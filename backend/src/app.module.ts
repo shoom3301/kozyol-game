@@ -10,6 +10,7 @@ import { AuthService } from './auth/auth.service';
 import { JwtModule } from '@nestjs/jwt';
 
 import { User } from './user/user.entity';
+import { GamesController } from './games/games.controller';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { User } from './user/user.entity';
     AuthModule,
     UserModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, GamesController],
   providers: [AppService],
 })
 export class AppModule {
