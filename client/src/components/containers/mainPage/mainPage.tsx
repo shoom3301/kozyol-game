@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
-import {authService} from 'services/auth.service';
 import {history} from 'router/router';
+import {gamesService} from 'services/games.service';
 
 export class MainPageComponent extends Component<any, any> {
     state = {};
 
     componentDidMount() {
-        authService.isAuthorized()
-            .then(isAuthorized => {
-                if (!isAuthorized) {
-                    history.replace('/authorization')
-                }
+        gamesService.getList()
+            .catch(error => {
+                history.replace('/authorization')
+            })
+            .then(games => {
+                console.log("Games: ", games)
             })
     }
 
