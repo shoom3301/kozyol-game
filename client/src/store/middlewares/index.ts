@@ -1,5 +1,5 @@
 import createSagaMiddleware from 'redux-saga';
-import { quotesMiddleware } from './quotes';
+import {gamesMiddleware} from 'store/middlewares/games';
 
 export const sagaMiddleware = createSagaMiddleware();
 
@@ -8,5 +8,5 @@ export function runSaga() {
 }
 
 function* appMiddleware() {
-    yield quotesMiddleware();
+    yield gamesMiddleware();
 }

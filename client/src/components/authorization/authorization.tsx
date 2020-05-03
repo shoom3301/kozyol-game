@@ -1,7 +1,7 @@
 import React, {ChangeEvent, Component} from 'react';
 import {UIInput} from 'ui-elements/input';
 import {UIButton} from 'ui-elements/button';
-import {Box, FormContainer, Label, Title, AuthorizationContainer, AuthLink} from './authorization.elements';
+import {Box, FormContainer, Label, Title, AuthorizationContainer, AuthLink} from 'components/authorization/authorization.elements';
 import {authorizationRoute, mainRoute, registrationRoute} from 'router/routerPaths';
 import {authService} from 'services/auth.service';
 import {history} from 'router/router';
