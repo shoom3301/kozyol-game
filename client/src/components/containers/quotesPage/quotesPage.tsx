@@ -1,14 +1,16 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import { IQuoteBlank } from '../../../interfaces/IQuote';
-import { quoteFetchAll, quoteCreate } from '../../../store/actions/quotes';
-import { UIButton } from '../../../ui-elements/button';
-import { QuoteCreateForm } from '../../pure/quoteCreateForm/quoteCreateForm';
-import { QuotesList } from '../../pure/quotesList/quotesList';
-import { IQuotesPageState, IQuotesPageDispatchProps, IQuotesPageProps } from './quotesPage.interface';
-import { QuotesPageTitle, QuotesPageContainer } from './quotesPage.elements';
-import { quotesPageSelector } from './quotesPage.selector';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {Dispatch} from 'redux';
+import {IQuoteBlank} from 'interfaces/IQuote';
+import {quoteFetchAll, quoteCreate} from 'store/actions/quotes';
+import {UIButton} from 'ui-elements/button';
+import {QuoteCreateForm} from '../../pure/quoteCreateForm/quoteCreateForm';
+import {QuotesList} from '../../pure/quotesList/quotesList';
+import {IQuotesPageState, IQuotesPageDispatchProps, IQuotesPageProps} from './quotesPage.interface';
+import {QuotesPageTitle, QuotesPageContainer} from './quotesPage.elements';
+import {quotesPageSelector} from './quotesPage.selector';
+import {authService} from 'services/auth.service';
+import {history} from 'router/router';
 
 export class QuotesPageComponent extends Component<IQuotesPageProps, IQuotesPageState> {
     static defaultState: IQuotesPageState = {formIsOpened: true};
@@ -20,6 +22,13 @@ export class QuotesPageComponent extends Component<IQuotesPageProps, IQuotesPage
     };
 
     componentDidMount() {
+        authService.isAuthorized()
+            .then(isAuthorized => {
+                if (!isAuthorized) {
+                    history.replace('/authorization')
+                }
+            })
+
         this.props.fetchAll();
     }
 
@@ -29,7 +38,7 @@ export class QuotesPageComponent extends Component<IQuotesPageProps, IQuotesPage
                 <QuotesPageTitle>Quotes app</QuotesPageTitle>
                 <QuotesList quotes={this.props.quotes}/>
                 <div>
-                    { this.state.formIsOpened
+                    {this.state.formIsOpened
                         ? <QuoteCreateForm onClose={this.toggleForm} onSubmit={this.props.createQuote}/>
                         : <UIButton onClick={this.toggleForm}>Create quote</UIButton>
                     }
