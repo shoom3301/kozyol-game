@@ -1,8 +1,7 @@
 import React, {ChangeEvent, Component} from 'react';
 import {UIInput} from 'ui-elements/input';
 import {UIButton} from 'ui-elements/button';
-import {Box, FormContainer, Label, Title, AuthorizationContainer} from './authorization.elements';
-import {Link} from 'react-router-dom';
+import {Box, FormContainer, Label, Title, AuthorizationContainer, AuthLink} from 'components/authorization/authorization.elements';
 import {authorizationRoute, mainRoute, registrationRoute} from 'router/routerPaths';
 import {authService} from 'services/auth.service';
 import {history} from 'router/router';
@@ -67,13 +66,13 @@ export class Authorization extends Component<AuthorizationProps, AuthorizationSt
                                  value={this.state.password}
                                  onChange={this.onChangePassword}/>
                     </Box>
-                    <Box>
+                    <Box align="center">
                         <UIButton onClick={this.signIn}>
                             {this.props.isRegistration ? 'Зарегистрироваться' : 'Войти'}
                         </UIButton>
-                        <Link to={this.props.isRegistration ? authorizationRoute : registrationRoute}>
+                        <AuthLink to={this.props.isRegistration ? authorizationRoute : registrationRoute}>
                             {this.props.isRegistration ? 'Авторизация' : 'Регистрация'}
-                        </Link>
+                        </AuthLink>
                     </Box>
                 </FormContainer>
             </AuthorizationContainer>

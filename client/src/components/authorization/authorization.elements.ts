@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import {Link} from 'react-router-dom';
 
 export const AuthorizationContainer = styled.div`
   width: 500px;
@@ -12,16 +13,15 @@ export const FormContainer = styled.div`
     padding: 20px;
 `;
 
-export const Box = styled.div<{error?: boolean}>`
+export const Box = styled.div<{align?: string}>`
     margin-bottom: 15px;
 
     :last-child {
         margin-bottom: 0;
     }
 
-    ${({error}) => error && css`
-        color: #d52315;
-        font-size: 13px;
+    ${({align}) => align === 'center' && css`
+        text-align: center;
     `}
 `;
 
@@ -33,4 +33,8 @@ export const Label = styled.label`
     display: block;
     font-size: 14px;
     margin-bottom: 4px;
+`;
+
+export const AuthLink = styled(Link)`
+  margin-left: 15px;
 `;
