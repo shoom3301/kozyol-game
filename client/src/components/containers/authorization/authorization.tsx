@@ -30,6 +30,10 @@ export class Authorization extends Component<AuthorizationProps, AuthorizationSt
         (this.props.isRegistration
             ? authService.signUp(login, password)
             : authService.signIn(login, password))
+            .catch(error => {
+                alert(error);
+                this.setState({login: '', password: '', formDisabled: false});
+            })
             .then(() => {
                 history.replace(mainRoute)
             });
