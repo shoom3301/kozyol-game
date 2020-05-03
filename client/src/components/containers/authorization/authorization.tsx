@@ -1,8 +1,7 @@
 import React, {ChangeEvent, Component} from 'react';
 import {UIInput} from 'ui-elements/input';
 import {UIButton} from 'ui-elements/button';
-import {Box, FormContainer, Label, Title} from 'components/pure/quoteCreateForm/qutesCreateForm.elements';
-import {QuotesPageContainer} from 'components/containers/quotesPage/quotesPage.elements';
+import {Box, FormContainer, Label, Title, AuthorizationContainer} from './authorization.elements';
 import {Link} from 'react-router-dom';
 import {authorizationRoute, mainRoute, registrationRoute} from 'router/routerPaths';
 import {authService} from 'services/auth.service';
@@ -46,7 +45,7 @@ export class Authorization extends Component<AuthorizationProps, AuthorizationSt
 
     render(): React.ReactElement {
         return (
-            <QuotesPageContainer>
+            <AuthorizationContainer>
                 <FormContainer>
                     <Box>
                         <Title>{this.props.isRegistration ? 'Регистрация' : 'Авторизация'}</Title>
@@ -73,7 +72,7 @@ export class Authorization extends Component<AuthorizationProps, AuthorizationSt
                         </Link>
                     </Box>
                 </FormContainer>
-            </QuotesPageContainer>
+            </AuthorizationContainer>
         )
     }
 }

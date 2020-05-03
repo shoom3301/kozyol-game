@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export class AuthService {
     isAuthorized(): Promise<Boolean> {
         return Promise.resolve(
@@ -13,7 +15,8 @@ export class AuthService {
     }
 
     signUp(login: string, password: string): Promise<void> {
-        return Promise.resolve()
+        return axios.post('/api/auth/signup', {login, password})
+            .then(() => void 0)
     }
 }
 
