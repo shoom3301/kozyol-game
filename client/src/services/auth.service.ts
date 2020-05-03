@@ -8,15 +8,17 @@ export class AuthService {
     }
 
     signIn(login: string, password: string): Promise<void> {
-        console.log({login, password})
-        localStorage.setItem('auth', '1')
-
-        return Promise.resolve()
+        return axios.post('/api/auth/login', {username: login, password})
+            .then(res => {
+                localStorage.setItem('auth', res.data.access_token)
+            })
     }
 
     signUp(login: string, password: string): Promise<void> {
-        return axios.post('/api/auth/signup', {login, password})
-            .then(() => void 0)
+        return axios.post('/api/auth/signup', {username: login, password})
+            .then(res => {
+                localStorage.setItem('auth', res.data.access_token)
+            })
     }
 }
 
