@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
 
 import { User } from '../user/user.entity';
 
@@ -13,6 +13,19 @@ export class Game {
   @Column()
   slotsCount: number;
 
-  @Column({ nullable: true })
-  playersCount: number;
+  @ManyToMany(() => User, { eager: true })
+  @JoinTable()
+  players: User[];
+
+  get playersCount() {
+    return this.players.length;
+  }
+
+  hasAvailableSlots() {
+    return this.players?.length < this.slotsCount;
+  }
+
+  hasPlayer(id: number) {
+    return !!this.players.find(user => user.id === id);
+  }
 }
