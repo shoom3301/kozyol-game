@@ -16,6 +16,7 @@ import { GamesController } from './games/games.controller';
 import { GamesService } from './games/games.service';
 import { GamesModule } from './games/games.module';
 import { GameStateController } from './game-state/game-state.controller';
+import { StepController } from './step/step.controller';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { GameStateController } from './game-state/game-state.controller';
     UserModule,
     GamesModule,
   ],
-  controllers: [AppController, GamesController, GameStateController],
+  controllers: [AppController, GamesController, GameStateController, StepController],
   providers: [AppService, GamesService],
 })
 export class AppModule {

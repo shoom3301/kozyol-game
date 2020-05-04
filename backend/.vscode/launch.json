@@ -1,0 +1,25 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "nest",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v13.13.0/bin/node",
+      "runtimeArgs": ["-r", "ts-node/register", "-r", "tsconfig-paths/register"],
+      "args": ["${workspaceRoot}//src/main.ts"],
+      "protocol": "inspector",
+      "console": "internalConsole",
+      "autoAttachChildProcesses": true,
+      "outputCapture": "std",
+      "internalConsoleOptions": "openOnSessionStart",
+      "env": {
+        "TS_NODE_IGNORE": "false",
+        "TS_NODE_PROJECT": "${workspaceRoot}/tsconfig.json"
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { Cards } from 'src/games/cards/types';
+import { Cards, Desk } from 'src/games/cards/types';
 
 export enum GameStateEnum {
   WAIT_PLAYERS = 'WAIT_PLAYERS',
@@ -9,16 +9,14 @@ export enum GameStateEnum {
 export type GameState = {
   id: number;
   state: GameStateEnum;
-  trump: string;
+  trump: number;
   currentPlayerId?: number;
   // stepEndTime: string;
   myScore: number;
   gameScore: {
     [playerId: number]: number;
   };
-  cardsOnTable: {
-    [playerId: number]: Array<Cards | null>; // || null // null - если не побил
-  };
+  cardsOnTable: Desk;
   players: {
     id: number;
     name: string;
