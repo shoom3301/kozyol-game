@@ -8,6 +8,7 @@ export enum GameStateEnum {
 
 export type GameState = {
   id: number;
+  me: number;
   ownerId: number;
   state: GameStateEnum;
   trump: number;

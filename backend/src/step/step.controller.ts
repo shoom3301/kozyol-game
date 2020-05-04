@@ -13,7 +13,6 @@ import { Request } from 'express';
 import { Cards } from 'src/games/cards/types';
 import { GamesService } from 'src/games/games.service';
 import { processStep } from './processStep';
-import { tail } from 'ramda';
 
 @UseGuards(JwtAuthGuard)
 @Controller('step')
@@ -63,7 +62,7 @@ export class StepController {
       }
     });
 
-    const stepResult = await processStep(game, cards, userId);
+    await processStep(game, cards, userId);
 
     return { status: 'ok' };
   }

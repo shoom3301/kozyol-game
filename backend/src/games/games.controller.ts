@@ -17,6 +17,7 @@ import { Request } from 'express';
 
 import { GamesService } from './games.service';
 import { UserService } from '../user/user.service';
+import { calcGameState } from 'src/game-state/calcGameState';
 
 @UseGuards(JwtAuthGuard)
 @Controller('games')
@@ -58,6 +59,6 @@ export class GamesController {
 
     const game = await this.gameService.connectUserToGame(req.user.userId, body.gameId);
 
-    return game;
+    return calcGameState(game, req.user.userId);
   }
 }

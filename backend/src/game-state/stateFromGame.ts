@@ -1,8 +1,9 @@
 import { Game } from 'src/games/entities/game';
 import { GameState, GameStateEnum } from './types';
 
-export const getWaitState = (game: Game): GameState => ({
+export const getWaitState = (game: Game, userId: number): GameState => ({
   id: game.id,
+  me: userId,
   ownerId: game.owner.id,
   state: GameStateEnum.WAIT_PLAYERS,
   trump: -1,
@@ -19,6 +20,7 @@ export const getWaitState = (game: Game): GameState => ({
 export const getEndedState = (game: Game, userId: number): GameState => {
   return {
     id: game.id,
+    me: userId,
     ownerId: game.owner.id,
     state: GameStateEnum.ENDED,
     trump: -1,
@@ -43,6 +45,7 @@ export const getPlayState = async (game: Game, userId: number): Promise<GameStat
 
   return {
     id: game.id,
+    me: userId,
     ownerId: game.owner.id,
     state: GameStateEnum.PLAY,
     trump: set.trump,
