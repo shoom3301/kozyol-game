@@ -18,7 +18,13 @@ export interface GamePageProps {
   gameState: GameStateHelpers | null;
 }
 
-export class GamePageComponent extends Component<GamePageProps, any> {
+export interface GamePageState {
+  timer: number | null;
+}
+
+export class GamePageComponent extends Component<GamePageProps, GamePageState> {
+  state: GamePageState = { timer: null };
+
   componentDidMount() {
     const gameId = parseInt(this.props.gameId)
 
@@ -29,7 +35,17 @@ export class GamePageComponent extends Component<GamePageProps, any> {
       })
       .then(() => {
         gameStateService.fetch()
+
+        const timer = window.setInterval(() => {
+          gameStateService.fetch()
+        }, 1500)
+
+        this.setState({ timer })
       })
+  }
+
+  componentWillUnmount() {
+    if (this.state.timer !== null) window.clearInterval(this.state.timer)
   }
 
   render(): React.ReactElement {
@@ -38,17 +54,17 @@ export class GamePageComponent extends Component<GamePageProps, any> {
     return (
       <div>
         {gameState !== null && <div>
-          <GamePageTitle>
-            <ToMain to={mainRoute}>← назад</ToMain>
-            Game by: {gameState.gameState.owner.name}
-          </GamePageTitle>
-          <PlayersList players={gameState.gameState.players}/>
+            <GamePageTitle>
+                <ToMain to={mainRoute}>← назад</ToMain>
+                Game by: {gameState.gameState.owner.name}
+            </GamePageTitle>
+            <PlayersList players={gameState.gameState.players}/>
           {gameState.isWaitingPlayers && <PlayersWaiting>{`Ожидаем игроков: ${gameState.slotsState}`}</PlayersWaiting>}
           {gameState.isPlaying && <CardsOnTable cards={gameState.gameState.cardsOnTable}/>}
           {gameState.gameState.myCards.length > 0 && <MyCards
-            gameId={gameState.gameState.id}
-            enabled={gameState.isMyTurn}
-            cards={gameState.gameState.myCards}/>}
+              gameId={gameState.gameState.id}
+              enabled={gameState.isMyTurn}
+              cards={gameState.gameState.myCards}/>}
         </div>}
       </div>
     );
