@@ -18,7 +18,7 @@ export class Round extends Base {
   @Column({ type: 'json' })
   hands: { [playerId: number]: Cards };
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, eager: true })
   currentPlayer: User;
 
   @ManyToOne(() => User, { nullable: true })

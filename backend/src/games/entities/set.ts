@@ -7,6 +7,7 @@ import { Game } from './game';
 import { Round } from './round';
 import { randomSuit } from '../cards/utils';
 import { makeDeck } from '../cards/make';
+import { head, sortWith, descend, prop } from 'ramda';
 
 @Entity()
 export class Set extends Base {
@@ -56,5 +57,10 @@ export class Set extends Base {
       this.rounds = [];
     }
     this.rounds.push(round);
+  }
+
+  // TODO: test
+  currentRound() {
+    return head(sortWith([descend(prop('updatedAt'))], this.rounds));
   }
 }

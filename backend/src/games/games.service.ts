@@ -15,7 +15,6 @@ export class GamesService {
   async gameById(gameId: number) {
     const game = await this.gameRepository.findOne(gameId);
 
-    console.log({ game });
     if (!game) {
       throw new HttpException('no game found', HttpStatus.NOT_FOUND);
     }

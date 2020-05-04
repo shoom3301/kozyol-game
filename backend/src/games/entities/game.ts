@@ -3,6 +3,7 @@ import { Entity, Column, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typ
 import { User } from '../../user/user.entity';
 import { Base } from './base';
 import { Set } from './set';
+import { map, prop, toPairs, unnest, values, gte } from 'ramda';
 
 @Entity()
 export class Game extends Base {
@@ -35,18 +36,27 @@ export class Game extends Base {
     return !!this.players.find(user => user.id === id);
   }
 
-  // TODO: implement
-  isFinished() {
-    return false;
+  gameScore(): { [playerId: number]: number } {
+    // [id, score][]
+    const setScores = unnest(map(set => toPairs(prop('score', set)), this.sets));
+
+    // [id, score][] => {id: sum of scores}
+    return setScores.reduce((acc, score) => {
+      const [id, val] = score;
+      if (!acc[id]) {
+        acc[id] = val;
+      } else {
+        acc[id] = acc[id] + val;
+      }
+      return acc;
+    }, {});
   }
 
-  // async lastSet(): Set | undefined {
-  //   return Game.findOne({where: {isFinished: false}})
-  // }
+  isFinished(): boolean {
+    return values(this.gameScore()).find(score => score > 11) !== undefined;
+  }
 
-  playingSet(): Set | null {
-    //
-
-    return null;
+  async playingSet(): Promise<Set | undefined> {
+    return Set.findOne({ where: { game: this, finished: false }, order: { createdAt: 'DESC' } });
   }
 }
