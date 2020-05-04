@@ -11,6 +11,7 @@ import { gameStateService } from 'services/gameState.service';
 export interface MyCardsProps {
   cards: Cards
   gameId: number
+  enabled: boolean
 }
 
 export interface MyCardsState {
@@ -69,7 +70,7 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
             </MyCardSlot>
           ))}
         </CardsList>
-        <Button onClick={() => this.doStep()}>Ногам ходу, голове приходу</Button>
+        {this.props.enabled && <Button onClick={() => this.doStep()}>Ногам ходу, голове приходу</Button>}
       </Container>
     )
   }

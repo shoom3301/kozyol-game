@@ -38,16 +38,17 @@ export class GamePageComponent extends Component<GamePageProps, any> {
     return (
       <div>
         {gameState !== null && <div>
-            <GamePageTitle>
-                <ToMain to={mainRoute}>← назад</ToMain>
-                Game by: "TODO"
-            </GamePageTitle>
-            <PlayersList players={gameState.gameState.players}/>
+          <GamePageTitle>
+            <ToMain to={mainRoute}>← назад</ToMain>
+            Game by: {gameState.gameState.owner.name}
+          </GamePageTitle>
+          <PlayersList players={gameState.gameState.players}/>
           {gameState.isWaitingPlayers && <PlayersWaiting>{`Ожидаем игроков: ${gameState.slotsState}`}</PlayersWaiting>}
-          {gameState.isPlaying && <CardsOnTable/>}
+          {gameState.isPlaying && <CardsOnTable cards={gameState.gameState.cardsOnTable}/>}
           {gameState.gameState.myCards.length > 0 && <MyCards
-              gameId={gameState.gameState.id}
-              cards={gameState.gameState.myCards}/>}
+            gameId={gameState.gameState.id}
+            enabled={gameState.isMyTurn}
+            cards={gameState.gameState.myCards}/>}
         </div>}
       </div>
     );

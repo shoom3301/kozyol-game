@@ -6,19 +6,23 @@ export class GameStateHelpers {
   ) {
   }
 
-  get isWaitingPlayers(): Boolean {
+  get isWaitingPlayers(): boolean {
     return this.gameState.state === GameStateEnum.WAIT_PLAYERS
   }
 
-  get isPlaying(): Boolean {
+  get isPlaying(): boolean {
     return this.gameState.state === GameStateEnum.PLAY
   }
 
-  get isEnded(): Boolean {
+  get isEnded(): boolean {
     return this.gameState.state === GameStateEnum.ENDED
   }
 
-  get slotsState(): String {
-    return `${this.gameState.players.length}/${4}`
+  get isMyTurn(): boolean {
+    return this.gameState.me === this.gameState.currentPlayerId
+  }
+
+  get slotsState(): string {
+    return `${this.gameState.players.length}/${this.gameState.slotsCount}`
   }
 }
