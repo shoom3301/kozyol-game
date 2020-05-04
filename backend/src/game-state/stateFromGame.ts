@@ -1,5 +1,5 @@
 import { Game } from 'src/games/entities/game';
-import { GameState, GameStateEnum } from './types';
+import { GameState, GameStateEnum } from '@game-types/game-state';
 import { last } from 'ramda';
 
 // TODO: extract to helpers

@@ -1,5 +1,5 @@
 import { hearts, diamonds, spades, clubs } from './make';
-import { Value } from './types';
+import { Value } from '@game-types/card';
 
 export const orderedDeck = () => [
   hearts(Value.Six),

@@ -1,4 +1,4 @@
-import { Cards } from 'src/games/cards/types';
+import { Cards } from './card';
 
 export enum GameStateEnum {
   WAIT_PLAYERS = 'WAIT_PLAYERS',

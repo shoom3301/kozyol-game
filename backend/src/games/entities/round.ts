@@ -1,6 +1,6 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
 
-import { Desk, Cards } from '../cards/types';
+import { Desk, Cards } from '@game-types/card';
 
 import { Base } from './base';
 import { User } from '../../user/user.entity';

@@ -1,5 +1,7 @@
 //S-spades,H-hearts,D-diamonds,C-clubs
 
-export function cardImage(value: string, suit: string) {
-  return `http://richardschneider.github.io/cardsJS/cards/${value}${suit}.svg`
+import { Suit, SuitCharMap, Value, ValueCharMap } from '../../../types/card';
+
+export function cardImage(value: Value, suit: Suit) {
+  return `http://richardschneider.github.io/cardsJS/cards/${ValueCharMap[value]}${SuitCharMap[suit]}.svg`
 }
