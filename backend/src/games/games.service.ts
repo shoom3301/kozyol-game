@@ -56,9 +56,12 @@ export class GamesService {
     await this.gameRepository.save(game);
 
     game = await this.gameRepository.findOne(gameId);
+
     if (!game!.hasAvailableSlots()) {
       game = startGame(game!);
       await this.gameRepository.save(game);
     }
+
+    return game;
   }
 }
