@@ -8,7 +8,7 @@ export const getWaitState = (game: Game): GameState => ({
   state: GameStateEnum.WAIT_PLAYERS,
   trump: '',
   myScore: 0,
-  setScore: game.players.reduce((acc, item) => {
+  gameScore: game.players.reduce((acc, item) => {
     acc[item.id] = 0;
     return acc;
   }, {}),

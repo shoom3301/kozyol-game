@@ -13,7 +13,7 @@ export type GameState = {
   currentPlayerId?: number;
   // stepEndTime: string;
   myScore: number;
-  setScore: {
+  gameScore: {
     [playerId: number]: number;
   };
   cardsOnTable: {
