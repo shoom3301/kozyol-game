@@ -1,9 +1,7 @@
 import { GameState, GameStateEnum } from 'model/GameState';
-import { GameItem } from 'model/GameItem';
 
 export class GameStateHelpers {
   constructor(
-    public readonly gameItem: GameItem,
     public readonly gameState: GameState
   ) {
   }
@@ -21,6 +19,6 @@ export class GameStateHelpers {
   }
 
   get slotsState(): String {
-    return `${this.gameState.players.length}/${this.gameItem.slotsCount}`
+    return `${this.gameState.players.length}/${4}`
   }
 }

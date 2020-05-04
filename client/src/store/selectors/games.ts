@@ -2,9 +2,9 @@ import { IState } from '../states';
 import { createMatchSelector } from 'connected-react-router';
 import { gameRoute } from 'router/routerPaths';
 import { createSelector } from 'reselect';
-import { store } from 'store/index';
+import { GameItem } from 'model/GameItem';
 
-export const getGamesList = () => store.getState().games.games;
+export const getGamesList = ({ games }: IState): GameItem[] => games.games;
 
 export const getGameIdMatch = createMatchSelector<IState, { gameId: string }>(
   gameRoute()

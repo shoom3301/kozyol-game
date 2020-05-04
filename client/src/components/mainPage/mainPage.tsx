@@ -4,28 +4,23 @@ import { GameCreation } from 'components/gameCreation/gameCreation';
 import styled from 'styled-components';
 import { GameItem } from 'model/GameItem';
 import { gamesService } from 'services/games.service';
-import { store } from 'store';
 import { getGamesList } from 'store/selectors/games';
 import { history } from 'router/router';
 import { authorizationRoute } from 'router/routerPaths';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 
-export interface MainPageState {
+export interface MainPageProps {
   games: GameItem[]
 }
 
-export class MainPage extends Component<any, MainPageState> {
-  state = { games: [] }
+export class MainPageComponent extends Component<MainPageProps, any> {
 
   componentDidMount() {
-    gamesService
-      .updateList()
+    gamesService.updateList()
       .catch(() => {
         history.replace(authorizationRoute)
       })
-
-    store.subscribe(() => {
-      this.setState({ games: getGamesList() })
-    })
   }
 
   render(): React.ReactElement {
@@ -33,13 +28,18 @@ export class MainPage extends Component<any, MainPageState> {
       <div>
         <MainPageTitle>KOZYOL GAME</MainPageTitle>
         <MainPageContainer>
-          <GamesList games={this.state.games}/>
+          <GamesList games={this.props.games}/>
           <GameCreation/>
         </MainPageContainer>
       </div>
     );
   }
 }
+
+export const MainPage = connect(
+  createSelector(getGamesList, games => ({ games })),
+  () => ({})
+)(MainPageComponent);
 
 const MainPageContainer = styled.div`
   display: grid;

@@ -1,5 +1,5 @@
-import { Value, Suit, SuitCharMap, ValueCharMap } from 'model/Card';
+import { Card, SuitCharMap, ValueCharMap } from 'model/Card';
 
-export function cardImage(value: Value, suit: Suit) {
+export function cardImage([suit, value]: Card) {
   return `http://richardschneider.github.io/cardsJS/cards/${ValueCharMap[value]}${SuitCharMap[suit]}.svg`
 }

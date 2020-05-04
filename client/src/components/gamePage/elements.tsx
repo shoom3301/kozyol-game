@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { Title } from 'ui-elements/form';
 
@@ -30,10 +30,14 @@ export const CardSlot = styled.li`
   position: relative;
 `;
 
-export const MyCardSlot = styled(CardSlot)`
+export const MyCardSlot = styled(CardSlot)<{selected?: boolean}>`
   cursor: pointer;
   border-radius: 10px;
   background: #e4e4e4;
+
+  ${({selected}) => selected && css`
+    background: rgba(26, 90, 188, 0.83);
+  `}
 
   :hover {
     background: rgba(26, 90, 188, 0.83);
