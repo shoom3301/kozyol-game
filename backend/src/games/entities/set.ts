@@ -5,16 +5,18 @@ import { Deck, Suit, Trick } from '../cards/types';
 import { Base } from './base';
 import { Game } from './game';
 import { Round } from './round';
-import { randomEnumValue } from '../cards/utils';
+import { randomSuit } from '../cards/utils';
+import { makeDeck } from '../cards/make';
 
 @Entity()
 export class Set extends Base {
-  @ManyToOne(() => Game, { nullable: false, cascade: true })
+  @ManyToOne(() => Game, { nullable: false })
   game: Game;
 
   @OneToMany(
     () => Round,
     round => round.set,
+    { cascade: true, eager: true },
   )
   rounds: Round[];
 
@@ -33,7 +35,26 @@ export class Set extends Base {
   @Column({ default: false })
   finished: boolean;
 
-  // static initSet = (game: Game): Promise<Set | undefined> => {
-  //   const trump = randomEnumValue(Suit);
-  // };
+  initSet(game: Game) {
+    this.game = game;
+
+    this.trump = randomSuit();
+    this.deck = makeDeck();
+    this.score = game.players.reduce((acc, item) => {
+      acc[item.id] = 0;
+      return acc;
+    }, {});
+    this.tricks = game.players.reduce((acc, item) => {
+      acc[item.id] = [];
+      return acc;
+    }, {});
+
+    const round = new Round();
+    round.initRound(this);
+
+    if (!this.rounds) {
+      this.rounds = [];
+    }
+    this.rounds.push(round);
+  }
 }

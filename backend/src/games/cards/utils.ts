@@ -1,8 +1,7 @@
-export const randomEnumValue = <T extends Enumerator>(enumeration: T): T => {
-  const values = Object.keys(enumeration);
-  const enumKey = values[Math.floor(Math.random() * values.length)];
-  return enumeration[enumKey];
-};
+import { Suit } from './types';
 
 export const randomArrayValue = <T>(array: T[]): T =>
   array[Math.floor(Math.random() * array.length)];
+
+export const randomSuit = (): Suit =>
+  randomArrayValue([Suit.Hearts, Suit.Clubs, Suit.Diamonds, Suit.Spades]);

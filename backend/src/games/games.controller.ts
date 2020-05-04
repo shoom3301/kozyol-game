@@ -28,10 +28,6 @@ export class GamesController {
   @Get(':gameId')
   async gameById(@Req() req: Request, @Param('gameId') gameId?: number) {
     const game = await this.gameService.gameById(gameId);
-    console.log({ game });
-    if (!game) {
-      throw new HttpException('no game found', HttpStatus.NOT_FOUND);
-    }
 
     if (!game.hasPlayer(req.user.userId)) {
       throw new HttpException('you are not connected to game', HttpStatus.FORBIDDEN);

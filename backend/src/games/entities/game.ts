@@ -12,6 +12,7 @@ export class Game extends Base {
   @OneToMany(
     () => Set,
     set => set.game,
+    { cascade: true, eager: true },
   )
   sets: Set[];
 
@@ -32,5 +33,20 @@ export class Game extends Base {
 
   hasPlayer(id: number) {
     return !!this.players.find(user => user.id === id);
+  }
+
+  // TODO: implement
+  isFinished() {
+    return false;
+  }
+
+  // async lastSet(): Set | undefined {
+  //   return Game.findOne({where: {isFinished: false}})
+  // }
+
+  playingSet(): Set | null {
+    //
+
+    return null;
   }
 }

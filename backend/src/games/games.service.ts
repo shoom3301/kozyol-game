@@ -1,4 +1,5 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { Injectable, HttpException, HttpStatus, Req } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -14,10 +15,15 @@ export class GamesService {
   async gameById(gameId: number) {
     const game = await this.gameRepository.findOne(gameId);
 
+    console.log({ game });
+    if (!game) {
+      throw new HttpException('no game found', HttpStatus.NOT_FOUND);
+    }
+
     return game;
   }
 
-  async create(payload: any): Promise<Game> {
+  async create(payload: any): Promise<Game | undefined> {
     const { id } = await this.gameRepository.save(payload);
 
     return this.gameRepository.findOne(id);
@@ -32,7 +38,6 @@ export class GamesService {
 
   async connectUserToGame(userId: number, gameId: number) {
     let game = await this.gameRepository.findOne(gameId);
-    console.log({ game });
 
     if (!game) {
       throw new HttpException('game not found', HttpStatus.NOT_FOUND);
@@ -51,8 +56,9 @@ export class GamesService {
     await this.gameRepository.save(game);
 
     game = await this.gameRepository.findOne(gameId);
-    if (!game.hasAvailableSlots()) {
-      game = await startGame(game);
+    if (!game!.hasAvailableSlots()) {
+      game = startGame(game!);
+      await this.gameRepository.save(game);
     }
   }
 }

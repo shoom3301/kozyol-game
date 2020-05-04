@@ -1,15 +1,17 @@
 export enum Suit {
-  Hearts, // – червы
-  Diamonds, // – бубны
-  Clubs, // – трефы
-  Spades, // – пики точеные
+  Hearts = 0, // – червы ♥
+  Diamonds, // – бубны ♦
+  Clubs, // – трефы ♣
+  Spades, // – пики точеные ♠
 }
 
+export const suitSymbols = ['♥', '♦', '♣', '♠'];
+
 export enum Value {
-  Six = 0,
-  Seven = 0,
-  Eight = 0,
-  Nine = 0,
+  Six = -6,
+  Seven = -7,
+  Eight = -8,
+  Nine = -9,
   Jack = 2, // – валет
   Queen, // – дама
   King, // – король
@@ -26,6 +28,4 @@ export type Hand = Cards;
 
 export type Trick = Cards;
 
-export type Desk = {
-  [player: number]: Cards;
-};
+export type Desk = Array<{ [player: number]: Cards }>;
