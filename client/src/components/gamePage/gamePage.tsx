@@ -54,7 +54,12 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
             <Container>
                 <Title>Карты на столе:</Title>
                 <CardsList>
-                  <CardSlot><Card src={cardImage('10', 'H')}/></CardSlot>
+                  <CardSlot>
+                      <Card src={cardImage('6', 'H')}/>
+                      <Card src={cardImage('8', 'H')}/>
+                      <Card src={cardImage('10', 'H')}/>
+                      <Card src={cardImage('A', 'H')}/>
+                  </CardSlot>
                   <CardSlot><Card src={cardImage('A', 'D')}/></CardSlot>
                   <CardSlot><Card src={cardImage('K', 'S')}/></CardSlot>
                   <CardSlot><Card src={cardImage('7', 'C')}/></CardSlot>
@@ -63,10 +68,10 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
             <Container>
                 <Title>Мои карты:</Title>
                 <CardsList>
-                    <CardSlot><Card src={cardImage('7', 'C')}/></CardSlot>
-                    <CardSlot><Card src={cardImage('7', 'C')}/></CardSlot>
-                    <CardSlot><Card src={cardImage('7', 'C')}/></CardSlot>
-                    <CardSlot><Card src={cardImage('7', 'C')}/></CardSlot>
+                    <MyCardSlot><Card src={cardImage('7', 'C')}/></MyCardSlot>
+                    <MyCardSlot><Card src={cardImage('7', 'C')}/></MyCardSlot>
+                    <MyCardSlot><Card src={cardImage('7', 'C')}/></MyCardSlot>
+                    <MyCardSlot><Card src={cardImage('7', 'C')}/></MyCardSlot>
                 </CardsList>
             </Container>
         </div>}
@@ -127,14 +132,47 @@ const CardSlot = styled.li`
   display: inline-block;
   border: 1px solid #000;
   padding: 10px;
-  width: 100px;
-  height: 130px;
+  width: 120px;
+  height: 150px;
   margin: 10px;
   background: #f3f3f3;
+  overflow: hidden;
+  position: relative;
+`;
+
+const MyCardSlot = styled(CardSlot)`
+  cursor: pointer;
+
+  :hover {
+    background: rgba(26, 90, 188, 0.83);
+  }
 `;
 
 const Card = styled.img`
   width: 90px;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  
+  :nth-child(2) {
+    left: 20px;
+    top: 20px;
+  }
+  
+  :nth-child(3) {
+    left: 30px;
+    top: 30px;
+  }
+  
+  :nth-child(4) {
+    left: 40px;
+    top: 40px;
+  }
+  
+  :nth-child(5) {
+    left: 50px;
+    top: 50px;
+  }
 `;
 
 export const ToMain = styled(Link)`
