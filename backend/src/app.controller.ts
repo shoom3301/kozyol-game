@@ -1,8 +1,9 @@
-import { Controller, Req, Post, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Req, Post, UseGuards, HttpException, HttpStatus, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { UserService } from './user/user.service';
 import { AuthService } from './auth/auth.service';
+import { makeDeck } from './games/cards/make';
 
 @Controller()
 export class AppController {
@@ -22,5 +23,10 @@ export class AppController {
     }
     const user = await this.userService.create(req.body.username, req.body.password);
     return this.authService.login({ username: user.login, pass: user.password });
+  }
+
+  @Get('test')
+  test() {
+    return makeDeck();
   }
 }

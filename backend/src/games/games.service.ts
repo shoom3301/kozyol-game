@@ -3,11 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { User } from '../user/user.entity';
-import { Game } from './game.entity';
+import { Game } from './entities/game';
+
+import { startGame } from './helpers/startGame';
 
 @Injectable()
 export class GamesService {
   constructor(@InjectRepository(Game) private gameRepository: Repository<Game>) {}
+
+  async gameById(gameId: number) {
+    const game = await this.gameRepository.findOne(gameId);
+
+    return game;
+  }
 
   async create(payload: any): Promise<Game> {
     const { id } = await this.gameRepository.save(payload);
@@ -23,7 +31,7 @@ export class GamesService {
   }
 
   async connectUserToGame(userId: number, gameId: number) {
-    const game = await this.gameRepository.findOne(gameId);
+    let game = await this.gameRepository.findOne(gameId);
     console.log({ game });
 
     if (!game) {
@@ -42,6 +50,9 @@ export class GamesService {
     game.players.push({ id: userId } as User);
     await this.gameRepository.save(game);
 
-    return this.gameRepository.findOne(gameId);
+    game = await this.gameRepository.findOne(gameId);
+    if (!game.hasAvailableSlots()) {
+      game = await startGame(game);
+    }
   }
 }

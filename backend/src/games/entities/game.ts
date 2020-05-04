@@ -1,14 +1,19 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 
-import { User } from '../user/user.entity';
+import { User } from '../../user/user.entity';
+import { Base } from './base';
+import { Set } from './set';
 
 @Entity()
-export class Game {
-  @PrimaryGeneratedColumn()
-  id: string;
-
+export class Game extends Base {
   @ManyToOne(() => User, { eager: true, nullable: false })
   owner: User;
+
+  @OneToMany(
+    () => Set,
+    set => set.game,
+  )
+  sets: Set[];
 
   @Column()
   slotsCount: number;
