@@ -20,6 +20,11 @@ import { UserService } from '../user/user.service';
 export class GamesController {
   constructor(private gameService: GamesService, private userService: UserService) {}
 
+  @Get('list')
+  getGames() {
+    return this.gameService.availableGames();
+  }
+
   @Get(':gameId')
   async gameById(@Req() req: Request, @Param('gameId') gameId?: number) {
     const game = await this.gameService.gameById(gameId);
@@ -35,17 +40,13 @@ export class GamesController {
     return game;
   }
 
-  @Get('list')
-  getProfile() {
-    return this.gameService.availableGames();
-  }
-
   @Post('create')
   async createGame(@Req() req: Request) {
     console.log(req.user);
     const game = await this.gameService.create({
       owner: { id: req.user.userId },
       slotsCount: req.body.slotsCount,
+      // players: [{ id: 4 }, { id: 5 }, { id: 6 }],
     });
     return game;
   }
