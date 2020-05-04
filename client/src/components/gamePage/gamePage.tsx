@@ -9,7 +9,25 @@ import { history } from 'router/router';
 import { mainRoute } from 'router/routerPaths';
 import { cardImage } from 'model/Card';
 import { Link } from 'react-router-dom';
-import { Suit, Value } from '../../../../types/card';
+
+export enum Suit {
+  Hearts = 0, // – червы ♥
+  Diamonds, // – бубны ♦
+  Clubs, // – трефы ♣
+  Spades, // – пики точеные ♠
+}
+
+export enum Value {
+  Six = -6,
+  Seven = -7,
+  Eight = -8,
+  Nine = -9,
+  Jack = 2, // – валет
+  Queen, // – дама
+  King, // – король
+  Ten = 10,
+  Ace, // – туз
+}
 
 export interface GamePageProps {
   gameId: string;
