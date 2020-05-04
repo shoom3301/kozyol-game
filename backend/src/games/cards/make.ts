@@ -1,4 +1,4 @@
-import { Value, Suit, Card, Deck } from '@game-types/card';
+import { Value, Suit, Card, Deck } from './types';
 import { randomArrayValue } from './utils';
 import { orderedDeck } from './orderedDeck';
 

@@ -3,7 +3,7 @@ import { GamesService } from '../games/games.service';
 import { Request } from 'express';
 import { Game } from 'src/games/entities/game';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { GameState } from '@game-types/game-state';
+import { GameState } from './types';
 import { getWaitState, getEndedState } from './stateFromGame';
 
 @UseGuards(JwtAuthGuard)

@@ -1,4 +1,4 @@
-import { Suit } from '@game-types/card';
+import { Suit } from './types';
 
 export const randomArrayValue = <T>(array: T[]): T =>
   array[Math.floor(Math.random() * array.length)];

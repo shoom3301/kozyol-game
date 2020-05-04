@@ -9,9 +9,6 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "paths": {
-      "@game-types/*": ["../types/*"]
-    },
     "incremental": true
   },
   "exclude": ["node_modules", "dist"]

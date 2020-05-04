@@ -1,5 +1,7 @@
 import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
-import { Deck, Suit, Trick } from '@game-types/card';
+
+import { Deck, Suit, Trick } from '../cards/types';
+
 import { Base } from './base';
 import { Game } from './game';
 import { Round } from './round';

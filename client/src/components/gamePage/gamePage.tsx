@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { history } from 'router/router';
 import { mainRoute } from 'router/routerPaths';
 import { cardImage } from 'model/Card';
+import { Button } from 'ui-elements/button';
 import { Link } from 'react-router-dom';
 
 export enum Suit {
@@ -73,23 +74,23 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
                 <Title>Карты на столе:</Title>
                 <CardsList>
                   <CardSlot>
-                      <Card src={cardImage(Value.Six, Suit.Hearts)}/>
-                      <Card src={cardImage(Value.Eight, Suit.Hearts)}/>
-                      <Card src={cardImage(Value.Ten, Suit.Hearts)}/>
-                      <Card src={cardImage(Value.Ace, Suit.Hearts)}/>
+                      <Card src={cardImage('6', 'H')}/>
+                      <Card src={cardImage('8', 'H')}/>
+                      <Card src={cardImage('10', 'H')}/>
+                      <Card src={cardImage('A', 'H')}/>
                   </CardSlot>
-                  <CardSlot><Card src={cardImage(Value.Ace, Suit.Diamonds)}/></CardSlot>
-                  <CardSlot><Card src={cardImage(Value.King, Suit.Spades)}/></CardSlot>
-                  <CardSlot><Card src={cardImage(Value.Seven, Suit.Clubs)}/></CardSlot>
+                  <CardSlot><Card src={cardImage('A', 'D')}/></CardSlot>
+                  <CardSlot><Card src={cardImage('K', 'S')}/></CardSlot>
+                  <CardSlot><Card src={cardImage('7', 'C')}/></CardSlot>
                 </CardsList>
             </Container>
             <Container>
                 <Title>Мои карты:</Title>
                 <CardsList>
-                    <MyCardSlot><Card src={cardImage(Value.Seven, Suit.Clubs)}/></MyCardSlot>
-                    <MyCardSlot><Card src={cardImage(Value.Seven, Suit.Clubs)}/></MyCardSlot>
-                    <MyCardSlot><Card src={cardImage(Value.Seven, Suit.Clubs)}/></MyCardSlot>
-                    <MyCardSlot><Card src={cardImage(Value.Seven, Suit.Clubs)}/></MyCardSlot>
+                    <MyCardSlot><Card src={cardImage('7', 'C')}/></MyCardSlot>
+                    <MyCardSlot><Card src={cardImage('7', 'C')}/></MyCardSlot>
+                    <MyCardSlot><Card src={cardImage('7', 'C')}/></MyCardSlot>
+                    <MyCardSlot><Card src={cardImage('7', 'C')}/></MyCardSlot>
                 </CardsList>
             </Container>
         </div>}
