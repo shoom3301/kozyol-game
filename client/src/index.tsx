@@ -10,10 +10,10 @@ import './index.css';
 const rootElement = document.getElementById('root');
 
 ReactDOM.render(
-    <Provider store={store}>
-        <ConnectedRouter history={history}>
-            <Routes />
-        </ConnectedRouter>
-    </Provider>,
-    rootElement
+  <Provider store={store}>
+    <ConnectedRouter history={history}>
+      <Routes/>
+    </ConnectedRouter>
+  </Provider>,
+  rootElement
 );

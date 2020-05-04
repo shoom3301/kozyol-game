@@ -33,7 +33,7 @@ export class Set extends Base {
   @Column({ default: false })
   finished: boolean;
 
-  // static initSet = (game: Game): Promise<Set | undefined> => {
+  // static initSet = (game: GameItem): Promise<Set | undefined> => {
   //   const trump = randomEnumValue(Suit);
   // };
 }

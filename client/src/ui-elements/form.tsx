@@ -1,10 +1,5 @@
 import styled, { css } from 'styled-components';
-import {Link} from 'react-router-dom';
-
-export const AuthorizationContainer = styled.div`
-  width: 500px;
-  margin: 0 auto;
-`;
+import { Link } from 'react-router-dom';
 
 export const FormContainer = styled.div`
     display: block;
@@ -13,14 +8,14 @@ export const FormContainer = styled.div`
     padding: 20px;
 `;
 
-export const Box = styled.div<{align?: string}>`
+export const Box = styled.div<{ align?: string }>`
     margin-bottom: 15px;
 
     :last-child {
         margin-bottom: 0;
     }
 
-    ${({align}) => align === 'center' && css`
+    ${({ align }) => align === 'center' && css`
         text-align: center;
     `}
 `;
@@ -35,6 +30,6 @@ export const Label = styled.label`
     margin-bottom: 4px;
 `;
 
-export const AuthLink = styled(Link)`
+export const FormLink = styled(Link)`
   margin-left: 15px;
 `;

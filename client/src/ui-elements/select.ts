@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const Input = styled.input`
+export const Select = styled.select`
     width: 100%;
     max-width: 100%;
     min-width: 100%;
