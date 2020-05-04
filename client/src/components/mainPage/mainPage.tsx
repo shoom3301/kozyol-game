@@ -1,37 +1,53 @@
-import React, {Component} from 'react';
-import {GamesList} from 'components/gamesList/gamesList';
-import {Game} from 'model/Game';
-import {connect} from 'react-redux';
-import {createSelector} from 'reselect';
-import {getGamesList} from 'store/selectors/games';
-import {gameCreate, gameFetchAll} from 'store/actions/games';
-import {GameBlank} from 'model/GameBlank';
+import React, { Component } from 'react';
+import { GamesList } from 'components/gamesList/gamesList';
+import { GameCreation } from 'components/gameCreation/gameCreation';
+import styled from 'styled-components';
+import { GameItem } from 'model/GameItem';
+import { gamesService } from 'services/games.service';
+import { store } from 'store';
+import { getGamesList } from 'store/selectors/games';
+import { history } from 'router/router';
+import { authorizationRoute } from 'router/routerPaths';
 
-export interface MainPageProps {
-    games: Game[];
-    fetchAll(): void;
-    createGame(game: GameBlank): void;
+export interface MainPageState {
+  games: GameItem[]
 }
 
-export class MainPageComponent extends Component<MainPageProps, any> {
-    componentDidMount() {
-        this.props.fetchAll();
-    }
+export class MainPage extends Component<any, MainPageState> {
+  state = { games: [] }
 
-    render(): React.ReactElement {
-        return (
-            <div>
-                <h1>KOZYOL GAME</h1>
-                {this.props.games.length > 0 && <GamesList games={this.props.games}/>}
-            </div>
-        );
-    }
-}
+  componentDidMount() {
+    gamesService
+      .updateList()
+      .catch(() => {
+        history.replace(authorizationRoute)
+      })
 
-export const MainPage = connect(
-    createSelector(getGamesList, games => ({games})),
-    dispatch => ({
-        fetchAll: () => dispatch(gameFetchAll()),
-        createGame: (game: GameBlank) => dispatch(gameCreate(game))
+    store.subscribe(() => {
+      this.setState({ games: getGamesList() })
     })
-)(MainPageComponent);
+  }
+
+  render(): React.ReactElement {
+    return (
+      <div>
+        <MainPageTitle>KOZYOL GAME</MainPageTitle>
+        <MainPageContainer>
+          <GamesList games={this.state.games}/>
+          <GameCreation/>
+        </MainPageContainer>
+      </div>
+    );
+  }
+}
+
+const MainPageContainer = styled.div`
+  display: grid;
+  grid-template-columns: 50% 50%;
+  padding: 0 5%;
+`;
+
+const MainPageTitle = styled.h1`
+  text-align: center;
+  color: rgba(26,90,188,0.83);
+`;

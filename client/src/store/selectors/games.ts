@@ -1,19 +1,19 @@
-import {IState} from '../states';
-import {createMatchSelector} from 'connected-react-router';
-import {gameRoute} from 'router/routerPaths';
-import {createSelector} from 'reselect';
-import {GamesState} from 'store/states/games';
+import { IState } from '../states';
+import { createMatchSelector } from 'connected-react-router';
+import { gameRoute } from 'router/routerPaths';
+import { createSelector } from 'reselect';
+import { store } from 'store/index';
 
-export const getGamesList = ({games}: IState): GamesState => games;
+export const getGamesList = () => store.getState().games.games;
 
 export const getGameIdMatch = createMatchSelector<IState, { gameId: string }>(
-    gameRoute()
+  gameRoute()
 );
 
 export const getGameIdByLocation = createSelector(getGameIdMatch, match => {
-    if (!match) {
-        return '';
-    }
+  if (!match) {
+    return '';
+  }
 
-    return match.params['gameId'];
+  return match.params['gameId'];
 });

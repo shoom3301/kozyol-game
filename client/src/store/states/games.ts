@@ -1,5 +1,7 @@
-import {Game} from 'model/Game';
+import { GameItem } from 'model/GameItem';
 
-export type GamesState = Game[];
+export interface GamesState {
+  games: GameItem[]
+}
 
-export const defaultGamesState: GamesState = [];
+export const defaultGamesState: GamesState = {games: []}

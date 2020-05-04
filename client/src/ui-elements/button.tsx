@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const UIButton = styled.button`
+export const Button = styled.button`
     height: 40px;
     padding: 0 15px;
     color: #fff;

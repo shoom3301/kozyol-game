@@ -25,7 +25,7 @@ User:
 }
 ```
 
-Game (GET by id):
+GameItem (GET by id):
 ```
 {
 	id: String,
@@ -85,4 +85,4 @@ Games List (GET):
 }
 ```
 
-Connect (POST by gameId): Game
+Connect (POST by gameId): GameItem
