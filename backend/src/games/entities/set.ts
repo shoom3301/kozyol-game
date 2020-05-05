@@ -82,8 +82,9 @@ export class Set extends Base {
       if (!acc[winnerId]) {
         acc[winnerId] = [];
       }
+
       const tricks = map(trick => head(toPairs(trick))[1], round.desk);
-      acc[winnerId] = concat(acc[winnerId], unnest(tricks));
+      acc[winnerId] = [...acc[winnerId], ...unnest(tricks)];
       return acc;
     }, {});
 
@@ -95,6 +96,5 @@ export class Set extends Base {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     const score = fromPairs(scoresPairs);
-    const x = 0;
   }
 }
