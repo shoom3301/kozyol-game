@@ -1,6 +1,6 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
 
-import { Desk, Cards, Card } from '../cards/types';
+import { Desk, Cards } from '../cards/types';
 
 import { Base } from './base';
 import { User } from '../../user/user.entity';
@@ -15,8 +15,13 @@ import {
   findIndex,
   toPairs,
   head,
+  all,
+  complement,
+  find,
+  last,
 } from 'ramda';
 import { flatten } from '@nestjs/common';
+import { isCardsGreater } from '../cards/comparisons';
 
 @Entity()
 export class Round extends Base {
@@ -48,11 +53,55 @@ export class Round extends Base {
   }
 
   pushToDesk(cards: Cards, userId: number) {
-    const userHandIdx = findIndex(
+    // idx of user in Desk
+    const userDeskIdx = findIndex(
       (hand: { [id: number]: Cards }) => head(head(toPairs(hand))) === `${userId}`,
     )(this.desk);
-    this.desk[userHandIdx] = { [userId]: cards };
+    this.desk[userDeskIdx] = { [userId]: cards };
     this.hands[userId] = without(cards, this.hands[userId]);
+
+    if (this.isTurnGreater(userDeskIdx)) {
+      this.winner = { id: userId } as User;
+    }
+
+    this.recalcRound();
+  }
+
+  isTurnGreater(userIdx: number) {
+    if (userIdx === 0) {
+      return true;
+    }
+
+    const [_, prevUserCards] = head(toPairs(this.desk[userIdx - 1]));
+    const [__, currUserCards] = head(toPairs(this.desk[userIdx]));
+    return isCardsGreater(this.set.trump)(prevUserCards, currUserCards);
+  }
+
+  deskToDic(): { [player: number]: Cards } {
+    return this.desk.reduce((acc, item) => {
+      const pair = head(toPairs(item));
+      acc[pair[0]] = pair[1];
+      return acc;
+    }, {});
+  }
+
+  isFinished() {
+    // if all users pushed cards to desk
+    const isFinished = all(complement(isEmpty), values(this.deskToDic()));
+    return isFinished;
+  }
+
+  recalcRound() {
+    if (!this.isFinished()) {
+      // looking for the first player that didnt push cards to desk
+      const nextPlayer = find(player => isEmpty(last(player)), toPairs(this.deskToDic()));
+      if (nextPlayer) {
+        const nextPlayerId = nextPlayer[0]; // toopaya ramda
+        this.currentPlayer = { id: parseInt(nextPlayerId, 10) } as User;
+      }
+    } else {
+      // TODO: блядь, забыл
+    }
   }
 
   fillHands() {

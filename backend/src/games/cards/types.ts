@@ -5,27 +5,21 @@ export enum Suit {
   Spades, // – пики точеные ♠
 }
 
-export const suitSymbols = ['♥', '♦', '♣', '♠'];
-
-export enum Value {
-  Six = -6,
-  Seven = -7,
-  Eight = -8,
-  Nine = -9,
-  Jack = 2, // – валет
-  Queen, // – дама
-  King, // – король
-  Ten = 10,
-  Ace, // – туз
+export enum Rank {
+  Six = 6,
+  Seven = 7,
+  Eight = 8,
+  Nine = 9,
+  Jack = 102, // – валет
+  Queen = 103, // – дама
+  King = 104, // – король
+  Ten = 110,
+  Ace = 111, // – туз
 }
 
-export type Card = [Suit, Value];
+export type Card = [Suit, Rank];
 export type Cards = Card[];
-
 export type Deck = Cards;
-
 export type Hand = Cards;
-
 export type Trick = Cards;
-
 export type Desk = Array<{ [player: number]: Cards }>;

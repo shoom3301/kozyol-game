@@ -57,6 +57,10 @@ export class Game extends Base {
   }
 
   async playingSet(): Promise<Set | undefined> {
-    return Set.findOne({ where: { game: this, finished: false }, order: { createdAt: 'DESC' } });
+    return Set.findOne({
+      where: { game: this, finished: false },
+      order: { createdAt: 'DESC' },
+      relations: ['game'],
+    });
   }
 }

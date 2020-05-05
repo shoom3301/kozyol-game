@@ -63,4 +63,9 @@ export class Set extends Base {
   currentRound() {
     return head(sortWith([descend(prop('updatedAt'))], this.rounds));
   }
+
+  async recalculate() {
+    // TODO: if deck isEmpty, calc scores
+    await this.reload();
+  }
 }

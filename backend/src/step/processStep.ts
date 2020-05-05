@@ -2,30 +2,32 @@ import { Game } from '../games/entities/game';
 import { Cards } from '../games/cards/types';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Round } from 'src/games/entities/round';
+import { allCardsOfSameRankOrSuit } from 'src/games/cards/comparisons';
 
 export const processStep = async (game: Game, cards: Cards, userId: number) => {
   const set = await game.playingSet();
   const round = set.currentRound();
 
-  // first step
-  if (round.isDeskEmpty) {
-    // TODO: check that step is allowed // zalupa-mode
-    let isValSame = false;
-    let isSuitSame = false;
-    cards.reduce((prevCard, card) => {
-      isValSame = prevCard[1] === card[1];
-      isSuitSame = prevCard[0] === card[0];
-      return card;
-    }, cards[0]);
-    if (!isValSame && !isSuitSame) {
+  // first step && more than 1 card
+  if (round.isDeskEmpty && cards.length > 1) {
+    if (!allCardsOfSameRankOrSuit(cards)) {
       throw new HttpException(
         'This cards now allowed for first step',
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
+  }
 
-    round.pushToDesk(cards, userId);
+  round.pushToDesk(cards, userId);
+  await round.save();
+  await set.reload();
+  await set.recalculate();
 
-    await Round.save(round);
+  if (round.isFinished() && !set.finished) {
+    const newRound = new Round();
+    newRound.hands = round.hands;
+    newRound.initRound(set);
+    set.rounds.push(newRound);
+    await set.save();
   }
 };

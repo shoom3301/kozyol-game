@@ -1,7 +1,7 @@
+import { Request } from 'express';
 import { Controller, Get, Param, Req, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { GamesService } from '../games/games.service';
-import { Request } from 'express';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { calcGameState } from './calcGameState';
 
 @UseGuards(JwtAuthGuard)
