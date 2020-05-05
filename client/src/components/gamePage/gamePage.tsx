@@ -61,6 +61,7 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
           <PlayersList
             players={gameState.gameState.players}
             me={gameState.gameState.me}
+            currentPlayerId={gameState.gameState.currentPlayerId}
             score={gameState.gameState.gameScore}/>
           {gameState.isWaitingPlayers &&
           <PlayersWaiting>{`Ожидаем игроков: ${gameState.slotsState}`}</PlayersWaiting>}

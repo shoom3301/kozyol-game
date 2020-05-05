@@ -7,6 +7,7 @@ import { Player } from 'model/Player';
 export interface CardsOnTableProps {
   players: Player[]
   me: number
+  currentPlayerId?: number
   score: {
     [playerId: number]: number
   }
@@ -21,6 +22,7 @@ export class PlayersList extends Component<CardsOnTableProps, any> {
           {this.props.players
             .map(({ id, name }) => <PlayersListItem
               isMe={this.props.me === id}
+              current={this.props.currentPlayerId === id}
               key={id}>
             <PlayerAvatar src={'https://cdn.iconscout.com/icon/free/png-512/avatar-380-456332.png'}/>
             <PlayerName>{name}: {this.props.score[id]}</PlayerName>
@@ -44,7 +46,7 @@ export const PlayerName = styled.p`
   text-align: center;
 `;
 
-export const PlayersListItem = styled.li<{isMe?: boolean}>`
+export const PlayersListItem = styled.li<{isMe?: boolean, current?: boolean}>`
   display: inline-block;
   border: 1px solid #000;
   padding: 10px;
@@ -55,5 +57,9 @@ export const PlayersListItem = styled.li<{isMe?: boolean}>`
   ${({isMe}) => isMe && css`
     background: rgba(26, 90, 188, 0.83);
     color: #fff;
+  `}
+
+  ${({current}) => current && css`
+    border: 3px solid rgba(255,193,35,0.83);
   `}
 `;
