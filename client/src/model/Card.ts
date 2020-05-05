@@ -16,7 +16,7 @@ export const SuitCharMap = {
   [Suit.Spades]: "S",
 };
 
-export enum Value {
+export enum Rank {
   Six = 6,
   Seven = 7,
   Eight = 8,
@@ -29,24 +29,20 @@ export enum Value {
 }
 
 export const ValueCharMap = {
-  [Value.Six]: "6",
-  [Value.Seven]: "7",
-  [Value.Eight]: "8",
-  [Value.Nine]: "9",
-  [Value.Jack]: "J",
-  [Value.Queen]: "Q",
-  [Value.King]: "K",
-  [Value.Ten]: "10",
-  [Value.Ace]: "A",
+  [Rank.Six]: "6",
+  [Rank.Seven]: "7",
+  [Rank.Eight]: "8",
+  [Rank.Nine]: "9",
+  [Rank.Jack]: "J",
+  [Rank.Queen]: "Q",
+  [Rank.King]: "K",
+  [Rank.Ten]: "10",
+  [Rank.Ace]: "A",
 };
 
-export type Card = [Suit, Value];
+export type Card = [Suit, Rank];
 export type Cards = Card[];
-
 export type Deck = Cards;
-
 export type Hand = Cards;
-
 export type Trick = Cards;
-
 export type Desk = Array<{ [player: number]: Cards }>;

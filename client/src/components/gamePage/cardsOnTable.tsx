@@ -10,24 +10,7 @@ export interface CardsOnTableProps {
 
 export class CardsOnTable extends Component<CardsOnTableProps, any> {
   render(): React.ReactElement {
-    const first = this.props.cards[0]
-    const firstUserId = parseInt(Object.keys(first)[0])
-    const firstCards = first[firstUserId]
-    const slotsCount = firstCards.length
     const slots: Cards[] = []
-
-    for (let i = 0; i < slotsCount; i++) {
-      this.props.cards.forEach(item => {
-        const userId = parseInt(Object.keys(item)[0])
-        const cards = item[userId]
-
-        slots[i] = slots[i] || []
-
-        if (cards[i]) {
-          slots[i].push(cards[i])
-        }
-      })
-    }
 
     return (
       <Container>

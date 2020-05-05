@@ -10,11 +10,11 @@ export enum GameStateEnum {
 export type GameState = {
   id: number;
   me: number;
+  owner: Player;
+  slotsCount: number;
   state: GameStateEnum;
   trump: number;
   currentPlayerId?: number;
-  owner: Player;
-  slotsCount: number;
   // stepEndTime: string;
   myScore: number;
   gameScore: {

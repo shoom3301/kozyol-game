@@ -21,9 +21,19 @@ export interface MyCardsState {
 export class MyCards extends Component<MyCardsProps, MyCardsState> {
   state: MyCardsState = { selectedCards: [] }
 
+  shouldComponentUpdate(
+    nextProps: Readonly<MyCardsProps>,
+    nextState: Readonly<MyCardsState>,
+    nextContext: any): boolean {
+    return JSON.stringify(nextState) !== JSON.stringify(this.state)
+      || JSON.stringify(nextProps) !== JSON.stringify(this.props)
+  }
+
   selectCard(card: Card) {
     if (this.isSelectedCard(card)) {
-      this.setState({selectedCards: this.state.selectedCards.filter(item => item !== card)})
+      this.setState({
+        selectedCards: this.state.selectedCards.filter(item => JSON.stringify(item) !== JSON.stringify(card))
+      })
 
       return
     }
@@ -36,7 +46,7 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
   }
 
   isSelectedCard(card: Card): boolean {
-    return this.state.selectedCards.includes(card)
+    return !!this.state.selectedCards.find(item => JSON.stringify(item) === JSON.stringify(card))
   }
 
   doStep() {

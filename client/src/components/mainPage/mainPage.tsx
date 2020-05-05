@@ -2,25 +2,28 @@ import React, { Component } from 'react';
 import { GamesList } from 'components/gamesList/gamesList';
 import { GameCreation } from 'components/gameCreation/gameCreation';
 import styled from 'styled-components';
-import { GameItem } from 'model/GameItem';
 import { gamesService } from 'services/games.service';
-import { getGamesList } from 'store/selectors/games';
 import { history } from 'router/router';
 import { authorizationRoute } from 'router/routerPaths';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
 
-export interface MainPageProps {
-  games: GameItem[]
-}
-
-export class MainPageComponent extends Component<MainPageProps, any> {
+export class MainPage extends Component<any, any> {
 
   componentDidMount() {
     gamesService.updateList()
       .catch(() => {
         history.replace(authorizationRoute)
       })
+      .then(() => {
+        const timer = window.setInterval(() => {
+          gamesService.updateList()
+        }, 3000)
+
+        this.setState({ timer })
+      })
+  }
+
+  componentWillUnmount() {
+    if (this.state.timer !== null) window.clearInterval(this.state.timer)
   }
 
   render(): React.ReactElement {
@@ -28,18 +31,13 @@ export class MainPageComponent extends Component<MainPageProps, any> {
       <div>
         <MainPageTitle>KOZYOL GAME</MainPageTitle>
         <MainPageContainer>
-          <GamesList games={this.props.games}/>
+          <GamesList/>
           <GameCreation/>
         </MainPageContainer>
       </div>
     );
   }
 }
-
-export const MainPage = connect(
-  createSelector(getGamesList, games => ({ games })),
-  () => ({})
-)(MainPageComponent);
 
 const MainPageContainer = styled.div`
   display: grid;

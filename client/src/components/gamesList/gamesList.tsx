@@ -4,12 +4,21 @@ import { history } from "router/router";
 import { gameRoute } from "router/routerPaths";
 import { Box, FormContainer, Title } from 'ui-elements/form';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
+import { getGamesList } from 'store/selectors/games';
 
 export interface GamesListProps {
   games: GameItem[];
 }
 
-export class GamesList extends Component<GamesListProps, any> {
+export interface GamesListState {
+  timer: number | null;
+}
+
+export class GamesListComponent extends Component<GamesListProps, GamesListState> {
+  state: GamesListState = { timer: null };
+
   openGame(gameId: number) {
     history.push(gameRoute(gameId.toString()))
   }
@@ -33,6 +42,11 @@ export class GamesList extends Component<GamesListProps, any> {
     );
   }
 }
+
+export const GamesList = connect(
+  createSelector(getGamesList, games => ({ games })),
+  () => ({})
+)(GamesListComponent);
 
 export const GameListItem = styled.li`
     margin-bottom: 10px;

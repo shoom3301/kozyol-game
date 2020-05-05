@@ -22,9 +22,7 @@ export class AuthService {
 
   signUp(login: string, password: string): Promise<void> {
     return axios.post('/api/auth/signup', { username: login, password })
-      .then(res => {
-        this.setToken(res.data.access_token)
-      })
+      .then(() => void 0)
   }
 }
 

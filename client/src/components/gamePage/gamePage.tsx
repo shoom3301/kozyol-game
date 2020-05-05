@@ -38,7 +38,7 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
 
         const timer = window.setInterval(() => {
           gameStateService.fetch()
-        }, 1500)
+        }, 3000)
 
         this.setState({ timer })
       })
@@ -58,7 +58,10 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
                 <ToMain to={mainRoute}>← назад</ToMain>
                 Game by: {gameState.gameState.owner.name}
             </GamePageTitle>
-            <PlayersList players={gameState.gameState.players}/>
+            <PlayersList
+              players={gameState.gameState.players}
+              me={gameState.gameState.me}
+              score={gameState.gameState.gameScore}/>
           {gameState.isWaitingPlayers && <PlayersWaiting>{`Ожидаем игроков: ${gameState.slotsState}`}</PlayersWaiting>}
           {gameState.isPlaying && <CardsOnTable cards={gameState.gameState.cardsOnTable}/>}
           {gameState.gameState.myCards.length > 0 && <MyCards
