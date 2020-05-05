@@ -57,8 +57,13 @@ export class Set extends Base {
       return acc;
     }, {});
 
+    await this.save();
+    await this.reload();
+
     const round = new Round();
     await round.initRound(this);
+    await round.save();
+    await round.reload();
 
     if (!this.rounds) {
       this.rounds = [];

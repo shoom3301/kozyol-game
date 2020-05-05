@@ -14,6 +14,7 @@ import { Cards } from '../games/cards/types';
 import { Set } from '../games/entities/set';
 import { GamesService } from 'src/games/games.service';
 import { processStep } from './processStep';
+import { head, values } from 'ramda';
 
 @UseGuards(JwtAuthGuard)
 @Controller('step')
@@ -47,6 +48,13 @@ export class StepController {
 
     const set = await game.playingSet();
     const round = await set.currentRound();
+
+    if (!round.isDeskEmpty) {
+      const cardsOnDeskNum = head(values(round.desk[0])).length;
+      if (cards.length !== cardsOnDeskNum) {
+        throw new HttpException('cards count not equal', HttpStatus.UNPROCESSABLE_ENTITY);
+      }
+    }
 
     // check that user doing step according to order
     if (round.currentPlayer.id !== userId) {

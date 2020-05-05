@@ -18,13 +18,11 @@ import {
   prop,
   map,
   findIndex,
-  propEq,
-  slice,
   equals,
   all,
   isEmpty,
 } from 'ramda';
-import { isCardsGreater } from '../cards/comparisons';
+import { isCardsGreater, allCardsOfSameRankOrSuit } from '../cards/comparisons';
 
 @Entity()
 export class Round extends Base {
@@ -140,6 +138,20 @@ export class Round extends Base {
       );
       return acc;
     }, {});
+
+    const emergencyTurnPair = toPairs(this.hands)
+      .map(hand => {
+        if (hand[1].length === 4 && allCardsOfSameRankOrSuit(hand[1])) {
+          return hand;
+        } else {
+          return null;
+        }
+      })
+      .filter(item => item != null);
+    if (emergencyTurnPair.length > 0) {
+      this.currentPlayer = { id: parseInt(emergencyTurnPair[0][0], 10) } as User;
+      console.log('emergency turn', { currentPlayerId: this.currentPlayer.id });
+    }
   }
 
   async getOrder() {
@@ -147,18 +159,9 @@ export class Round extends Base {
 
     const playersIds = map(prop('id'), this.set.game.players);
 
-    const prevRound = await this.prevRound();
-    if (!prevRound) {
-      return map(prop('id'), this.set.game.players);
-    }
-
-    const prevWinnerId = prevRound.winner.id;
-    const prevWinnerIdx = findIndex(propEq('id', prevWinnerId), this.set.game.players);
-
     // [1,2,3] => [1,2,3,1,2,3];
     const doubledPlayers = concat(playersIds, playersIds);
 
-    // [1,2,3,1,2,3] => [_,_,{3,1,2},_]
-    return slice(prevWinnerIdx, doubledPlayers.length - 1, doubledPlayers);
+    return doubledPlayers;
   }
 }

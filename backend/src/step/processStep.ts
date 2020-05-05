@@ -25,11 +25,12 @@ export const processStep = async (game: Game, cards: Cards, userId: number): Pro
   await set.reload();
 
   if (round.isFinished()) {
-    if (!round.isHandsEmpty()) {
+    if (!round.isHandsEmpty() || set.deck.length > 0) {
       const newRound = new Round();
       newRound.prevRoundId = round.id;
       newRound.hands = round.hands;
       await newRound.initRound(set);
+      await newRound.save();
       set.rounds.push(newRound);
       await set.save();
     } else {
