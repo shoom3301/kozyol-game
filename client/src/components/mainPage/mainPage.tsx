@@ -23,7 +23,7 @@ export class MainPage extends Component<any, any> {
   }
 
   componentWillUnmount() {
-    if (this.state.timer !== null) window.clearInterval(this.state.timer)
+    if (this.state && this.state.timer !== null) window.clearInterval(this.state.timer)
   }
 
   render(): React.ReactElement {
