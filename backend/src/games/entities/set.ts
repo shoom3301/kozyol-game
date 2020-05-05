@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany, RelationId } from 'typeorm';
 
 import { Deck, Suit, Trick } from '../cards/types';
 
@@ -7,11 +7,14 @@ import { Game } from './game';
 import { Round } from './round';
 import { randomSuit } from '../cards/utils';
 import { makeDeck } from '../cards/make';
-import { head, sortWith, descend, prop } from 'ramda';
 
 @Entity()
 export class Set extends Base {
-  @ManyToOne(() => Game, { nullable: false })
+  @ManyToOne(
+    () => Game,
+    game => game.sets,
+    { nullable: false },
+  )
   game: Game;
 
   @OneToMany(

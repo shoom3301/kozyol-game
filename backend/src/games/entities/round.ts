@@ -27,7 +27,11 @@ export class Round extends Base {
     super();
   }
 
-  @ManyToOne(() => Set, { nullable: false })
+  @ManyToOne(
+    () => Set,
+    set => set.rounds,
+    { nullable: false },
+  )
   set: Set;
 
   @Column({ type: 'json' })
@@ -65,16 +69,17 @@ export class Round extends Base {
   }
 
   isTurnGreater() {
-    const turnsCount = this.desk.length - 1;
-    if (turnsCount === 0) {
+    const turnNumber = this.desk.length - 1;
+    if (turnNumber === 0) {
       return true;
     }
 
-    const [_, prevUserCards] = head(toPairs(this.desk[turnsCount - 1]));
-    const [__, currUserCards] = head(toPairs(this.desk[turnsCount]));
+    const [_, prevUserCards] = head(toPairs(this.desk[turnNumber - 1]));
+    const [__, currUserCards] = head(toPairs(this.desk[turnNumber]));
     return isCardsGreater(this.set.trump)(prevUserCards, currUserCards);
   }
 
+  // [{1: []}, {2:[]}] => {1:[], 2:[]}
   deskToDic(): { [player: number]: Cards } {
     return this.desk.reduce((acc, item) => {
       const pair = head(toPairs(item));
@@ -122,5 +127,9 @@ export class Round extends Base {
       );
       return acc;
     }, {});
+  }
+
+  getOrder() {
+    const prevWinnerId = this.prevRound ? this.prevRound.winner.id : this.set.game.players[0].id;
   }
 }
