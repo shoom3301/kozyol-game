@@ -12,17 +12,13 @@ import {
   isEmpty,
   values,
   without,
-  findIndex,
   toPairs,
   head,
-  all,
-  complement,
   find,
   last,
   length,
   concat,
 } from 'ramda';
-import { flatten } from '@nestjs/common';
 import { isCardsGreater } from '../cards/comparisons';
 
 @Entity()
@@ -48,38 +44,34 @@ export class Round extends Base {
 
   initRound(set: Set) {
     this.set = set;
-    this.desk = this.set.game.players.map(player => ({ [player.id]: [] }));
+    this.desk = [];
     this.currentPlayer = this.prevRound?.winner || this.set.game.players[0];
     this.fillHands();
   }
 
   get isDeskEmpty(): boolean {
-    const deskPlayersCards = values(this.deskToDic());
-    return all(isEmpty, deskPlayersCards);
+    return this.desk.length === 0;
   }
 
   pushToDesk(cards: Cards, userId: number) {
-    // idx of user in Desk
-    const userDeskIdx = findIndex(
-      (hand: { [id: number]: Cards }) => head(head(toPairs(hand))) === `${userId}`,
-    )(this.desk);
-    this.desk[userDeskIdx] = { [userId]: cards };
+    this.desk.push({ [userId]: cards });
     this.hands[userId] = without(cards, this.hands[userId]);
 
-    if (this.isTurnGreater(userDeskIdx)) {
+    if (this.isTurnGreater()) {
       this.winner = { id: userId } as User;
     }
 
     this.recalcRound();
   }
 
-  isTurnGreater(userIdx: number) {
-    if (userIdx === 0) {
+  isTurnGreater() {
+    const turnsCount = this.desk.length - 1;
+    if (turnsCount === 0) {
       return true;
     }
 
-    const [_, prevUserCards] = head(toPairs(this.desk[userIdx - 1]));
-    const [__, currUserCards] = head(toPairs(this.desk[userIdx]));
+    const [_, prevUserCards] = head(toPairs(this.desk[turnsCount - 1]));
+    const [__, currUserCards] = head(toPairs(this.desk[turnsCount]));
     return isCardsGreater(this.set.trump)(prevUserCards, currUserCards);
   }
 
@@ -93,13 +85,13 @@ export class Round extends Base {
 
   isFinished() {
     // if all users pushed cards to desk
-    const isFinished = all(complement(isEmpty), values(this.deskToDic()));
-    return isFinished;
+    return this.desk.length === this.set.game.players.length;
   }
 
   recalcRound() {
     if (!this.isFinished()) {
       // looking for the first player that didnt push cards to desk
+      // TODO: !!!
       const nextPlayer = find(player => isEmpty(last(player)), toPairs(this.deskToDic()));
       if (nextPlayer) {
         const nextPlayerId = nextPlayer[0]; // toopaya ramda
@@ -125,7 +117,7 @@ export class Round extends Base {
     this.set.deck = dropLast(cardsForUsers.length, this.set.deck);
     this.hands = this.set.game.players.reduce((acc, item) => {
       acc[item.id] = concat(
-        this.hands[item.id],
+        this.hands ? this.hands[item.id] : [],
         range(0, cardsDelta).map(() => cardsForUsers.pop()),
       );
       return acc;
