@@ -12,6 +12,7 @@ export interface MyCardsProps {
   cards: Cards
   gameId: number
   enabled: boolean
+  isFirstStep: boolean
 }
 
 export interface MyCardsState {
@@ -30,6 +31,10 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
   }
 
   selectCard(card: Card) {
+    if (!this.props.enabled) {
+      return
+    }
+
     if (this.isSelectedCard(card)) {
       this.setState({
         selectedCards: this.state.selectedCards.filter(item => JSON.stringify(item) !== JSON.stringify(card))
@@ -38,7 +43,7 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
       return
     }
 
-    if (!canCardBeSelected(card, this.state.selectedCards)) {
+    if (this.props.isFirstStep && !canCardBeSelected(card, this.state.selectedCards)) {
       return
     }
 
