@@ -21,6 +21,8 @@ import {
   propEq,
   slice,
   equals,
+  all,
+  isEmpty,
 } from 'ramda';
 import { isCardsGreater } from '../cards/comparisons';
 
@@ -103,6 +105,10 @@ export class Round extends Base {
     return this.desk.length === this.set.game.players.length;
   }
 
+  isHandsEmpty() {
+    return all(isEmpty, values(this.hands));
+  }
+
   async recalcRound() {
     if (!this.isFinished()) {
       // looking for the first player that didnt push cards to desk
@@ -110,8 +116,6 @@ export class Round extends Base {
       const currentPlayerIdx = findIndex(equals(this.currentPlayer.id), order);
       const nextPlayerId = order[currentPlayerIdx + 1];
       this.currentPlayer = { id: nextPlayerId } as User;
-    } else {
-      // TODO: блядь, забыл
     }
   }
 

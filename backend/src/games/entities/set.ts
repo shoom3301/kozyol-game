@@ -1,12 +1,13 @@
 import { Entity, Column, ManyToOne, OneToMany, RelationId } from 'typeorm';
 
-import { Deck, Suit, Trick } from '../cards/types';
+import { Deck, Suit, Trick, Cards } from '../cards/types';
 
 import { Base } from './base';
 import { Game } from './game';
 import { Round } from './round';
 import { randomSuit } from '../cards/utils';
 import { makeDeck } from '../cards/make';
+import { concat, flatten, map, toPairs, head, sum, fromPairs, unnest } from 'ramda';
 
 @Entity()
 export class Set extends Base {
@@ -65,7 +66,6 @@ export class Set extends Base {
     this.rounds.push(round);
   }
 
-  // TODO: test
   currentRound() {
     return Round.findOne({
       where: { set: this },
@@ -74,8 +74,27 @@ export class Set extends Base {
     });
   }
 
-  async recalculate() {
-    // TODO: if deck isEmpty, calc scores
-    await this.reload();
+  async calcScores() {
+    this.finished = true;
+
+    const playersTricks: { [id: number]: Cards } = this.rounds.reduce((acc, round) => {
+      const winnerId = round.winner.id;
+      if (!acc[winnerId]) {
+        acc[winnerId] = [];
+      }
+      const tricks = map(trick => head(toPairs(trick))[1], round.desk);
+      acc[winnerId] = concat(acc[winnerId], unnest(tricks));
+      return acc;
+    }, {});
+
+    const scoresPairs = map(pair => {
+      const cardsSum = sum(map(card => (card[1] > 100 ? card[1] - 100 : 0), pair[1]));
+      return [pair[0], cardsSum];
+    }, toPairs(playersTricks));
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    const score = fromPairs(scoresPairs);
+    const x = 0;
   }
 }

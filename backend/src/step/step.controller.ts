@@ -10,7 +10,8 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Request } from 'express';
-import { Cards } from 'src/games/cards/types';
+import { Cards } from '../games/cards/types';
+import { Set } from '../games/entities/set';
 import { GamesService } from 'src/games/games.service';
 import { processStep } from './processStep';
 
@@ -62,7 +63,12 @@ export class StepController {
       }
     });
 
-    await processStep(game, cards, userId);
+    const updSet = await processStep(game, cards, userId);
+    if (updSet.finished) {
+      const newSet = new Set();
+      await newSet.initSet(game);
+      newSet.save();
+    }
 
     return { status: 'ok' };
   }
