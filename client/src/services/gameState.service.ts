@@ -6,10 +6,11 @@ import { store } from 'store';
 import { IState } from 'store/states';
 import { gameStateUpdate } from 'store/actions/gameState';
 import { GameStateHelpers } from 'helpers/gameStateHelpers';
+import { apiUrl } from 'helpers/apiUrl';
 
 export class GameStateService {
   getGameState(gameId: number): Promise<GameState> {
-    return axios.get<GameState>(`/api/gameState/${gameId}`, {...authService.withAuth()})
+    return axios.get<GameState>(apiUrl(`/gameState/${gameId}`), {...authService.withAuth()})
       .then(res => res.data)
   }
 

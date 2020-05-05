@@ -20,6 +20,10 @@ interface AuthorizationProps {
 export class Authorization extends Component<AuthorizationProps, AuthorizationState> {
   state: AuthorizationState = { login: '', password: '', formDisabled: false };
 
+  componentDidMount() {
+    localStorage.removeItem('auth')
+  }
+
   signIn = () => {
     const { login, password, formDisabled } = this.state;
 
