@@ -7,7 +7,7 @@ import { Game } from './game';
 import { Round } from './round';
 import { randomSuit } from '../cards/utils';
 import { makeDeck } from '../cards/make';
-import { concat, flatten, map, toPairs, head, sum, fromPairs, unnest } from 'ramda';
+import { map, toPairs, head, sum, fromPairs, unnest, last, tail, descend, sortWith } from 'ramda';
 
 @Entity()
 export class Set extends Base {
@@ -95,6 +95,28 @@ export class Set extends Base {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
-    const score = fromPairs(scoresPairs);
+    const score: { [id: number]: number } = fromPairs(scoresPairs);
+
+    const sortedWinPairs = sortWith([descend(last)])(toPairs(score));
+
+    const winnerOfGame = head(sortedWinPairs);
+    const gameScores: [number, number][] = tail(sortedWinPairs).map(scorePair => {
+      const playerTrick = scorePair[1];
+      let res = 0;
+      if (playerTrick < winnerOfGame[1]) {
+        if (playerTrick === 0) {
+          res = 6;
+        } else if (playerTrick < 31) {
+          res = 4;
+        } else {
+          res = 2;
+        }
+      }
+
+      return [parseInt(scorePair[0], 10), res];
+    });
+
+    const result = fromPairs([...gameScores, [winnerOfGame[0], 0]]);
+    this.score = result;
   }
 }
