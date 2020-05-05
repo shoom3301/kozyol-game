@@ -11,7 +11,7 @@ export interface CardsOnTableProps {
 
 export class CardsOnTable extends Component<CardsOnTableProps, any> {
   render(): React.ReactElement {
-    const slots: Cards[] = []
+    const slots: Cards[] = [[], [], [], []]
 
     if (this.props.cards.length > 0) {
       const first = this.props.cards[0]

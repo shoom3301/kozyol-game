@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import { GameItem } from "model/GameItem";
 import { history } from "router/router";
-import { gameRoute } from "router/routerPaths";
+import { authorizationRoute, gameRoute } from "router/routerPaths";
 import { Box, FormContainer, Title } from 'ui-elements/form';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { getGamesList } from 'store/selectors/games';
+import { gamesService } from 'services/games.service';
 
 export interface GamesListProps {
   games: GameItem[];
@@ -18,6 +19,24 @@ export interface GamesListState {
 
 export class GamesListComponent extends Component<GamesListProps, GamesListState> {
   state: GamesListState = { timer: null };
+
+  componentDidMount() {
+    gamesService.updateList()
+      .catch(() => {
+        history.replace(authorizationRoute)
+      })
+      .then(() => {
+        const timer = window.setInterval(() => {
+          gamesService.updateList()
+        }, 3000)
+
+        this.setState({ timer })
+      })
+  }
+
+  componentWillUnmount() {
+    if (this.state && this.state.timer !== null) window.clearInterval(this.state.timer)
+  }
 
   openGame(gameId: number) {
     history.push(gameRoute(gameId.toString()))
