@@ -3,22 +3,23 @@ import { authService } from 'services/auth.service';
 import { GameItem } from 'model/GameItem';
 import { store } from 'store';
 import { gameFetchAllSuccess } from 'store/actions/games';
+import { apiUrl } from 'helpers/apiUrl';
 
 export class GamesService {
   createGame(slotsCount: number): Promise<any> {
     return axios
-      .post('/api/games/create', { slotsCount }, { ...authService.withAuth() })
+      .post(apiUrl('/games/create'), { slotsCount }, { ...authService.withAuth() })
   }
 
   getList(): Promise<GameItem[]> {
     return axios
-      .get<GameItem[]>('/api/games/list', { ...authService.withAuth() })
+      .get<GameItem[]>(apiUrl('/games/list'), { ...authService.withAuth() })
       .then(({ data }) => data)
   }
 
   connectToGame(gameId: number): Promise<any> {
     return axios
-      .post('/api/games/connect', { gameId }, { ...authService.withAuth() })
+      .post(apiUrl('/games/connect'), { gameId }, { ...authService.withAuth() })
       .then(res => res.data)
   }
 

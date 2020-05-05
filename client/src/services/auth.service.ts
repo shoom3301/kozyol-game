@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { apiUrl } from 'helpers/apiUrl';
 
 export class AuthService {
   setToken(token: string) {
@@ -14,14 +15,14 @@ export class AuthService {
   }
 
   signIn(login: string, password: string): Promise<void> {
-    return axios.post('/api/auth/login', { username: login, password })
+    return axios.post(apiUrl('/auth/login'), { username: login, password })
       .then(res => {
         this.setToken(res.data.access_token)
       })
   }
 
   signUp(login: string, password: string): Promise<void> {
-    return axios.post('/api/auth/signup', { username: login, password })
+    return axios.post(apiUrl('/auth/signup'), { username: login, password })
       .then(() => void 0)
   }
 }
