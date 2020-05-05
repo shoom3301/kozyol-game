@@ -31,9 +31,10 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
   }
 
   selectCard(card: Card) {
-    if (!this.props.enabled || this.props.cardsOnTable.length === this.state.selectedCards.length) {
-      return
-    }
+    const isFirstStep = this.props.cardsOnTable.length === 0
+    const firstStep = this.props.cardsOnTable[0]
+    const firstUserId = parseInt(Object.keys(firstStep)[0])
+    const firstStepCards = firstStep[firstUserId]
 
     if (this.isSelectedCard(card)) {
       this.setState({
@@ -43,7 +44,11 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
       return
     }
 
-    if (this.props.cardsOnTable.length === 0 && !canCardBeSelected(card, this.state.selectedCards)) {
+    if (!this.props.enabled || (!isFirstStep && firstStepCards.length === this.state.selectedCards.length)) {
+      return
+    }
+
+    if (isFirstStep && !canCardBeSelected(card, this.state.selectedCards)) {
       return
     }
 
