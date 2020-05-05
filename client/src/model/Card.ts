@@ -7,38 +7,38 @@ export enum Suit {
   Spades, // – пики точеные ♠
 }
 
-export const suitSymbols = ['♥', '♦', '♣', '♠']
+export const suitSymbols = ["♥", "♦", "♣", "♠"];
 
 export const SuitCharMap = {
-  [Suit.Hearts]: 'H',
-  [Suit.Diamonds]: 'D',
-  [Suit.Clubs]: 'C',
-  [Suit.Spades]: 'S'
-}
+  [Suit.Hearts]: "H",
+  [Suit.Diamonds]: "D",
+  [Suit.Clubs]: "C",
+  [Suit.Spades]: "S",
+};
 
 export enum Value {
-  Six = -6,
-  Seven = -7,
-  Eight = -8,
-  Nine = -9,
-  Jack = 2, // – валет
-  Queen, // – дама
-  King, // – король
-  Ten = 10,
-  Ace, // – туз
+  Six = 6,
+  Seven = 7,
+  Eight = 8,
+  Nine = 9,
+  Jack = 102, // – валет
+  Queen = 103, // – дама
+  King = 104, // – король
+  Ten = 110,
+  Ace = 111, // – туз
 }
 
 export const ValueCharMap = {
-  [Value.Six]: '6',
-  [Value.Seven]: '7',
-  [Value.Eight]: '8',
-  [Value.Nine]: '9',
-  [Value.Jack]: 'J',
-  [Value.Queen]: 'Q',
-  [Value.King]: 'K',
-  [Value.Ten]: '10',
-  [Value.Ace]: 'A'
-}
+  [Value.Six]: "6",
+  [Value.Seven]: "7",
+  [Value.Eight]: "8",
+  [Value.Nine]: "9",
+  [Value.Jack]: "J",
+  [Value.Queen]: "Q",
+  [Value.King]: "K",
+  [Value.Ten]: "10",
+  [Value.Ace]: "A",
+};
 
 export type Card = [Suit, Value];
 export type Cards = Card[];

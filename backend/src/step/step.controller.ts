@@ -45,7 +45,7 @@ export class StepController {
     }
 
     const set = await game.playingSet();
-    const round = set.currentRound();
+    const round = await set.currentRound();
 
     // check that user doing step according to order
     if (round.currentPlayer.id !== userId) {

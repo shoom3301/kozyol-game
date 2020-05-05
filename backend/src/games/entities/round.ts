@@ -19,12 +19,18 @@ import {
   complement,
   find,
   last,
+  length,
+  concat,
 } from 'ramda';
 import { flatten } from '@nestjs/common';
 import { isCardsGreater } from '../cards/comparisons';
 
 @Entity()
 export class Round extends Base {
+  constructor(private prevRound?: Round) {
+    super();
+  }
+
   @ManyToOne(() => Set, { nullable: false })
   set: Set;
 
@@ -43,7 +49,7 @@ export class Round extends Base {
   initRound(set: Set) {
     this.set = set;
     this.desk = this.set.game.players.map(player => ({ [player.id]: [] }));
-    this.currentPlayer = this.set.game.players[0];
+    this.currentPlayer = this.prevRound?.winner || this.set.game.players[0];
     this.fillHands();
   }
 
@@ -105,11 +111,23 @@ export class Round extends Base {
   }
 
   fillHands() {
-    const cardsDelta = Math.min(4, this.set.deck.length / this.set.game.players.length);
+    // calc cards delta (4 - on hands)
+    let cardsToCharge = 4;
+
+    if (this.prevRound) {
+      // get first hand
+      const firstHandCardsCount = length(head(values(this.prevRound.hands)));
+      cardsToCharge = 4 - firstHandCardsCount;
+    }
+
+    const cardsDelta = Math.min(cardsToCharge, this.set.deck.length / this.set.game.players.length);
     const cardsForUsers = takeLast(cardsDelta * this.set.game.playersCount, this.set.deck);
     this.set.deck = dropLast(cardsForUsers.length, this.set.deck);
     this.hands = this.set.game.players.reduce((acc, item) => {
-      acc[item.id] = range(0, cardsDelta).map(() => cardsForUsers.pop());
+      acc[item.id] = concat(
+        this.hands[item.id],
+        range(0, cardsDelta).map(() => cardsForUsers.pop()),
+      );
       return acc;
     }, {});
   }

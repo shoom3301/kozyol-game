@@ -61,7 +61,11 @@ export class Set extends Base {
 
   // TODO: test
   currentRound() {
-    return head(sortWith([descend(prop('updatedAt'))], this.rounds));
+    return Round.findOne({
+      where: { set: this },
+      order: { createdAt: 'DESC' },
+      relations: ['set'],
+    });
   }
 
   async recalculate() {

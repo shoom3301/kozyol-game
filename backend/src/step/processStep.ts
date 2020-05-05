@@ -6,7 +6,7 @@ import { allCardsOfSameRankOrSuit } from 'src/games/cards/comparisons';
 
 export const processStep = async (game: Game, cards: Cards, userId: number) => {
   const set = await game.playingSet();
-  const round = set.currentRound();
+  const round = await set.currentRound();
 
   // first step && more than 1 card
   if (round.isDeskEmpty && cards.length > 1) {
@@ -24,7 +24,7 @@ export const processStep = async (game: Game, cards: Cards, userId: number) => {
   await set.recalculate();
 
   if (round.isFinished() && !set.finished) {
-    const newRound = new Round();
+    const newRound = new Round(round);
     newRound.hands = round.hands;
     newRound.initRound(set);
     set.rounds.push(newRound);

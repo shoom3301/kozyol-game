@@ -49,7 +49,7 @@ export const getPlayState = async (game: Game, userId: number): Promise<GameStat
     return getEndedState(game, userId);
   }
 
-  const round = set.currentRound();
+  const round = await set.currentRound();
 
   return {
     id: game.id,
