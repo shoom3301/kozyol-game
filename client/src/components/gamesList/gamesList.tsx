@@ -4,7 +4,6 @@ import { history } from "router/router";
 import { gameRoute } from "router/routerPaths";
 import { Box, FormContainer, Title } from 'ui-elements/form';
 import styled from 'styled-components';
-import { gamesService } from 'services/games.service';
 
 export interface GamesListProps {
   games: GameItem[];

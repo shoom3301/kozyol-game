@@ -4,4 +4,4 @@ export interface GamesState {
   games: GameItem[]
 }
 
-export const defaultGamesState: GamesState = {games: []}
+export const defaultGamesState: GamesState = { games: [] }
