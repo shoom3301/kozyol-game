@@ -11,7 +11,7 @@ export const isTrump = (trump: Suit, card: Card) => card[0] === trump;
  */
 const isCardGreater = (trump: Suit) => (a: Card, b: Card): boolean => {
   if (sameSuit(a, b)) {
-    return b[0] > a[0];
+    return b[1] > a[1];
   } else if (isTrump(trump, b)) {
     return true;
   }
@@ -25,7 +25,9 @@ export const isCardsGreater = (trump: Suit) => (a: Cards, b: Cards) => {
   const sortedA = sortWithTrump(trump)(a);
   const sortedB = sortWithTrump(trump)(b);
 
-  return all(equals(true), zipWith(isCardGreater(trump), sortedA, sortedB));
+  const comparedPairs = zipWith(isCardGreater(trump), sortedA, sortedB);
+
+  return all(equals(true), comparedPairs);
 };
 
 export const allCardsOfSameRankOrSuit = (cards: Cards) => {

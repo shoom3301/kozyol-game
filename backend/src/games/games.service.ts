@@ -57,7 +57,7 @@ export class GamesService {
     game = await this.gameRepository.findOne(gameId, { relations: ['sets'] });
 
     if (!game.hasAvailableSlots()) {
-      game = startGame(game);
+      game = await startGame(game);
       await this.gameRepository.save(game);
     }
 

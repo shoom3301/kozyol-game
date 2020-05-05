@@ -42,7 +42,7 @@ export class Set extends Base {
   @Column({ default: false })
   finished: boolean;
 
-  initSet(game: Game) {
+  async initSet(game: Game) {
     this.game = game;
 
     this.trump = randomSuit();
@@ -57,7 +57,7 @@ export class Set extends Base {
     }, {});
 
     const round = new Round();
-    round.initRound(this);
+    await round.initRound(this);
 
     if (!this.rounds) {
       this.rounds = [];

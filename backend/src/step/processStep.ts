@@ -18,15 +18,16 @@ export const processStep = async (game: Game, cards: Cards, userId: number) => {
     }
   }
 
-  round.pushToDesk(cards, userId);
+  await round.pushToDesk(cards, userId);
   await round.save();
   await set.reload();
   await set.recalculate();
 
   if (round.isFinished() && !set.finished) {
-    const newRound = new Round(round);
+    const newRound = new Round();
+    newRound.prevRoundId = round.id;
     newRound.hands = round.hands;
-    newRound.initRound(set);
+    await newRound.initRound(set);
     set.rounds.push(newRound);
     await set.save();
   }

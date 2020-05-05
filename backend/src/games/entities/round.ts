@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 
 import { Desk, Cards } from '../cards/types';
 
@@ -9,26 +9,23 @@ import {
   range,
   takeLast,
   dropLast,
-  isEmpty,
   values,
   without,
   toPairs,
   head,
-  find,
-  last,
   length,
   concat,
   prop,
   map,
+  findIndex,
+  propEq,
+  slice,
+  equals,
 } from 'ramda';
 import { isCardsGreater } from '../cards/comparisons';
 
 @Entity()
 export class Round extends Base {
-  constructor(private prevRound?: Round) {
-    super();
-  }
-
   @ManyToOne(
     () => Set,
     set => set.rounds,
@@ -45,21 +42,32 @@ export class Round extends Base {
   @ManyToOne(() => User, { nullable: false, eager: true })
   currentPlayer: User;
 
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User, { nullable: true, eager: true })
   winner: User;
 
-  initRound(set: Set) {
+  @Column({ nullable: true })
+  prevRoundId: number;
+
+  prevRound() {
+    if (!this.prevRoundId) {
+      return Promise.resolve(undefined);
+    }
+    return Round.findOne(this.prevRoundId);
+  }
+
+  async initRound(set: Set) {
     this.set = set;
     this.desk = [];
-    this.currentPlayer = this.prevRound?.winner || this.set.game.players[0];
-    this.fillHands();
+    const prevRound = await this.prevRound();
+    this.currentPlayer = prevRound?.winner || this.set.game.players[0];
+    await this.fillHands();
   }
 
   get isDeskEmpty(): boolean {
     return this.desk.length === 0;
   }
 
-  pushToDesk(cards: Cards, userId: number) {
+  async pushToDesk(cards: Cards, userId: number) {
     this.desk.push({ [userId]: cards });
     this.hands[userId] = without(cards, this.hands[userId]);
 
@@ -67,7 +75,7 @@ export class Round extends Base {
       this.winner = { id: userId } as User;
     }
 
-    this.recalcRound();
+    await this.recalcRound();
   }
 
   isTurnGreater() {
@@ -95,27 +103,26 @@ export class Round extends Base {
     return this.desk.length === this.set.game.players.length;
   }
 
-  recalcRound() {
+  async recalcRound() {
     if (!this.isFinished()) {
       // looking for the first player that didnt push cards to desk
-      // TODO: !!!
-      const nextPlayer = find(player => isEmpty(last(player)), toPairs(this.deskToDic()));
-      if (nextPlayer) {
-        const nextPlayerId = nextPlayer[0]; // toopaya ramda
-        this.currentPlayer = { id: parseInt(nextPlayerId, 10) } as User;
-      }
+      const order = await this.getOrder();
+      const currentPlayerIdx = findIndex(equals(this.currentPlayer.id), order);
+      const nextPlayerId = order[currentPlayerIdx + 1];
+      this.currentPlayer = { id: nextPlayerId } as User;
     } else {
       // TODO: блядь, забыл
     }
   }
 
-  fillHands() {
+  async fillHands() {
     // calc cards delta (4 - on hands)
     let cardsToCharge = 4;
 
-    if (this.prevRound) {
+    const prevRound = await this.prevRound();
+    if (prevRound) {
       // get first hand
-      const firstHandCardsCount = length(head(values(this.prevRound.hands)));
+      const firstHandCardsCount = length(head(values(prevRound.hands)));
       cardsToCharge = 4 - firstHandCardsCount;
     }
 
@@ -131,15 +138,23 @@ export class Round extends Base {
     }, {});
   }
 
-  getOrder() {
+  async getOrder() {
     // TODO: check winner of prev set too
 
     const playersIds = map(prop('id'), this.set.game.players);
 
-    if (!this.prevRound) {
+    const prevRound = await this.prevRound();
+    if (!prevRound) {
       return map(prop('id'), this.set.game.players);
     }
 
-    const prevWinnerId = this.prevRound.winner.id;
+    const prevWinnerId = prevRound.winner.id;
+    const prevWinnerIdx = findIndex(propEq('id', prevWinnerId), this.set.game.players);
+
+    // [1,2,3] => [1,2,3,1,2,3];
+    const doubledPlayers = concat(playersIds, playersIds);
+
+    // [1,2,3,1,2,3] => [_,_,{3,1,2},_]
+    return slice(prevWinnerIdx, doubledPlayers.length - 1, doubledPlayers);
   }
 }
