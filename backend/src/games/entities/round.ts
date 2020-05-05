@@ -54,8 +54,8 @@ export class Round extends Base {
   }
 
   get isDeskEmpty(): boolean {
-    const firstPlayerCards = values(this.desk[0]);
-    return isEmpty(flatten(firstPlayerCards));
+    const deskPlayersCards = values(this.deskToDic());
+    return all(isEmpty, deskPlayersCards);
   }
 
   pushToDesk(cards: Cards, userId: number) {
