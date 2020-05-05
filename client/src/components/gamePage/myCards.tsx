@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Title } from 'ui-elements/form';
 import { cardImage } from 'helpers/cardImage';
-import { Card, Cards } from 'model/Card';
+import { Card, Cards, Desk } from 'model/Card';
 import { CardItem, CardsList, Container, MyCardSlot } from './elements';
 import { canCardBeSelected } from 'helpers/stepHelpers';
 import { Button } from 'ui-elements/button';
@@ -12,7 +12,7 @@ export interface MyCardsProps {
   cards: Cards
   gameId: number
   enabled: boolean
-  isFirstStep: boolean
+  cardsOnTable: Desk
 }
 
 export interface MyCardsState {
@@ -31,8 +31,13 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
   }
 
   selectCard(card: Card) {
-    if (!this.props.enabled) {
-      return
+    const isFirstStep = this.props.cardsOnTable.length === 0
+    let firstStepCards = []
+
+    if (!isFirstStep) {
+      const firstStep = this.props.cardsOnTable[0]
+      const firstUserId = parseInt(Object.keys(firstStep)[0])
+      firstStepCards = firstStep[firstUserId]
     }
 
     if (this.isSelectedCard(card)) {
@@ -43,7 +48,11 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
       return
     }
 
-    if (this.props.isFirstStep && !canCardBeSelected(card, this.state.selectedCards)) {
+    if (!this.props.enabled || (!isFirstStep && firstStepCards.length === this.state.selectedCards.length)) {
+      return
+    }
+
+    if (isFirstStep && !canCardBeSelected(card, this.state.selectedCards)) {
       return
     }
 
