@@ -32,9 +32,13 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
 
   selectCard(card: Card) {
     const isFirstStep = this.props.cardsOnTable.length === 0
-    const firstStep = this.props.cardsOnTable[0]
-    const firstUserId = parseInt(Object.keys(firstStep)[0])
-    const firstStepCards = firstStep[firstUserId]
+    let firstStepCards = []
+
+    if (!isFirstStep) {
+      const firstStep = this.props.cardsOnTable[0]
+      const firstUserId = parseInt(Object.keys(firstStep)[0])
+      firstStepCards = firstStep[firstUserId]
+    }
 
     if (this.isSelectedCard(card)) {
       this.setState({
