@@ -13,7 +13,7 @@ export class GamesService {
   constructor(@InjectRepository(Game) private gameRepository: Repository<Game>) {}
 
   async gameById(gameId: number) {
-    const game = await this.gameRepository.findOne(gameId);
+    const game = await this.gameRepository.findOne(gameId, { relations: ['sets'] });
 
     if (!game) {
       throw new HttpException('no game found', HttpStatus.NOT_FOUND);
@@ -36,7 +36,7 @@ export class GamesService {
   }
 
   async connectUserToGame(userId: number, gameId: number) {
-    let game = await this.gameRepository.findOne(gameId);
+    let game = await this.gameRepository.findOne(gameId, { relations: ['sets'] });
 
     if (!game) {
       throw new HttpException('game not found', HttpStatus.NOT_FOUND);
@@ -54,10 +54,10 @@ export class GamesService {
     game.players.push({ id: userId } as User);
     await this.gameRepository.save(game);
 
-    game = await this.gameRepository.findOne(gameId);
+    game = await this.gameRepository.findOne(gameId, { relations: ['sets'] });
 
-    if (!game!.hasAvailableSlots()) {
-      game = startGame(game!);
+    if (!game.hasAvailableSlots()) {
+      game = startGame(game);
       await this.gameRepository.save(game);
     }
 

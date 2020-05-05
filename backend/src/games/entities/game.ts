@@ -13,7 +13,7 @@ export class Game extends Base {
   @OneToMany(
     () => Set,
     set => set.game,
-    { cascade: true, eager: true },
+    { cascade: true },
   )
   sets: Set[];
 

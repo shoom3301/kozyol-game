@@ -13,9 +13,12 @@ export class Set extends Base {
   @ManyToOne(
     () => Game,
     game => game.sets,
-    { nullable: false },
+    { nullable: false, eager: true },
   )
   game: Game;
+
+  @RelationId((set: Set) => set.game)
+  gameId: number;
 
   @OneToMany(
     () => Round,

@@ -18,6 +18,8 @@ import {
   last,
   length,
   concat,
+  prop,
+  map,
 } from 'ramda';
 import { isCardsGreater } from '../cards/comparisons';
 
@@ -130,6 +132,14 @@ export class Round extends Base {
   }
 
   getOrder() {
-    const prevWinnerId = this.prevRound ? this.prevRound.winner.id : this.set.game.players[0].id;
+    // TODO: check winner of prev set too
+
+    const playersIds = map(prop('id'), this.set.game.players);
+
+    if (!this.prevRound) {
+      return map(prop('id'), this.set.game.players);
+    }
+
+    const prevWinnerId = this.prevRound.winner.id;
   }
 }
