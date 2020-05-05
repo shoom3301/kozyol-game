@@ -73,7 +73,7 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
           <MyCards
             gameId={gameState.gameState.id}
             enabled={gameState.isMyTurn}
-            isFirstStep={gameState.gameState.cardsOnTable.length === 0}
+            cardsOnTable={gameState.gameState.cardsOnTable}
             cards={gameState.gameState.myCards}/>}
         </div>}
       </div>
