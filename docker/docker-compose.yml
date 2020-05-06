@@ -1,6 +1,22 @@
 version: "2.4"
 
 services:
+  frontend:
+    container_name: kozyol_front
+    build:
+      context: ../client
+      dockerfile: ../docker/front.Dockerfile
+      target: static-html
+    restart: always
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+    environment:
+      CERTBOT_EMAIL: saldin.iliya@gmail.com
+    volumes:
+      - ./conf.d:/etc/nginx/user.conf.d:ro
+      - letsencrypt:/etc/letsencrypt
+
   backend:
     container_name: kozyol_backend
     depends_on:
@@ -11,8 +27,8 @@ services:
       target: prod-build
     env_file:
       - ../backend/.env
-    ports:
-      - 8814:8041
+    #ports:
+    #- 8814:8041
     command: node dist/main.js
     restart: always
     networks:

@@ -1,8 +1,14 @@
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: { origin: true } });
+  const app = await NestFactory.create(AppModule, {
+    cors: { origin: process.env.NODE_ENV === 'production' ? 'https://skazhi.be' : true },
+  });
+  app.use(helmet());
+
   await app.listen(8041, '0.0.0.0');
 }
 bootstrap();
