@@ -16,6 +16,8 @@ services:
     volumes:
       - ./conf.d:/etc/nginx/user.conf.d:ro
       - letsencrypt:/etc/letsencrypt
+    networks:
+      - kozyol_network
 
   backend:
     container_name: kozyol_backend
