@@ -11,7 +11,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Request } from 'express';
 import { Cards } from '../games/cards/types';
-import { Set } from '../games/entities/set';
+import { GameSet } from '../games/entities/set';
 import { GamesService } from 'src/games/games.service';
 import { processStep } from './processStep';
 import { head, values } from 'ramda';
@@ -73,7 +73,7 @@ export class StepController {
 
     const updSet = await processStep(game, cards, userId);
     if (updSet.finished) {
-      const newSet = new Set();
+      const newSet = new GameSet();
       await newSet.initSet(game);
       newSet.save();
     }

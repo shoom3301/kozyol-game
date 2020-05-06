@@ -1,16 +1,29 @@
 import { Entity, Column, ManyToOne, OneToMany, RelationId } from 'typeorm';
 
-import { Deck, Suit, Trick, Cards } from '../cards/types';
+import { Deck, Suit, Cards } from '../cards/types';
 
 import { Base } from './base';
 import { Game } from './game';
 import { Round } from './round';
 import { randomSuit } from '../cards/utils';
 import { makeDeck } from '../cards/make';
-import { map, toPairs, head, sum, fromPairs, unnest, last, tail, descend, sortWith } from 'ramda';
+import {
+  map,
+  toPairs,
+  head,
+  sum,
+  fromPairs,
+  unnest,
+  last,
+  tail,
+  descend,
+  sortWith,
+  prop,
+} from 'ramda';
+import { startNewRound } from './round.utils';
 
-@Entity()
-export class Set extends Base {
+@Entity('set')
+export class GameSet extends Base {
   @ManyToOne(
     () => Game,
     game => game.sets,
@@ -18,13 +31,13 @@ export class Set extends Base {
   )
   game: Game;
 
-  @RelationId((set: Set) => set.game)
+  @RelationId((set: GameSet) => set.game)
   gameId: number;
 
   @OneToMany(
     () => Round,
     round => round.set,
-    { cascade: true, eager: true },
+    { cascade: true, eager: true, onDelete: 'CASCADE' },
   )
   rounds: Round[];
 
@@ -35,9 +48,6 @@ export class Set extends Base {
   deck: Deck;
 
   @Column({ type: 'json' })
-  tricks: { [playerId: number]: Trick };
-
-  @Column({ type: 'json' })
   score: { [playerId: number]: number };
 
   @Column({ default: false })
@@ -45,30 +55,25 @@ export class Set extends Base {
 
   async initSet(game: Game) {
     this.game = game;
-
     this.trump = randomSuit();
     this.deck = makeDeck();
+    this.rounds = [];
     this.score = game.players.reduce((acc, item) => {
       acc[item.id] = 0;
       return acc;
     }, {});
-    this.tricks = game.players.reduce((acc, item) => {
-      acc[item.id] = [];
-      return acc;
-    }, {});
 
-    await this.save();
-    await this.reload();
-
-    const round = new Round();
-    await round.initRound(this);
-    await round.save();
-    await round.reload();
-
-    if (!this.rounds) {
-      this.rounds = [];
-    }
-    this.rounds.push(round);
+    const prevSet = await GameSet.findOne({
+      where: { game },
+      order: { createdAt: 'DESC' },
+    });
+    const { newRound, updatedDeck } = await startNewRound(
+      map(prop('id'), game.players),
+      this.deck,
+      prevSet,
+    );
+    this.rounds.push(newRound);
+    this.deck = updatedDeck;
   }
 
   currentRound() {

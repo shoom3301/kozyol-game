@@ -1,43 +1,42 @@
 import { Game } from '../games/entities/game';
 import { Cards } from '../games/cards/types';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { Round } from '../games/entities/round';
-import { Set } from '../games/entities/set';
+import { GameSet } from '../games/entities/set';
 import { allCardsOfSameRankOrSuit } from 'src/games/cards/comparisons';
+import { startNextRound } from 'src/games/entities/round.utils';
+import { map, prop } from 'ramda';
 
-export const processStep = async (game: Game, cards: Cards, userId: number): Promise<Set> => {
+const CARDS_NOT_ALLOWED_FOR_FIRST_STEP = new HttpException(
+  'This cards now allowed for first step',
+  HttpStatus.UNPROCESSABLE_ENTITY,
+);
+
+export const processStep = async (game: Game, cards: Cards, userId: number): Promise<GameSet> => {
   const set = await game.playingSet();
   const round = await set.currentRound();
 
   // first step && more than 1 card
   if (round.isDeskEmpty && cards.length > 1) {
     if (!allCardsOfSameRankOrSuit(cards)) {
-      throw new HttpException(
-        'This cards now allowed for first step',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      throw CARDS_NOT_ALLOWED_FOR_FIRST_STEP;
     }
   }
 
-  await round.pushToDesk(cards, userId);
+  await round.pushToDesk(cards, userId, map(prop('id'), game.players));
   await round.save();
-  //await set.save(); // update deck. so ugly
-  await set.reload();
+  await set.reload(); // for having actual round
 
   if (round.isFinished()) {
+    // check that all cards was played
     if (!round.isHandsEmpty() || set.deck.length > 0) {
-      const newRound = new Round();
-      newRound.prevRoundId = round.id;
-      newRound.hands = round.hands;
-      await newRound.initRound(set);
-      await newRound.save();
+      const { newRound, updatedDeck } = startNextRound(round, set.deck);
       set.rounds.push(newRound);
-      await set.save();
+      set.deck = updatedDeck;
     } else {
       set.calcScores();
-      await set.save();
     }
   }
 
+  await set.save();
   return set;
 };

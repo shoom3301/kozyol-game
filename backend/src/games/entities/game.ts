@@ -2,8 +2,8 @@ import { Entity, Column, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typ
 
 import { User } from '../../user/user.entity';
 import { Base } from './base';
-import { Set } from './set';
-import { map, prop, toPairs, unnest, values, gte } from 'ramda';
+import { GameSet } from './set';
+import { map, prop, toPairs, unnest, values } from 'ramda';
 
 @Entity()
 export class Game extends Base {
@@ -11,11 +11,11 @@ export class Game extends Base {
   owner: User;
 
   @OneToMany(
-    () => Set,
+    () => GameSet,
     set => set.game,
-    { cascade: true },
+    { cascade: true, onDelete: 'CASCADE' },
   )
-  sets: Set[];
+  sets: GameSet[];
 
   @Column()
   slotsCount: number;
@@ -56,8 +56,8 @@ export class Game extends Base {
     return values(this.gameScore()).find(score => score > 11) !== undefined;
   }
 
-  async playingSet(): Promise<Set | undefined> {
-    return Set.findOne({
+  async playingSet(): Promise<GameSet | undefined> {
+    return GameSet.findOne({
       where: { game: this, finished: false },
       order: { createdAt: 'DESC' },
       relations: ['game'],

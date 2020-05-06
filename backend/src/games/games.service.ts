@@ -54,11 +54,11 @@ export class GamesService {
     game.players.push({ id: userId } as User);
     await this.gameRepository.save(game);
 
-    game = await this.gameRepository.findOne(gameId, { relations: ['sets'] });
+    await game.reload();
 
     if (!game.hasAvailableSlots()) {
       game = await startGame(game);
-      await this.gameRepository.save(game);
+      await game.save();
     }
 
     return game;

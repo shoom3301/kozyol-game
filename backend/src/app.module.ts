@@ -10,7 +10,7 @@ import { UserModule } from './user/user.module';
 import { User } from './user/user.entity';
 import { Game } from './games/entities/game';
 import { Round } from './games/entities/round';
-import { Set } from './games/entities/set';
+import { GameSet } from './games/entities/set';
 
 import { GamesController } from './games/games.controller';
 import { GamesService } from './games/games.service';
@@ -27,7 +27,8 @@ import { StepController } from './step/step.controller';
       username: 'db_user',
       password: '2SNJwgsfPFMtSWkw68bnzwUKmvbkaJpj',
       database: 'kozyol',
-      entities: [User, Game, Round, Set],
+      // logging: true,
+      entities: [User, Game, Round, GameSet],
       synchronize: true,
     }),
     AuthModule,

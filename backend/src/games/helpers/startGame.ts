@@ -1,9 +1,10 @@
 import { Game } from '../entities/game';
-import { Set } from '../entities/set';
+import { GameSet } from '../entities/set';
 
 export const startGame = async (game: Game) => {
-  const set = new Set();
+  const set = new GameSet();
   await set.initSet(game);
+  await set.save();
 
   if (!game.sets) {
     game.sets = [];
