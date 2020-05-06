@@ -23,7 +23,7 @@ export class GamesService {
   }
 
   async create(payload: any): Promise<Game | undefined> {
-    const { id } = await this.gameRepository.save(payload);
+    const { id } = await this.gameRepository.save({ ...payload, waitConfirmations: [] });
 
     return this.gameRepository.findOne(id);
   }

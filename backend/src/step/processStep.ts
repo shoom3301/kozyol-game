@@ -1,9 +1,7 @@
 import { Game } from '../games/entities/game';
 import { Cards } from '../games/cards/types';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { GameSet } from '../games/entities/set';
 import { allCardsOfSameRankOrSuit } from 'src/games/cards/comparisons';
-import { startNextRound } from 'src/games/entities/round.utils';
 import { map, prop } from 'ramda';
 
 const CARDS_NOT_ALLOWED_FOR_FIRST_STEP = new HttpException(
@@ -11,7 +9,7 @@ const CARDS_NOT_ALLOWED_FOR_FIRST_STEP = new HttpException(
   HttpStatus.UNPROCESSABLE_ENTITY,
 );
 
-export const processStep = async (game: Game, cards: Cards, userId: number): Promise<GameSet> => {
+export const processStep = async (game: Game, cards: Cards, userId: number) => {
   const set = await game.playingSet();
   const round = await set.currentRound();
 
@@ -24,19 +22,10 @@ export const processStep = async (game: Game, cards: Cards, userId: number): Pro
 
   await round.pushToDesk(cards, userId, map(prop('id'), game.players));
   await round.save();
-  await set.reload(); // for having actual round
+  await game.reload();
 
   if (round.isFinished()) {
-    // check that all cards was played
-    if (!round.isHandsEmpty() || set.deck.length > 0) {
-      const { newRound, updatedDeck } = startNextRound(round, set.deck);
-      set.rounds.push(newRound);
-      set.deck = updatedDeck;
-    } else {
-      set.calcScores();
-    }
+    game.initWaitingConfirmationsForContinue();
+    await game.save();
   }
-
-  await set.save();
-  return set;
 };

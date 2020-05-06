@@ -1,28 +1,39 @@
-import { GameState, GameStateEnum } from 'model/GameState';
+import { GameState, GameStateEnum } from "model/GameState";
 
 export class GameStateHelpers {
-  constructor(
-    public readonly gameState: GameState
-  ) {
-  }
+  constructor(public readonly gameState: GameState) {}
 
   get isWaitingPlayers(): boolean {
-    return this.gameState.state === GameStateEnum.WAIT_PLAYERS
+    return this.gameState.state === GameStateEnum.WAIT_PLAYERS;
+  }
+
+  get isWaitingConfirmations(): boolean {
+    return [
+      GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_ROUND,
+      GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_SET,
+    ].includes(this.gameState.state);
   }
 
   get isPlaying(): boolean {
-    return this.gameState.state === GameStateEnum.PLAY
+    return [
+      GameStateEnum.PLAY,
+      GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_ROUND,
+      GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_SET,
+    ].includes(this.gameState.state);
   }
 
   get isEnded(): boolean {
-    return this.gameState.state === GameStateEnum.ENDED
+    return this.gameState.state === GameStateEnum.ENDED;
   }
 
   get isMyTurn(): boolean {
-    return this.gameState.me === this.gameState.currentPlayerId
+    return (
+      this.gameState.me === this.gameState.currentPlayerId &&
+      !this.isWaitingConfirmations
+    );
   }
 
   get slotsState(): string {
-    return `${this.gameState.players.length}/${this.gameState.slotsCount}`
+    return `${this.gameState.players.length}/${this.gameState.slotsCount}`;
   }
 }

@@ -1,5 +1,7 @@
 import { Game } from 'src/games/entities/game';
 import { GameState, GameStateEnum } from './types';
+import { Cards } from 'src/games/cards/types';
+import { map, head, toPairs, unnest, sum, fromPairs } from 'ramda';
 
 export const getWaitState = (game: Game, userId: number): GameState => ({
   id: game.id,
@@ -20,7 +22,6 @@ export const getWaitState = (game: Game, userId: number): GameState => ({
   myCards: [],
 });
 
-// TODO: test
 export const getEndedState = (game: Game, userId: number): GameState => {
   return {
     id: game.id,
@@ -43,13 +44,39 @@ export const getEndedState = (game: Game, userId: number): GameState => {
 };
 
 export const getPlayState = async (game: Game, userId: number): Promise<GameState> => {
-  const set = await game.playingSet();
+  const set = await game.lastSet();
+  const round = await set?.lastRound();
+  round.set = set;
 
-  if (!set) {
-    return getEndedState(game, userId);
+  let state = GameStateEnum.PLAY;
+  let setTricksPoints: { [id: number]: number } = {};
+  if (set.finished) {
+    state = GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_SET;
+    const playersTricks: { [id: number]: Cards } = set.rounds.reduce((acc, round) => {
+      // уже есть не начатый раунд, игнорим его
+      if (!round.winner) {
+        return [];
+      }
+      const winnerId = round.winner.id;
+      if (!acc[winnerId]) {
+        acc[winnerId] = [];
+      }
+
+      const tricks = map(trick => head(toPairs(trick))[1], round.desk);
+      acc[winnerId] = [...acc[winnerId], ...unnest(tricks)];
+      return acc;
+    }, {});
+    const scoresPairs = map(pair => {
+      const cardsSum = sum(map(card => (card[1] > 100 ? card[1] - 100 : 0), pair[1]));
+      return [pair[0], cardsSum];
+    }, toPairs(playersTricks));
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    setTricksPoints = fromPairs(scoresPairs);
+  } else if (round?.isFinished()) {
+    state = GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_ROUND;
   }
-
-  const round = await set.currentRound();
 
   return {
     id: game.id,
@@ -59,7 +86,8 @@ export const getPlayState = async (game: Game, userId: number): Promise<GameStat
       name: game.owner.login,
     },
     slotsCount: game.slotsCount,
-    state: GameStateEnum.PLAY,
+    state,
+    tricks: setTricksPoints,
     trump: set.trump,
     currentPlayerId: round.currentPlayer.id,
     myScore: game.gameScore[userId],

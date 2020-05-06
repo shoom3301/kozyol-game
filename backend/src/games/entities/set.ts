@@ -19,6 +19,8 @@ import {
   descend,
   sortWith,
   prop,
+  forEach,
+  keys,
 } from 'ramda';
 import { startNewRound } from './round.utils';
 
@@ -84,6 +86,13 @@ export class GameSet extends Base {
     });
   }
 
+  lastRound() {
+    return Round.findOne({
+      where: { set: this },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async calcScores() {
     this.finished = true;
 
@@ -106,9 +115,15 @@ export class GameSet extends Base {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     const score: { [id: number]: number } = fromPairs(scoresPairs);
+    // so hacky way to set 0 tricks for user
+    const lastRoundHands = last(this.rounds).hands;
+    forEach(playerId => {
+      if (!score[playerId]) {
+        score[playerId] = 0;
+      }
+    }, keys(lastRoundHands));
 
     const sortedWinPairs = sortWith([descend(last)])(toPairs(score));
-
     const winnerOfGame = head(sortedWinPairs);
     const gameScores: [number, number][] = tail(sortedWinPairs).map(scorePair => {
       const playerTrick = scorePair[1];

@@ -11,10 +11,12 @@ import {
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Request } from 'express';
 import { Cards } from '../games/cards/types';
-import { GameSet } from '../games/entities/set';
 import { GamesService } from 'src/games/games.service';
 import { processStep } from './processStep';
-import { head, values } from 'ramda';
+import { head, values, without } from 'ramda';
+import { calcGameState } from 'src/game-state/calcGameState';
+import { Game } from 'src/games/entities/game';
+import { continueGame } from 'src/games/helpers/continueGame';
 
 @UseGuards(JwtAuthGuard)
 @Controller('step')
@@ -27,7 +29,16 @@ export class StepController {
     @Param('gameId') gameId: number,
     @Body() { cards }: { cards: Cards },
   ) {
-    console.log({ cards });
+    // TODO: temp
+    const currGame = await Game.findOne({ where: { id: gameId } });
+    if (currGame.waitConfirmations.length > 0) {
+      currGame.waitConfirmations = without([req.user.userId], currGame.waitConfirmations);
+      await currGame.save();
+      if (currGame.waitConfirmations.length === 0) {
+        await continueGame(gameId);
+      }
+      return;
+    }
 
     if (!cards || !Array.isArray(cards) || cards.length === 0) {
       throw new HttpException('ooops', HttpStatus.UNPROCESSABLE_ENTITY);
@@ -71,13 +82,9 @@ export class StepController {
       }
     });
 
-    const updSet = await processStep(game, cards, userId);
-    if (updSet.finished) {
-      const newSet = new GameSet();
-      await newSet.initSet(game);
-      newSet.save();
-    }
+    await processStep(game, cards, userId);
 
-    return { status: 'ok' };
+    await game.reload();
+    return calcGameState(game, userId);
   }
 }

@@ -13,12 +13,15 @@ export class Game extends Base {
   @OneToMany(
     () => GameSet,
     set => set.game,
-    { cascade: true, onDelete: 'CASCADE' },
+    { onDelete: 'CASCADE' },
   )
   sets: GameSet[];
 
   @Column()
   slotsCount: number;
+
+  @Column({ type: 'json' })
+  waitConfirmations: User['id'][];
 
   @ManyToMany(() => User, { eager: true })
   @JoinTable()
@@ -34,6 +37,10 @@ export class Game extends Base {
 
   hasPlayer(id: number) {
     return !!this.players.find(user => user.id === id);
+  }
+
+  initWaitingConfirmationsForContinue() {
+    this.waitConfirmations = map(prop('id'), this.players);
   }
 
   gameScore(): { [playerId: number]: number } {
@@ -61,6 +68,14 @@ export class Game extends Base {
       where: { game: this, finished: false },
       order: { createdAt: 'DESC' },
       relations: ['game'],
+    });
+  }
+
+  async lastSet(): Promise<GameSet | undefined> {
+    return GameSet.findOne({
+      where: { game: this },
+      order: { createdAt: 'DESC' },
+      relations: ['rounds'],
     });
   }
 }

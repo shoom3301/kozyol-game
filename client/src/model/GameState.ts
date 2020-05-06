@@ -1,10 +1,12 @@
-import { Cards, Desk } from './Card';
-import { Player } from 'model/Player';
+import { Cards, Desk } from "./Card";
+import { Player } from "model/Player";
 
 export enum GameStateEnum {
-  WAIT_PLAYERS = 'WAIT_PLAYERS',
-  PLAY = 'PLAY',
-  ENDED = 'ENDED',
+  WAIT_PLAYERS = "WAIT_PLAYERS",
+  WAIT_CONFIRMATIONS_FOR_START_NEW_ROUND = "WAIT_CONFIRMATIONS_FOR_START_NEW_ROUND",
+  WAIT_CONFIRMATIONS_FOR_START_NEW_SET = "WAIT_CONFIRMATIONS_FOR_START_NEW_SET",
+  PLAY = "PLAY",
+  ENDED = "ENDED",
 }
 
 export type GameState = {
