@@ -22,6 +22,9 @@ export type GameState = {
   gameScore: {
     [playerId: number]: number;
   };
+  tricks?: {
+    [playerId: number]: number;
+  };
   cardsOnTable: Desk;
   players: Player[];
   myCards: Cards;

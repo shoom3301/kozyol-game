@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Title } from 'ui-elements/form';
 import { cardImage } from 'helpers/cardImage';
-import { Cards, Desk, suitSymbols } from 'model/Card';
+import { Cards, Desk, suitIsRed, suitSymbols } from 'model/Card';
 import { CardItem, CardsList, CardSlot, Container } from './elements';
+import styled, { css } from 'styled-components';
 
 export interface CardsOnTableProps {
   cards: Desk
@@ -35,7 +36,9 @@ export class CardsOnTable extends Component<CardsOnTableProps, any> {
 
     return (
       <Container>
-        <Title>Карты на столе (козырь: {suitSymbols[this.props.trump]})</Title>
+        <Title>Карты на столе (козырь:
+          <SuitSymbol isRed={suitIsRed[this.props.trump]}>{suitSymbols[this.props.trump]}</SuitSymbol>
+          )</Title>
         <CardsList>
           {slots.map((slot, i) => <CardSlot key={i}>{slot.map(card =>
             <CardItem key={card.toString()} src={cardImage(card)}/>
@@ -45,3 +48,20 @@ export class CardsOnTable extends Component<CardsOnTableProps, any> {
     )
   }
 }
+
+export const SuitSymbol = styled.span<{isRed?: boolean}>`
+  font-size: 24px;
+  line-height: 18px;
+  font-weight: bold;
+  margin: 0 5px;
+  display: inline-block;
+  border: 1px solid #4e4e4e;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  padding: 5px;
+
+  ${({isRed}) => isRed && css`
+    color: red;
+  `}
+`;

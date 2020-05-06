@@ -16,6 +16,8 @@ import { PlayersList } from "components/gamePage/playersList";
 import { gameStateService } from "services/gameState.service";
 import { GameStateHelpers } from "helpers/gameStateHelpers";
 import { getGameState } from "store/selectors/gameState";
+import { SetResults } from 'components/gamePage/setResults';
+import styled from 'styled-components';
 
 export interface GamePageProps {
   gameId: string;
@@ -70,15 +72,23 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
               currentPlayerId={gameState.gameState.currentPlayerId}
               score={gameState.gameState.gameScore}
             />
+            {gameState.isEnded && <EndBanner>
+                <p>Игры кончились, готовь туза</p>
+                <ToMain to={mainRoute}>К списку игр</ToMain>
+            </EndBanner>}
             {gameState.isWaitingPlayers && (
               <PlayersWaiting>{`Ожидаем игроков: ${gameState.slotsState}`}</PlayersWaiting>
             )}
-            {gameState.isPlaying && (
+            {gameState.isPlaying && !gameState.isSetEnded && (
               <CardsOnTable
                 trump={gameState.gameState.trump}
                 cards={gameState.gameState.cardsOnTable}
               />
             )}
+            {gameState.isSetEnded && !!gameState.gameState.tricks && <SetResults
+              players={gameState.gameState.players}
+              tricks={gameState.gameState.tricks}
+            />}
             {(gameState.gameState.myCards.length > 0 ||
               gameState.isWaitingConfirmations) && (
               <MyCards
@@ -103,3 +113,7 @@ export const GamePage = connect(
   })),
   () => ({})
 )(GamePageComponent);
+
+export const EndBanner = styled.h2`
+  text-align: center;
+`;

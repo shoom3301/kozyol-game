@@ -7,6 +7,7 @@ import { canCardBeSelected } from "helpers/stepHelpers";
 import { Button } from "ui-elements/button";
 import { stepService } from "services/step.service";
 import { gameStateService } from "services/gameState.service";
+import { ConfirmButton } from 'components/gamePage/confirmButton';
 
 export interface MyCardsProps {
   cards: Cards;
@@ -121,11 +122,7 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
             Ногам ходу, голове приходу
           </Button>
         )}
-        {this.props.waitingConfirmations && (
-          <Button onClick={() => this.confirm()}>
-            ЭЭЭЭ, давай дальше, сайпал
-          </Button>
-        )}
+        {this.props.waitingConfirmations && <ConfirmButton confirm={() => this.confirm()}/>}
       </Container>
     );
   }

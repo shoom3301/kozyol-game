@@ -9,6 +9,13 @@ export enum Suit {
 
 export const suitSymbols = ["♥", "♦", "♣", "♠"];
 
+export const suitIsRed: {[key: number]: boolean} = {
+  [Suit.Hearts]: true,
+  [Suit.Diamonds]: true,
+  [Suit.Clubs]: false,
+  [Suit.Spades]: false
+};
+
 export const SuitCharMap = {
   [Suit.Hearts]: "H",
   [Suit.Diamonds]: "D",
