@@ -22,11 +22,11 @@ import { StepController } from './step/step.controller';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: process.env.MYSQL_HOST || 'localhost',
       port: 3306,
-      username: 'db_user',
-      password: '2SNJwgsfPFMtSWkw68bnzwUKmvbkaJpj',
-      database: 'kozyol',
+      username: process.env.MYSQL_USER || 'db_user',
+      password: process.env.MYSQL_PASSWORD || '2SNJwgsfPFMtSWkw68bnzwUKmvbkaJpj',
+      database: process.env.MYSQL_DATABASE || 'kozyol',
       // logging: true,
       entities: [User, Game, Round, GameSet],
       synchronize: true,

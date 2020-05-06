@@ -1,0 +1,40 @@
+version: "2.4"
+
+services:
+  backend:
+    container_name: kozyol_backend
+    depends_on:
+      - mysql
+    build:
+      dockerfile: ../docker/backend.Dockerfile
+      context: ../backend
+      target: prod-build
+    env_file:
+      - ../backend/.env
+    ports:
+      - 8814:8041
+    command: node dist/main.js
+    restart: always
+    networks:
+      - kozyol_network
+
+  mysql:
+    env_file:
+      - ../backend/.env
+    image: mysql:5.7
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_volume:/var/lib/mysql
+    command:
+      [
+        "mysqld",
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+      ]
+    networks:
+      - kozyol_network
+
+networks:
+  kozyol_network: {}

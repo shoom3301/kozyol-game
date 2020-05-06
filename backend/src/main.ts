@@ -6,3 +6,19 @@ async function bootstrap() {
   await app.listen(8041, '0.0.0.0');
 }
 bootstrap();
+
+process.on('uncaughtException', error => {
+  console.error('uncaughtException handled, restarting...');
+  console.error(error);
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
+});
+
+process.on('unhandledRejection', reason => {
+  console.error('unhandledRejection handled, restarting...');
+  reason && console.error(reason);
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
+});
