@@ -5,7 +5,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { calcGameState } from './calcGameState';
 
 @UseGuards(JwtAuthGuard)
-@Controller('gameState')
+@Controller('api/gameState')
 export class GameStateController {
   constructor(private gameService: GamesService) {}
 

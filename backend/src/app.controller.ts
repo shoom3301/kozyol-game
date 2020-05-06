@@ -10,12 +10,12 @@ export class AppController {
   constructor(private userService: UserService, private authService: AuthService) {}
 
   @UseGuards(AuthGuard('local'))
-  @Post('auth/login')
+  @Post('api/auth/login')
   async login(@Req() req: Request) {
     return this.authService.login(req.user);
   }
 
-  @Post('auth/signup')
+  @Post('api/auth/signup')
   async signup(@Req() req: Request) {
     const existedUser = await this.userService.getByLogin(req.body.username);
     if (existedUser) {
