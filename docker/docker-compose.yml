@@ -22,7 +22,7 @@ services:
     depends_on:
       - mysql
     build:
-      dockerfile: ../docker/backend.Dockerfile
+      dockerfile: backend.Dockerfile
       context: ../backend
       target: prod-build
     env_file:
