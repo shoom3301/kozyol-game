@@ -5,7 +5,7 @@ services:
     container_name: kozyol_front
     build:
       context: ../client
-      dockerfile: ../docker/front.Dockerfile
+      dockerfile: front.Dockerfile
       target: static-html
     restart: always
     ports:
