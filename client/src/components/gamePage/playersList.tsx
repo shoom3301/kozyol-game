@@ -23,6 +23,7 @@ export class PlayersList extends Component<CardsOnTableProps, any> {
             .map(({ id, name }) => <PlayersListItem
               isMe={this.props.me === id}
               current={this.props.currentPlayerId === id}
+              myTurn={this.props.currentPlayerId === id && this.props.me === id}
               key={id}>
             <PlayerAvatar src={'https://cdn.iconscout.com/icon/free/png-512/avatar-380-456332.png'}/>
               <PlayerName>{name}</PlayerName>
@@ -65,7 +66,7 @@ export const PlayerScore = styled.div`
   text-align: center;
 `;
 
-export const PlayersListItem = styled.li<{isMe?: boolean, current?: boolean}>`
+export const PlayersListItem = styled.li<{isMe?: boolean, current?: boolean, myTurn?: boolean}>`
   display: inline-block;
   border: 1px solid #000;
   padding: 10px;
@@ -80,5 +81,9 @@ export const PlayersListItem = styled.li<{isMe?: boolean, current?: boolean}>`
 
   ${({current}) => current && css`
     border: 3px solid rgba(255,193,35,0.83);
+  `}
+
+  ${({myTurn}) => myTurn && css`
+    background: #ff5320;
   `}
 `;
