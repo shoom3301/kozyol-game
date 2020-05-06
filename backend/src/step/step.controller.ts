@@ -19,7 +19,7 @@ import { Game } from 'src/games/entities/game';
 import { continueGame } from 'src/games/helpers/continueGame';
 
 @UseGuards(JwtAuthGuard)
-@Controller('step')
+@Controller('api/step')
 export class StepController {
   constructor(private gameService: GamesService) {}
 

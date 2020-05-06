@@ -20,7 +20,7 @@ import { UserService } from '../user/user.service';
 import { calcGameState } from 'src/game-state/calcGameState';
 
 @UseGuards(JwtAuthGuard)
-@Controller('games')
+@Controller('api/games')
 export class GamesController {
   constructor(private gameService: GamesService, private userService: UserService) {}
 
