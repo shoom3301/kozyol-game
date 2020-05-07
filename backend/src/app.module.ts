@@ -19,8 +19,14 @@ import { GamesModule } from './games/games.module';
 import { GameStateController } from './game-state/game-state.controller';
 import { StepController } from './step/step.controller';
 
+import { ServeStaticModule } from '@nestjs/serve-static';
+
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, 'client'),
+      exclude: ['/api*'],
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.MYSQL_HOST || 'localhost',
