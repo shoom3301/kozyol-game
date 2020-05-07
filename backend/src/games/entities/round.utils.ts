@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { Round } from './round';
-import { Deck, Cards } from '../cards/types';
+import { Deck, Cards, Desk } from '../cards/types';
 import { User } from 'src/user/user.entity';
 import {
   findIndex,
@@ -18,6 +18,9 @@ import {
   all,
   last,
   clone,
+  reduce,
+  assoc,
+  head,
 } from 'ramda';
 import { allCardsOfSameRankOrSuit } from '../cards/comparisons';
 import { GameSet } from './set';
@@ -116,4 +119,12 @@ export const detectBingoTurn = (hands: Hands): number | null => {
   return null;
 };
 
-//const sortUsersDic = ()
+export const deskToObj = (desk: Desk): { [id: number]: Cards } =>
+  reduce(
+    (acc, val) => {
+      const [id, cards] = head(toPairs(val));
+      return assoc(id, cards, acc);
+    },
+    {},
+    desk,
+  );
