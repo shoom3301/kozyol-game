@@ -1,8 +1,8 @@
 export enum Suit {
   Hearts = 0, // – червы ♥
-  Diamonds, // – бубны ♦
-  Clubs, // – трефы ♣
-  Spades, // – пики точеные ♠
+  Diamonds = 1, // – бубны ♦
+  Clubs = 2, // – трефы ♣
+  Spades = 3, // – пики точеные ♠
 }
 
 export enum Rank {

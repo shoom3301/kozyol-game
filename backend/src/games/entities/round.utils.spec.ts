@@ -33,7 +33,6 @@ describe('round utils', () => {
 
     it('when cards amount in the deck is NOT enough', () => {
       const notFullDeck = take(3, getDeck());
-      console.log({ notFullDeck });
 
       const { chargedHands, reducedDeck } = chargeHands(hands, notFullDeck, 1);
 

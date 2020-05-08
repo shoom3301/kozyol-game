@@ -2,6 +2,7 @@ import { Game } from 'src/games/entities/game';
 import { GameState, GameStateEnum } from './types';
 import { Cards } from 'src/games/cards/types';
 import { map, head, toPairs, unnest, sum, fromPairs } from 'ramda';
+import { hideLosersCards } from 'src/games/cards/utils';
 
 export const getWaitState = (game: Game, userId: number): GameState => ({
   id: game.id,
@@ -53,10 +54,6 @@ export const getPlayState = async (game: Game, userId: number): Promise<GameStat
   if (set.finished) {
     state = GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_SET;
     const playersTricks: { [id: number]: Cards } = set.rounds.reduce((acc, round) => {
-      // уже есть не начатый раунд, игнорим его
-      if (!round.winner) {
-        return [];
-      }
       const winnerId = round.winner.id;
       if (!acc[winnerId]) {
         acc[winnerId] = [];
@@ -92,7 +89,7 @@ export const getPlayState = async (game: Game, userId: number): Promise<GameStat
     currentPlayerId: round.currentPlayer.id,
     myScore: game.gameScore[userId],
     gameScore: game.gameScore(),
-    cardsOnTable: round.desk,
+    cardsOnTable: hideLosersCards(round.desk, set.trump),
     players: game.players.map(player => ({ id: player.id, name: player.login, order: 0 })),
     myCards: round.hands[userId],
   };

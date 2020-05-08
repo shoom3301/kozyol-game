@@ -34,8 +34,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "docker": "docker stop kozyol/front:dev && npm run build && docker build . -t kozyol/front:dev && docker run --rm -d -p 8888:80 kozyol/front:dev"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
