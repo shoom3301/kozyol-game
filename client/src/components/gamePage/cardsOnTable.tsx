@@ -25,16 +25,10 @@ export class CardsOnTable extends Component<CardsOnTableProps, any> {
 
       for (let i = 0; i < slotsCount; i++) {
         this.props.cards.forEach(item => {
-          if (item === null) {
-            slots[i].push(null)
-          } else {
-            const userId = parseInt(Object.keys(item)[0])
-            const cards = item[userId]
+          const userId = parseInt(Object.keys(item)[0])
+          const cards = item[userId]
 
-            if (cards[i]) {
-              slots[i].push(cards[i])
-            }
-          }
+          slots[i].push(cards[i])
         })
       }
     }
