@@ -8,17 +8,15 @@ import { Button } from "ui-elements/button";
 import { stepService } from "services/step.service";
 import { gameStateService } from "services/gameState.service";
 import { ConfirmButton } from 'components/gamePage/confirmButton';
+import { GameStateHelpers } from 'helpers/gameStateHelpers';
+import { logError } from 'helpers/logError';
 
 export interface MyCardsProps {
-  cards: Cards;
-  gameId: number;
-  enabled: boolean;
-  cardsOnTable: Desk;
-  waitingConfirmations: boolean;
+  gameState: GameStateHelpers
 }
 
 export interface MyCardsState {
-  selectedCards: Cards;
+  selectedCards: Cards
 }
 
 export class MyCards extends Component<MyCardsProps, MyCardsState> {
@@ -36,11 +34,13 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
   }
 
   selectCard(card: Card) {
-    const isFirstStep = this.props.cardsOnTable.length === 0;
+    const gameState = this.props.gameState
+    const cardsOnTable = gameState.gameState.cardsOnTable
+    const isFirstStep = cardsOnTable.length === 0;
     let firstStepCards = [];
 
     if (!isFirstStep) {
-      const firstStep = this.props.cardsOnTable[0];
+      const firstStep = cardsOnTable[0];
       const firstUserId = parseInt(Object.keys(firstStep)[0]);
       firstStepCards = firstStep[firstUserId];
     }
@@ -56,7 +56,7 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
     }
 
     if (
-      !this.props.enabled ||
+      !gameState.isMyTurn ||
       (!isFirstStep &&
         firstStepCards.length === this.state.selectedCards.length)
     ) {
@@ -86,8 +86,8 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
     this.setState({ selectedCards: [] });
 
     stepService
-      .doStep(this.props.gameId, cards)
-      .catch(alert)
+      .doStep(this.props.gameState.gameState.id, cards)
+      .catch(logError)
       .then(() => {
         gameStateService.fetch();
       });
@@ -95,19 +95,21 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
 
   confirm() {
     stepService
-      .confirm(this.props.gameId)
-      .catch(alert)
+      .confirm(this.props.gameState.gameState.id)
+      .catch(logError)
       .then(() => {
         gameStateService.fetch();
       });
   }
 
   render(): React.ReactElement {
+    const gameState = this.props.gameState
+
     return (
       <Container>
         <Title>Мои карты:</Title>
         <CardsList>
-          {this.props.cards.map((card) => (
+          {gameState.gameState.myCards.map((card) => (
             <MyCardSlot
               key={`${card}`}
               selected={this.isSelectedCard(card)}
@@ -117,12 +119,16 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
             </MyCardSlot>
           ))}
         </CardsList>
-        {this.props.enabled && (
+        {gameState.isMyTurn && (
           <Button onClick={() => this.doStep()}>
             Ногам ходу, голове приходу
           </Button>
         )}
-        {this.props.waitingConfirmations && <ConfirmButton confirm={() => this.confirm()}/>}
+        {gameState.isWaitingConfirmations &&
+        <ConfirmButton
+          timeout={gameState.isWaitingForStartNewSet ? 10000 : 5000}
+          confirm={() => this.confirm()}/>
+        }
       </Container>
     );
   }

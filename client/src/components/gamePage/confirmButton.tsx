@@ -3,6 +3,7 @@ import { Button } from 'ui-elements/button';
 
 export interface ConfirmButtonProps {
   confirm: () => void
+  timeout: number
 }
 
 export interface ConfirmButtonState {
@@ -11,12 +12,26 @@ export interface ConfirmButtonState {
   disabled: boolean
 }
 
-const timeout = 10000
-
 export class ConfirmButton extends Component<ConfirmButtonProps, any> {
-  state: ConfirmButtonState = {timer: null, current: timeout, disabled: false}
+  state: ConfirmButtonState = {timer: null, current: 0, disabled: false}
+
+  componentDidUpdate(prevProps: Readonly<ConfirmButtonProps>, prevState: Readonly<any>) {
+    if (this.props.timeout !== prevProps.timeout) {
+      this.updateTimer()
+    }
+  }
 
   componentDidMount() {
+    this.updateTimer()
+  }
+
+  componentWillUnmount() {
+    if (this.state.timer) window.clearInterval(this.state.timer)
+  }
+
+  updateTimer() {
+    if (this.state.timer) window.clearInterval(this.state.timer)
+
     const timer = window.setInterval(() => {
       const newCurrent = this.state.current - 1000
 
@@ -30,13 +45,7 @@ export class ConfirmButton extends Component<ConfirmButtonProps, any> {
       })
     }, 1000)
 
-    if (this.state.timer) window.clearInterval(this.state.timer)
-
-    this.setState({timer})
-  }
-
-  componentWillUnmount() {
-    if (this.state.timer) window.clearInterval(this.state.timer)
+    this.setState({timer, current: this.props.timeout, disabled: false})
   }
 
   render(): React.ReactElement {

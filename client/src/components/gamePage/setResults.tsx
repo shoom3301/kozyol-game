@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Title } from 'ui-elements/form';
-import { cardImage } from 'helpers/cardImage';
-import { Cards, Desk, suitSymbols } from 'model/Card';
-import { CardItem, CardsList, CardSlot, Container } from './elements';
+import { Container } from './elements';
 import { Player } from 'model/Player';
 import styled from 'styled-components';
 

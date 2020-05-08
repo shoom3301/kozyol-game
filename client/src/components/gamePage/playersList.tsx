@@ -54,7 +54,7 @@ export const ScoreContainer = styled.p`
   margin: 0;
 `;
 
-export const PlayerScore = styled.div`
+export const PlayerScore = styled.span`
   display: inline-block;
   width: 25px;
   padding: 5px 1px;

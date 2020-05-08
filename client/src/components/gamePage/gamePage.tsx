@@ -89,15 +89,8 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
               players={gameState.gameState.players}
               tricks={gameState.gameState.tricks}
             />}
-            {(gameState.gameState.myCards.length > 0 ||
-              gameState.isWaitingConfirmations) && (
-              <MyCards
-                gameId={gameState.gameState.id}
-                enabled={gameState.isMyTurn}
-                waitingConfirmations={gameState.isWaitingConfirmations}
-                cardsOnTable={gameState.gameState.cardsOnTable}
-                cards={gameState.gameState.myCards}
-              />
+            {(gameState.isPlaying) && (
+              <MyCards gameState={gameState}/>
             )}
           </div>
         )}

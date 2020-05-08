@@ -3,6 +3,7 @@ import { Button } from 'ui-elements/button';
 import { Box, FormContainer, Label, Title } from 'ui-elements/form';
 import { Select } from 'ui-elements/select';
 import { gamesService } from 'services/games.service';
+import { logError } from 'helpers/logError';
 
 interface GameCreationState {
   slotsCount: number;
@@ -14,7 +15,7 @@ export class GameCreation extends Component<any, GameCreationState> {
 
   createGame = () => {
     gamesService.createGame(this.state.slotsCount)
-      .catch(alert)
+      .catch(logError)
       .then(() => {
         gamesService.updateList()
       })

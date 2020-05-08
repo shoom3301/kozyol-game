@@ -14,6 +14,10 @@ export class GameStateHelpers {
     ].includes(this.gameState.state);
   }
 
+  get isWaitingForStartNewSet(): boolean {
+    return this.gameState.state === GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_SET
+  }
+
   get isSetEnded(): boolean {
     return this.gameState.state === GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_SET
   }
