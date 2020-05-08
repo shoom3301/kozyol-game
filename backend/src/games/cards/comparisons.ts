@@ -1,5 +1,5 @@
 import { Card, Suit, Cards } from './types';
-import { all, equals, zipWith, aperture, head, last } from 'ramda';
+import { all, equals, aperture, head, last, find, without } from 'ramda';
 import { sortWithTrump } from './utils';
 
 export const sameSuit = (a: Card, b: Card): boolean => a[0] === b[0];
@@ -9,7 +9,7 @@ export const isTrump = (trump: Suit, card: Card) => card[0] === trump;
 /**
  * @returns true if b greater than a
  */
-const isCardGreater = (trump: Suit) => (a: Card, b: Card): boolean => {
+const isCardsPairGreater = (trump: Suit, a: Card) => (b: Card): boolean => {
   if (sameSuit(a, b)) {
     return b[1] > a[1];
   } else if (isTrump(trump, b)) {
@@ -23,11 +23,17 @@ const isCardGreater = (trump: Suit) => (a: Card, b: Card): boolean => {
  */
 export const isCardsGreater = (trump: Suit) => (a: Cards, b: Cards) => {
   const sortedA = sortWithTrump(trump)(a);
-  const sortedB = sortWithTrump(trump)(b);
+  let sortedB = sortWithTrump(trump)(b);
 
-  const comparedPairs = zipWith(isCardGreater(trump), sortedA, sortedB);
+  const comparisonResults = sortedA.map(prevCard => {
+    const hasWinCard = find(isCardsPairGreater(trump, prevCard), sortedB);
+    if (hasWinCard) {
+      sortedB = without([hasWinCard], sortedB);
+    }
+    return !!hasWinCard;
+  });
 
-  return all(equals(true), comparedPairs);
+  return all(equals(true), comparisonResults);
 };
 
 export const allCardsOfSameRankOrSuit = (cards: Cards) => {

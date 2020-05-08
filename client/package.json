@@ -35,10 +35,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "docker:build": "npm run build && docker build . -t kozyol/front:latest",
-    "docker:run": "docker run --name=kozyol_front -p 8080:80 -d --restart=always kozyol/front:latest",
-    "docker:stop": "(docker stop kozyol_front || true) && (docker rm kozyol_front || true)",
-    "docker:rebuild": "yarn docker:stop && yarn docker:build && yarn docker:run"
+    "docker": "docker stop kozyol/front:dev && npm run build && docker build . -t kozyol/front:dev && docker run --rm -d -p 8888:80 kozyol/front:dev"
   },
   "eslintConfig": {
     "extends": "react-app"

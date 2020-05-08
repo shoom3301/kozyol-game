@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { orderedTurns, chargeHands, detectBingoTurn } from './round.utils';
+import { orderedTurns, chargeHands, detectBingoTurn, deskToObj } from './round.utils';
 import { spades, hearts, clubs, diamonds } from '../cards/make';
 import { Rank } from '../cards/types';
 import { take } from 'ramda';
@@ -50,6 +50,19 @@ describe('round utils', () => {
     expect(detectBingoTurn(handsWithBingoSuits)).toEqual(2);
     expect(detectBingoTurn(handsWithBingoRanks)).toEqual(3);
     expect(detectBingoTurn(handsWithoutBingo)).toEqual(null);
+  });
+
+  it('deskToObj', () => {
+    const deskObj = deskToObj([
+      { 1: [hearts(Rank.Ten), clubs(Rank.Ace)] },
+      { 2: [hearts(Rank.King), clubs(Rank.Queen)] },
+      { 3: [spades(Rank.Seven), spades(Rank.Six)] },
+    ]);
+    expect(deskObj).toEqual({
+      1: [hearts(Rank.Ten), clubs(Rank.Ace)],
+      2: [hearts(Rank.King), clubs(Rank.Queen)],
+      3: [spades(Rank.Seven), spades(Rank.Six)],
+    });
   });
 });
 

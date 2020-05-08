@@ -22,5 +22,3 @@ EXPOSE 8041
 
 COPY --from=build-env /usr/src/app/dist/. ./dist
 COPY --from=build-env /usr/src/app/node_modules/ ./node_modules
-
-RUN ls -la

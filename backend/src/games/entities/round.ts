@@ -5,9 +5,9 @@ import { Desk, Cards } from '../cards/types';
 import { Base } from './base';
 import { User } from '../../user/user.entity';
 import { GameSet } from './set';
-import { values, without, toPairs, head, all, isEmpty } from 'ramda';
+import { values, without, all, isEmpty } from 'ramda';
 import { isCardsGreater } from '../cards/comparisons';
-import { orderedTurns } from './round.utils';
+import { orderedTurns, deskToObj } from './round.utils';
 
 @Entity()
 export class Round extends Base {
@@ -41,7 +41,7 @@ export class Round extends Base {
     this.desk.push({ [userId]: cards });
     this.hands[userId] = without(cards, this.hands[userId]);
 
-    if (this.isTurnGreater()) {
+    if (this.isTurnGreater(userId)) {
       this.winner = { id: userId } as User;
     }
 
@@ -50,15 +50,16 @@ export class Round extends Base {
     }
   }
 
-  isTurnGreater() {
+  isTurnGreater(userId: number) {
     const turnNumber = this.desk.length - 1;
     if (turnNumber === 0) {
       return true;
     }
 
-    const [_, prevUserCards] = head(toPairs(this.desk[turnNumber - 1]));
-    const [__, currUserCards] = head(toPairs(this.desk[turnNumber]));
-    return isCardsGreater(this.set.trump)(prevUserCards, currUserCards);
+    const prevWinnerCards = deskToObj(this.desk)[this.winner.id];
+    const currUserCards = deskToObj(this.desk)[userId];
+
+    return isCardsGreater(this.set.trump)(prevWinnerCards, currUserCards);
   }
 
   isFinished() {
