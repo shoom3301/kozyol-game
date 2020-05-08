@@ -2,20 +2,22 @@ import React, { Component } from 'react';
 import { Title } from 'ui-elements/form';
 import { cardImage } from 'helpers/cardImage';
 import { Card, Desk, suitIsRed, suitSymbols } from 'model/Card';
-import { CardItem, CardsList, CardSlot, Container } from './elements';
+import { CardItemOnTable, CardsList, CardSlot, Container } from './elements';
 import styled, { css } from 'styled-components';
 
 const cardBack = 'https://raw.githubusercontent.com/richardschneider/cardsJS/' +
   'fe5e857c5094468c58a7cfe0a7075ad351fc7920/cards/BLUE_BACK.svg'
+const cardsInDeckTotal = 36
 
 export interface CardsOnTableProps {
   cards: Desk
   trump: number
+  cardsInDeck: number
 }
 
 export class CardsOnTable extends Component<CardsOnTableProps, any> {
   render(): React.ReactElement {
-    const slots: (Card | null)[][] = [[], [], [], []]
+    const slots: (Card | null)[][] = []
 
     if (this.props.cards.length > 0) {
       const first = this.props.cards[0]
@@ -28,6 +30,7 @@ export class CardsOnTable extends Component<CardsOnTableProps, any> {
           const userId = parseInt(Object.keys(item)[0])
           const cards = item[userId]
 
+          slots[i] = slots[i] || []
           slots[i].push(cards[i])
         })
       }
@@ -35,16 +38,19 @@ export class CardsOnTable extends Component<CardsOnTableProps, any> {
 
     return (
       <Container>
-        <Title>Карты на столе (козырь:
+        <Title>Колода: {this.props.cardsInDeck || 0}/{cardsInDeckTotal}. Козырь:
           <SuitSymbol isRed={suitIsRed[this.props.trump]}>{suitSymbols[this.props.trump]}</SuitSymbol>
           )</Title>
         <CardsList>
-          {slots.map((slot, i) => <CardSlot key={i}>{slot.map((card, j) => {
-            const key = card ? card.toString() : j
-            const image = card ? cardImage(card) : cardBack
+          {slots.map((slot, i) =>
+            <CardSlot key={i} cardsCount={slot.length}>{slot.map((card, j) => {
+              const key = card ? card.toString() : j
+              const image = card ? cardImage(card) : cardBack
 
-            return <CardItem key={key} src={image}/>
-          })}</CardSlot>)}
+              return <CardItemOnTable key={key} src={image}/>
+              })}
+            </CardSlot>
+          )}
         </CardsList>
       </Container>
     )

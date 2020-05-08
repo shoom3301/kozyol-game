@@ -12,6 +12,7 @@ export enum GameStateEnum {
 export type GameState = {
   id: number;
   me: number;
+  myTricks: number[];
   owner: Player;
   slotsCount: number;
   state: GameStateEnum;
@@ -26,6 +27,7 @@ export type GameState = {
     [playerId: number]: number;
   };
   cardsOnTable: Desk;
+  cardsInDeck: number;
   players: Player[];
   myCards: Cards;
 };

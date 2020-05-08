@@ -69,6 +69,7 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
             <PlayersList
               players={gameState.gameState.players}
               me={gameState.gameState.me}
+              myTricks={gameState.gameState.myTricks}
               currentPlayerId={gameState.gameState.currentPlayerId}
               score={gameState.gameState.gameScore}
             />
@@ -81,6 +82,7 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
             )}
             {gameState.isPlaying && !gameState.isSetEnded && (
               <CardsOnTable
+                cardsInDeck={gameState.gameState.cardsInDeck}
                 trump={gameState.gameState.trump}
                 cards={gameState.gameState.cardsOnTable}
               />
