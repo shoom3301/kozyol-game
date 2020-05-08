@@ -1,8 +1,7 @@
 import { Game } from 'src/games/entities/game';
 import { GameState, GameStateEnum } from './types';
-import { Cards } from 'src/games/cards/types';
-import { map, head, toPairs, unnest, sum, fromPairs } from 'ramda';
 import { hideLosersCards } from 'src/games/cards/utils';
+import { calcPlayersTricks, calcPlayerTricksAmount } from './utils';
 
 export const getWaitState = (game: Game, userId: number): GameState => ({
   id: game.id,
@@ -21,6 +20,11 @@ export const getWaitState = (game: Game, userId: number): GameState => ({
   })),
   players: game.players.map(player => ({ id: player.id, name: player.login, order: 0 })),
   myCards: [],
+  myTricks: {
+    points: 0,
+    amount: 0,
+  },
+  cardsInDeck: 0,
 });
 
 export const getEndedState = (game: Game, userId: number): GameState => {
@@ -41,6 +45,11 @@ export const getEndedState = (game: Game, userId: number): GameState => {
     })),
     players: game.players.map(player => ({ id: player.id, name: player.login, order: 0 })),
     myCards: [],
+    myTricks: {
+      points: 0,
+      amount: 0,
+    },
+    cardsInDeck: 0,
   };
 };
 
@@ -50,27 +59,8 @@ export const getPlayState = async (game: Game, userId: number): Promise<GameStat
   round.set = set;
 
   let state = GameStateEnum.PLAY;
-  let setTricksPoints: { [id: number]: number } = {};
   if (set.finished) {
     state = GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_SET;
-    const playersTricks: { [id: number]: Cards } = set.rounds.reduce((acc, round) => {
-      const winnerId = round.winner.id;
-      if (!acc[winnerId]) {
-        acc[winnerId] = [];
-      }
-
-      const tricks = map(trick => head(toPairs(trick))[1], round.desk);
-      acc[winnerId] = [...acc[winnerId], ...unnest(tricks)];
-      return acc;
-    }, {});
-    const scoresPairs = map(pair => {
-      const cardsSum = sum(map(card => (card[1] > 100 ? card[1] - 100 : 0), pair[1]));
-      return [pair[0], cardsSum];
-    }, toPairs(playersTricks));
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    setTricksPoints = fromPairs(scoresPairs);
   } else if (round?.isFinished()) {
     state = GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_ROUND;
   }
@@ -84,7 +74,7 @@ export const getPlayState = async (game: Game, userId: number): Promise<GameStat
     },
     slotsCount: game.slotsCount,
     state,
-    tricks: setTricksPoints,
+    tricks: set.finished ? calcPlayersTricks(set) : {},
     trump: set.trump,
     currentPlayerId: round.currentPlayer.id,
     myScore: game.gameScore[userId],
@@ -92,5 +82,10 @@ export const getPlayState = async (game: Game, userId: number): Promise<GameStat
     cardsOnTable: hideLosersCards(round.desk, set.trump),
     players: game.players.map(player => ({ id: player.id, name: player.login, order: 0 })),
     myCards: round.hands[userId],
+    myTricks: {
+      points: calcPlayersTricks(set)[userId],
+      amount: calcPlayerTricksAmount(set, userId),
+    },
+    cardsInDeck: set.deck.length,
   };
 };

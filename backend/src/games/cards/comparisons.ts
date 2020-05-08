@@ -9,7 +9,7 @@ export const isTrump = (trump: Suit, card: Card) => card[0] === trump;
 /**
  * @returns true if b greater than a
  */
-const isCardsPairGreater = (trump: Suit, a: Card) => (b: Card): boolean => {
+export const isCardsPairGreater = (trump: Suit, a: Card) => (b: Card): boolean => {
   if (sameSuit(a, b)) {
     return b[1] > a[1];
   } else if (isTrump(trump, b)) {

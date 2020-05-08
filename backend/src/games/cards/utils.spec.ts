@@ -1,4 +1,4 @@
-import { hideLosersCards } from './utils';
+import { hideLosersCards, prettifyWinnerTurn } from './utils';
 import { diamonds, hearts, spades, clubs } from './make';
 import { Rank, Suit } from './types';
 
@@ -37,6 +37,28 @@ describe('utils', () => {
       expect(filteredDesk).toEqual([
         { 3: [spades(Rank.Six), spades(Rank.Nine)] },
         { 1: [null, null] },
+      ]);
+    });
+  });
+
+  describe('prettify winner turn', () => {
+    it('with trump', () => {
+      const prettifyWinnerTurnWithTrump = prettifyWinnerTurn(Suit.Hearts);
+      const prevWinnerCards = [clubs(Rank.Nine), spades(Rank.Nine)];
+      const currWinnerCards = [spades(Rank.Jack), clubs(Rank.Ten)];
+      expect(prettifyWinnerTurnWithTrump(prevWinnerCards, currWinnerCards)).toEqual([
+        clubs(Rank.Ten),
+        spades(Rank.Jack),
+      ]);
+    });
+
+    it('without trump', () => {
+      const prettifyWinnerTurnWithTrump = prettifyWinnerTurn(Suit.Diamonds);
+      const prevWinnerCards = [hearts(Rank.Ten), hearts(Rank.Jack)];
+      const currWinnerCards = [hearts(Rank.Queen), hearts(Rank.Ace)];
+      expect(prettifyWinnerTurnWithTrump(prevWinnerCards, currWinnerCards)).toEqual([
+        hearts(Rank.Ace),
+        hearts(Rank.Queen),
       ]);
     });
   });

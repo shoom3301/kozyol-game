@@ -11,6 +11,10 @@ export enum GameStateEnum {
 export type GameState = {
   id: number;
   me: number;
+  myTricks: {
+    points: number;
+    amount: number;
+  };
   owner: {
     id: number;
     name: string;
@@ -28,6 +32,7 @@ export type GameState = {
     [playerId: number]: number;
   };
   cardsOnTable: Desk;
+  cardsInDeck: number;
   players: {
     id: number;
     name: string;

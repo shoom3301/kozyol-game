@@ -1,7 +1,6 @@
 import { Suit, Card, Desk, Cards } from './types';
-import { sortWith, toPairs, head, without, map, always, fromPairs, concat } from 'ramda';
-import { deskToObj } from '../entities/round.utils';
-import { isCardsGreater } from './comparisons';
+import { sortWith, toPairs, head, without, map, always, concat, findIndex } from 'ramda';
+import { isCardsGreater, isCardsPairGreater } from './comparisons';
 
 export const randomArrayValue = <T>(array: T[]): T =>
   array[Math.floor(Math.random() * array.length)];
@@ -50,4 +49,20 @@ export const hideLosersCards = (desk: Desk, trump: Suit): { [id: number]: Cards 
   const newDeskPairs = concat([deskHead], deskTail);
   const result = newDeskPairs.map(([id, cards]) => ({ [id]: cards }));
   return result;
+};
+
+export const prettifyWinnerTurn = (trump: Suit) => (
+  prevCards: Cards,
+  winnerCards: Cards,
+): Cards => {
+  let winnerSorted = sortWithTrump(trump)(winnerCards);
+
+  const orderedWinnerCards = prevCards.map(prevCard => {
+    const winCardIdx = findIndex(isCardsPairGreater(trump, prevCard), winnerSorted);
+    const winCard = winnerSorted[winCardIdx];
+    winnerSorted = without([winCard], winnerSorted);
+    return winCard;
+  });
+
+  return orderedWinnerCards;
 };

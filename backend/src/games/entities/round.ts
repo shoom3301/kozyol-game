@@ -8,6 +8,7 @@ import { GameSet } from './set';
 import { values, without, all, isEmpty } from 'ramda';
 import { isCardsGreater } from '../cards/comparisons';
 import { orderedTurns, deskToObj } from './round.utils';
+import { prettifyWinnerTurn } from '../cards/utils';
 
 @Entity()
 export class Round extends Base {
@@ -38,33 +39,46 @@ export class Round extends Base {
   }
 
   async pushToDesk(cards: Cards, userId: number, playersIds: number[]) {
-    this.desk.push({ [userId]: cards });
-    this.hands[userId] = without(cards, this.hands[userId]);
-
-    if (this.isTurnGreater(userId)) {
+    if (this.isDeskEmpty) {
+      this.desk.push({ [userId]: cards });
       this.winner = { id: userId } as User;
+    } else if (this.isTurnGreater(cards)) {
+      this.desk.push({
+        [userId]: prettifyWinnerTurn(this.set.trump)(this.getCurrentWinnerCards(), cards),
+      });
+      this.winner = { id: userId } as User;
+    } else {
+      this.desk.push({ [userId]: cards });
     }
+    this.hands[userId] = without(cards, this.hands[userId]);
 
     if (!this.isFinished()) {
       this.changeHand(playersIds);
     }
   }
 
-  isTurnGreater(userId: number) {
-    const turnNumber = this.desk.length - 1;
-    if (turnNumber === 0) {
+  getCurrentWinnerCards() {
+    return deskToObj(this.desk)[this.winner.id];
+  }
+
+  isTurnGreater(cards: Cards) {
+    if (!this.winner) {
       return true;
     }
 
-    const prevWinnerCards = deskToObj(this.desk)[this.winner.id];
-    const currUserCards = deskToObj(this.desk)[userId];
+    const roundCurrentWinnerCards = this.getCurrentWinnerCards();
+    const currUserCards = cards;
 
-    return isCardsGreater(this.set.trump)(prevWinnerCards, currUserCards);
+    return isCardsGreater(this.set.trump)(roundCurrentWinnerCards, currUserCards);
   }
 
   isFinished() {
     // if all users pushed cards to desk
     return this.desk.length === this.set.game.players.length;
+  }
+
+  isFinishedWithSet(set: GameSet) {
+    return this.desk.length === set.game.players.length;
   }
 
   isHandsEmpty() {
