@@ -5,6 +5,11 @@ import { Rank, Suit } from './types';
 // trump 0
 describe('utils', () => {
   describe('hide losers cards on desk', () => {
+    it('when desk is empty', () => {
+      const desk = [];
+      expect(hideLosersCards(desk, Suit.Hearts)).toEqual([]);
+    });
+
     it('when desk is full', () => {
       // [{"1": [[1, 9], [0, 9]]}, {"2": [[1, 8], [3, 102]]}, {"3": [[0, 7], [0, 110]]}] 2 - lose, 3 - win
       // trump - 0

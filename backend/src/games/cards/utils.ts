@@ -25,6 +25,10 @@ export const sortWithTrump = (trump: Suit) => {
 };
 
 export const hideLosersCards = (desk: Desk, trump: Suit): { [id: number]: Cards | null[] }[] => {
+  if (desk.length === 0) {
+    return desk;
+  }
+
   // transform desk
   // [{1: [a,b]}, {2:[c,d]}] => [[1, [a,b]], [2, [c,d]]]
   const deskAsPairs = map(item => head(toPairs(item)), desk);
