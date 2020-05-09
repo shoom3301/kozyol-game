@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import { Title } from 'ui-elements/form';
-import { cardImage } from 'helpers/cardImage';
-import { Card, Desk, suitIsRed, suitSymbols } from 'model/Card';
-import { CardItemOnTable, CardsList, CardSlot, Container } from './elements';
-import styled, { css } from 'styled-components';
+import React, { Component } from 'react'
+import { Title } from 'ui-elements/form'
+import { cardImage } from 'helpers/cardImage'
+import { Card, Desk, suitIsRed, suitSymbols } from 'model/Card'
+import { CardItemOnTable, CardsList, CardSlot, Container } from './elements'
+import styled, { css } from 'styled-components'
 
 const cardBack = 'https://raw.githubusercontent.com/richardschneider/cardsJS/' +
   'fe5e857c5094468c58a7cfe0a7075ad351fc7920/cards/BLUE_BACK.svg'
@@ -48,7 +48,7 @@ export class CardsOnTable extends Component<CardsOnTableProps, any> {
               const image = card ? cardImage(card) : cardBack
 
               return <CardItemOnTable key={key} src={image}/>
-              })}
+            })}
             </CardSlot>
           )}
         </CardsList>
@@ -72,4 +72,4 @@ export const SuitSymbol = styled.span<{ isRed?: boolean }>`
   ${({ isRed }) => isRed && css`
     color: red;
   `}
-`;
+`

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Button } from 'ui-elements/button';
+import React, { Component } from 'react'
+import { Button } from 'ui-elements/button'
 
 export interface ConfirmButtonProps {
   confirm: () => void
@@ -13,7 +13,7 @@ export interface ConfirmButtonState {
 }
 
 export class ConfirmButton extends Component<ConfirmButtonProps, any> {
-  state: ConfirmButtonState = {timer: null, current: 0, disabled: false}
+  state: ConfirmButtonState = { timer: null, current: 0, disabled: false }
 
   componentDidUpdate(prevProps: Readonly<ConfirmButtonProps>, prevState: Readonly<any>) {
     if (this.props.timeout !== prevProps.timeout) {
@@ -35,25 +35,25 @@ export class ConfirmButton extends Component<ConfirmButtonProps, any> {
     const timer = window.setInterval(() => {
       const newCurrent = this.state.current - 1000
 
-      this.setState({...this.state, current: newCurrent}, () => {
+      this.setState({ ...this.state, current: newCurrent }, () => {
         if (newCurrent <= 0) {
           if (this.state.timer) window.clearInterval(this.state.timer)
-          this.setState({timer: null, current: 0, disabled: true}, () => {
+          this.setState({ timer: null, current: 0, disabled: true }, () => {
             this.props.confirm()
           })
         }
       })
     }, 1000)
 
-    this.setState({timer, current: this.props.timeout, disabled: false})
+    this.setState({ timer, current: this.props.timeout, disabled: false })
   }
 
   render(): React.ReactElement {
     return (
       this.state.disabled ? <span/> :
-      <Button onClick={() => this.props.confirm()}>
-        ЭЭЭЭ, давай дальше, сайпал ({this.state.current / 1000})
-      </Button>
+        <Button onClick={() => this.props.confirm()}>
+          ЭЭЭЭ, давай дальше, сайпал ({this.state.current / 1000})
+        </Button>
     )
   }
 }

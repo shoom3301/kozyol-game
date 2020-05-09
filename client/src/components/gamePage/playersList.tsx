@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { Title } from 'ui-elements/form';
-import { Container } from './elements';
-import styled, { css } from 'styled-components';
-import { Player } from 'model/Player';
+import React, { Component } from 'react'
+import { Title } from 'ui-elements/form'
+import { Container } from './elements'
+import styled, { css } from 'styled-components'
+import { Player } from 'model/Player'
 
 export interface CardsOnTableProps {
   players: Player[]
@@ -43,12 +43,12 @@ export const PlayersListContainer = styled.ul`
   text-align: center;
   margin: 10px 0 15px 0;
   padding: 0;
-`;
+`
 
 export const PlayerAvatar = styled.img`
   width: 50px;
   height: 50px;
-`;
+`
 
 export const PlayerTricks = styled.div`
   width: 100%;
@@ -68,17 +68,17 @@ export const PlayerTricks = styled.div`
   :hover {
     opacity: 1;
   }
-`;
+`
 
 export const PlayerName = styled.p`
   text-align: center;
   overflow: hidden;
   margin: 0;
-`;
+`
 
 export const ScoreContainer = styled.p`
   margin: 0;
-`;
+`
 
 export const PlayerScore = styled.span`
   display: inline-block;
@@ -90,7 +90,7 @@ export const PlayerScore = styled.span`
   border: 2px solid #fff;
   color: #000;
   text-align: center;
-`;
+`
 
 export const PlayersListItem = styled.li<{ isMe?: boolean, current?: boolean, myTurn?: boolean }>`
   display: inline-block;
@@ -118,5 +118,5 @@ export const PlayersListItem = styled.li<{ isMe?: boolean, current?: boolean, my
   ${({ myTurn }) => myTurn && css`
     background: #ff5320;
   `}
-`;
+`
 

@@ -1,17 +1,17 @@
-import React, { ChangeEvent, Component } from 'react';
-import { Button } from 'ui-elements/button';
-import { Box, FormContainer, Label, Title } from 'ui-elements/form';
-import { Select } from 'ui-elements/select';
-import { gamesService } from 'services/games.service';
-import { logError } from 'helpers/logError';
+import React, { ChangeEvent, Component } from 'react'
+import { Button } from 'ui-elements/button'
+import { Box, FormContainer, Label, Title } from 'ui-elements/form'
+import { Select } from 'ui-elements/select'
+import { gamesService } from 'services/games.service'
+import { logError } from 'helpers/logError'
 
 interface GameCreationState {
-  slotsCount: number;
-  formDisabled: boolean;
+  slotsCount: number
+  formDisabled: boolean
 }
 
 export class GameCreation extends Component<any, GameCreationState> {
-  state: GameCreationState = { slotsCount: 2, formDisabled: false };
+  state: GameCreationState = { slotsCount: 2, formDisabled: false }
 
   createGame = () => {
     gamesService.createGame(this.state.slotsCount)
@@ -33,7 +33,7 @@ export class GameCreation extends Component<any, GameCreationState> {
         </Box>
         <Box>
           <Label>Кол-во игроков:</Label>
-          <Select name="slotsCount"
+          <Select name='slotsCount'
                   value={this.state.slotsCount}
                   onChange={this.onSlotsCountChange}>
             <option>2</option>
@@ -42,7 +42,7 @@ export class GameCreation extends Component<any, GameCreationState> {
           </Select>
         </Box>
 
-        <Box align="center">
+        <Box align='center'>
           <Button onClick={this.createGame}>Создать</Button>
         </Box>
       </FormContainer>

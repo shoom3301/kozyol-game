@@ -1,6 +1,6 @@
-import styled, { css } from 'styled-components';
-import { Link } from 'react-router-dom';
-import { Title } from 'ui-elements/form';
+import styled, { css } from 'styled-components'
+import { Link } from 'react-router-dom'
+import { Title } from 'ui-elements/form'
 
 const cardWidth = 64
 const cardHeight = 89
@@ -10,11 +10,11 @@ export const GamePageTitle = styled.h1`
   text-align: center;
   font-size: 24px;
   color: rgba(26,90,188,0.83);
-`;
+`
 
 export const Container = styled.div`
   text-align: center;
-`;
+`
 
 export const CardsList = styled.ul`
   text-align: center;
@@ -22,7 +22,7 @@ export const CardsList = styled.ul`
   padding: 0;
   height: 130px;
   white-space: nowrap;
-`;
+`
 
 export const CardSlot = styled.li<{ cardsCount?: number }>`
   display: inline-block;
@@ -44,7 +44,7 @@ export const CardSlot = styled.li<{ cardsCount?: number }>`
   @media (max-width: 600px) {
     margin: 0 3px;
   }
-`;
+`
 
 export const MyCardSlot = styled.li<{ selected?: boolean }>`
   cursor: pointer;
@@ -64,13 +64,13 @@ export const MyCardSlot = styled.li<{ selected?: boolean }>`
   :hover {
     background: rgba(177,206,252,0.83);
   }
-`;
+`
 
 export const CardItem = styled.img`
   width: ${cardWidth}px;
   height: ${cardHeight}px;
   margin-left: 0;
-`;
+`
 
 export const CardItemOnTable = styled(CardItem)`
   :nth-child(2) {
@@ -88,7 +88,7 @@ export const CardItemOnTable = styled(CardItem)`
   :nth-child(5) {
     transform: translate(-${(cardWidth - cardOffset) * 4}px, ${cardOffset * 4}px);
   }
-`;
+`
 
 export const ToMain = styled(Link)`
     display: inline-block;
@@ -100,11 +100,11 @@ export const ToMain = styled(Link)`
     border-radius: 3px;
     vertical-align: top;
     margin-right: 10px;
-`;
+`
 
 export const PlayersWaiting = styled(Title)`
     text-align: center;
     padding: 10px;
     border: 1px solid #444;
     margin-bottom: 15px;
-`;
+`

@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import { Title } from "ui-elements/form";
-import { cardImage } from "helpers/cardImage";
-import { Card, Cards, Desk } from "model/Card";
-import { CardItem, CardsList, Container, MyCardSlot } from "./elements";
-import { canCardBeSelected } from "helpers/stepHelpers";
-import { Button } from "ui-elements/button";
-import { stepService } from "services/step.service";
-import { gameStateService } from "services/gameState.service";
-import { ConfirmButton } from 'components/gamePage/confirmButton';
-import { logError } from 'helpers/logError';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
+import React, { Component } from 'react'
+import { Title } from 'ui-elements/form'
+import { cardImage } from 'helpers/cardImage'
+import { Card, Cards, Desk } from 'model/Card'
+import { CardItem, CardsList, Container, MyCardSlot } from './elements'
+import { canCardBeSelected } from 'helpers/stepHelpers'
+import { Button } from 'ui-elements/button'
+import { stepService } from 'services/step.service'
+import { gameStateService } from 'services/gameState.service'
+import { ConfirmButton } from 'components/gamePage/confirmButton'
+import { logError } from 'helpers/logError'
+import { connect } from 'react-redux'
+import { createSelector } from 'reselect'
 import {
   getCardsOnTable,
   getGameId,
@@ -18,7 +18,7 @@ import {
   getIsWaitingConfirmations,
   getIsWaitingForStartNewSet,
   getMyCards
-} from 'store/selectors/gameState';
+} from 'store/selectors/gameState'
 
 export interface MyCardsProps {
   myCards: Cards
@@ -44,18 +44,18 @@ export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
     return (
       JSON.stringify(nextState) !== JSON.stringify(this.state) ||
       JSON.stringify(nextProps) !== JSON.stringify(this.props)
-    );
+    )
   }
 
   selectCard(card: Card) {
     const { cardsOnTable, isMyTurn } = this.props
-    const isFirstStep = cardsOnTable.length === 0;
-    let firstStepCards = [];
+    const isFirstStep = cardsOnTable.length === 0
+    let firstStepCards = []
 
     if (!isFirstStep) {
-      const firstStep = cardsOnTable[0];
-      const firstUserId = parseInt(Object.keys(firstStep)[0]);
-      firstStepCards = firstStep[firstUserId];
+      const firstStep = cardsOnTable[0]
+      const firstUserId = parseInt(Object.keys(firstStep)[0])
+      firstStepCards = firstStep[firstUserId]
     }
 
     if (this.isSelectedCard(card)) {
@@ -63,9 +63,9 @@ export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
         selectedCards: this.state.selectedCards.filter(
           (item) => JSON.stringify(item) !== JSON.stringify(card)
         ),
-      });
+      })
 
-      return;
+      return
     }
 
     if (
@@ -73,37 +73,37 @@ export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
       (!isFirstStep &&
         firstStepCards.length === this.state.selectedCards.length)
     ) {
-      return;
+      return
     }
 
     if (isFirstStep && !canCardBeSelected(card, this.state.selectedCards)) {
-      return;
+      return
     }
 
-    this.setState({ selectedCards: [...this.state.selectedCards, card] });
+    this.setState({ selectedCards: [...this.state.selectedCards, card] })
   }
 
   isSelectedCard(card: Card): boolean {
     return !!this.state.selectedCards.find(
       (item) => JSON.stringify(item) === JSON.stringify(card)
-    );
+    )
   }
 
   doStep() {
     if (this.state.selectedCards.length === 0) {
-      return;
+      return
     }
 
-    const cards = this.state.selectedCards;
+    const cards = this.state.selectedCards
 
-    this.setState({ selectedCards: [] });
+    this.setState({ selectedCards: [] })
 
     stepService
       .doStep(this.props.gameId, cards)
       .catch(logError)
       .then(() => {
-        gameStateService.fetch();
-      });
+        gameStateService.fetch()
+      })
   }
 
   confirm() {
@@ -111,8 +111,8 @@ export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
       .confirm(this.props.gameId)
       .catch(logError)
       .then(() => {
-        gameStateService.fetch();
-      });
+        gameStateService.fetch()
+      })
   }
 
   render(): React.ReactElement {
@@ -148,7 +148,7 @@ export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
             confirm={() => this.confirm()}/>
         }
       </Container>
-    );
+    )
   }
 }
 
@@ -170,4 +170,4 @@ export const MyCards = connect(
     })
   ),
   () => ({})
-)(MyCardsComponent);
+)(MyCardsComponent)
