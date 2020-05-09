@@ -18,6 +18,7 @@ import { GamesModule } from './games/games.module';
 import { GameStateController } from './game-state/game-state.controller';
 import { StepController } from './step/step.controller';
 import { SubscribeController } from './subscribe/subscribe.controller';
+import { SubscribeModule } from './subscribe/subscribe.module';
 
 @Module({
   imports: [
@@ -35,8 +36,15 @@ import { SubscribeController } from './subscribe/subscribe.controller';
     AuthModule,
     UserModule,
     GamesModule,
+    SubscribeModule,
   ],
-  controllers: [AppController, GamesController, GameStateController, StepController, SubscribeController],
+  controllers: [
+    AppController,
+    GamesController,
+    GameStateController,
+    StepController,
+    SubscribeController,
+  ],
   providers: [AppService, GamesService],
 })
 export class AppModule {

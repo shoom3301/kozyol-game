@@ -1,10 +1,20 @@
-import { Controller, UseGuards, Get, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Req,
+  Res,
+  HttpException,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Response, Request } from 'express';
 import { forEach, values, assoc, dissoc } from 'ramda';
 import { Game } from 'src/games/entities/game';
 import { calcGameState } from 'src/game-state/calcGameState';
 import { User } from '../user/user.entity';
+import { JwtService } from '@nestjs/jwt';
 
 type GameEventType = 'list' | 'state';
 type SseChunkDataType = { data: string; event: GameEventType };
@@ -38,29 +48,43 @@ export const broadcastGamesList = async () => {
   }, values(conns));
 };
 
-@UseGuards(JwtAuthGuard)
 @Controller('api/subscribe')
 export class SubscribeController {
+  constructor(private jwtService: JwtService) {}
+
   @Get()
-  async subscribeToUpdates(@Req() req: Request, @Res() res: Response) {
+  async subscribeToUpdates(
+    @Query('token') token: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
     if (req.headers.accept !== 'text/event-stream') {
       res.end();
       return;
     }
+
+    const decodedUser = this.jwtService.decode(token);
+    if (!decodedUser || typeof decodedUser !== 'object' || !decodedUser.sub) {
+      throw new HttpException('User not found', HttpStatus.FORBIDDEN);
+    }
+    const user = await User.findOne({
+      where: { id: decodedUser.sub },
+      relations: ['games', 'games.sets'],
+    });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.FORBIDDEN);
+    }
+
     res.setHeader('content-type', 'text/event-stream');
     res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('Connection', 'keep-alive');
 
-    conns = assoc(`${req.user.userId}`, res, conns);
+    conns = assoc(`${decodedUser.sub}`, res, conns);
     res.on('close', () => {
-      console.log('conn closed for user with id %d', req.user.userId);
-      conns = dissoc(`${req.user.userId}`, conns);
+      console.log('conn closed for user with id %d', decodedUser.sub);
+      conns = dissoc(`${decodedUser.sub}`, conns);
     });
 
-    const user = await User.findOne({
-      where: { id: req.user.userId },
-      relations: ['games', 'games.sets'],
-    });
     const promises = user.games
       .filter(game => !game.isFinished())
       .map(async game => {
