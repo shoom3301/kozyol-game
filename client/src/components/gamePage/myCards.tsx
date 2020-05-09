@@ -6,7 +6,6 @@ import { CardItem, CardsList, Container, MyCardSlot } from './elements'
 import { canCardBeSelected } from 'helpers/stepHelpers'
 import { Button } from 'ui-elements/button'
 import { stepService } from 'services/step.service'
-import { gameStateService } from 'services/gameState.service'
 import { ConfirmButton } from 'components/gamePage/confirmButton'
 import { logError } from 'helpers/logError'
 import { connect } from 'react-redux'
@@ -15,6 +14,7 @@ import { getCardsOnTable, getGameId, getGameStages, getIsMyTurn, getMyCards } fr
 import { getDeskItemCards } from 'helpers/getDeskItemCards'
 import { isJsonEquals } from 'helpers/isJsonEquals'
 import { GameStages } from 'model/GameState'
+import { gamesService } from 'services/games.service'
 
 export interface MyCardsProps {
   myCards: Cards
@@ -80,8 +80,7 @@ export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
   }
 
   confirm() {
-    stepService
-      .confirm(this.props.gameId)
+    gamesService.continue(this.props.gameId)
       .catch(logError)
   }
 

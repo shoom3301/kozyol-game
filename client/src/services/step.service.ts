@@ -10,13 +10,6 @@ export class StepService {
       .post<GameState>(apiUrl(`/step/${gameId}`), { cards }, { ...authService.withAuth() })
       .then((res) => res.data)
   }
-
-  confirm(gameId: number) {
-    // TODO: change to /games/:id/confirm
-    return axios
-      .post<GameState>(apiUrl(`/step/${gameId}`), {}, { ...authService.withAuth() })
-      .then((res) => res.data)
-  }
 }
 
 export const stepService = new StepService()
