@@ -26,8 +26,8 @@ export class PlayersList extends Component<CardsOnTableProps, any> {
                 isMe={this.props.me === id}
                 current={this.props.currentPlayerId === id}
                 myTurn={this.props.currentPlayerId === id && this.props.me === id}
-                key={id}>
-                <PlayerTricks>{this.props.myTricks.map(i => ([i, <br/>])).flat()}</PlayerTricks>
+                key={id + name}>
+                <PlayerTricks>{JSON.stringify(this.props.myTricks)}</PlayerTricks>
                 <PlayerAvatar src={'https://cdn.iconscout.com/icon/free/png-512/avatar-380-456332.png'}/>
                 <PlayerName>{name}</PlayerName>
                 <ScoreContainer><PlayerScore>{this.props.score[id]}</PlayerScore></ScoreContainer>

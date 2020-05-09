@@ -8,19 +8,33 @@ import { Button } from "ui-elements/button";
 import { stepService } from "services/step.service";
 import { gameStateService } from "services/gameState.service";
 import { ConfirmButton } from 'components/gamePage/confirmButton';
-import { GameStateHelpers } from 'helpers/gameStateHelpers';
 import { logError } from 'helpers/logError';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
+import {
+  getCardsOnTable,
+  getGameId,
+  getIsMyTurn,
+  getIsWaitingConfirmations,
+  getIsWaitingForStartNewSet,
+  getMyCards
+} from 'store/selectors/gameState';
 
 export interface MyCardsProps {
-  gameState: GameStateHelpers
+  myCards: Cards
+  cardsOnTable: Desk
+  gameId: number
+  isMyTurn: boolean
+  isWaitingConfirmations: boolean
+  isWaitingForStartNewSet: boolean
 }
 
 export interface MyCardsState {
   selectedCards: Cards
 }
 
-export class MyCards extends Component<MyCardsProps, MyCardsState> {
-  state: MyCardsState = { selectedCards: [] };
+export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
+  state: MyCardsState = { selectedCards: [] }
 
   shouldComponentUpdate(
     nextProps: Readonly<MyCardsProps>,
@@ -34,8 +48,7 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
   }
 
   selectCard(card: Card) {
-    const gameState = this.props.gameState
-    const cardsOnTable = gameState.gameState.cardsOnTable
+    const { cardsOnTable, isMyTurn } = this.props
     const isFirstStep = cardsOnTable.length === 0;
     let firstStepCards = [];
 
@@ -56,7 +69,7 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
     }
 
     if (
-      !gameState.isMyTurn ||
+      !isMyTurn ||
       (!isFirstStep &&
         firstStepCards.length === this.state.selectedCards.length)
     ) {
@@ -86,7 +99,7 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
     this.setState({ selectedCards: [] });
 
     stepService
-      .doStep(this.props.gameState.gameState.id, cards)
+      .doStep(this.props.gameId, cards)
       .catch(logError)
       .then(() => {
         gameStateService.fetch();
@@ -95,7 +108,7 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
 
   confirm() {
     stepService
-      .confirm(this.props.gameState.gameState.id)
+      .confirm(this.props.gameId)
       .catch(logError)
       .then(() => {
         gameStateService.fetch();
@@ -103,33 +116,58 @@ export class MyCards extends Component<MyCardsProps, MyCardsState> {
   }
 
   render(): React.ReactElement {
-    const gameState = this.props.gameState
+    const {
+      myCards,
+      isMyTurn,
+      isWaitingConfirmations,
+      isWaitingForStartNewSet
+    } = this.props
 
     return (
       <Container>
         <Title>Мои карты:</Title>
         <CardsList>
-          {gameState.gameState.myCards.map((card) => (
+          {myCards.map((card) => (
             <MyCardSlot
               key={`${card}`}
               selected={this.isSelectedCard(card)}
               onClick={() => this.selectCard(card)}
             >
-              <CardItem src={cardImage(card)} />
+              <CardItem src={cardImage(card)}/>
             </MyCardSlot>
           ))}
         </CardsList>
-        {gameState.isMyTurn && (
+        {isMyTurn && (
           <Button onClick={() => this.doStep()}>
             Ногам ходу, голове приходу
           </Button>
         )}
-        {gameState.isWaitingConfirmations &&
+        {isWaitingConfirmations &&
         <ConfirmButton
-          timeout={gameState.isWaitingForStartNewSet ? 10000 : 5000}
-          confirm={() => this.confirm()}/>
+            timeout={isWaitingForStartNewSet ? 10000 : 5000}
+            confirm={() => this.confirm()}/>
         }
       </Container>
     );
   }
 }
+
+export const MyCards = connect(
+  createSelector(
+    getMyCards,
+    getCardsOnTable,
+    getGameId,
+    getIsMyTurn,
+    getIsWaitingConfirmations,
+    getIsWaitingForStartNewSet,
+    (myCards, cardsOnTable, gameId, isMyTurn, isWaitingConfirmations, isWaitingForStartNewSet) => ({
+      myCards,
+      cardsOnTable,
+      gameId,
+      isMyTurn,
+      isWaitingConfirmations,
+      isWaitingForStartNewSet
+    })
+  ),
+  () => ({})
+)(MyCardsComponent);

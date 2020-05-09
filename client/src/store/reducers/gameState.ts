@@ -1,18 +1,18 @@
-import { Action } from 'model/Action';
-import { defaultGameStateState } from 'store/states/gameState';
-import { GameStateActionTypes } from 'store/actions/gameState';
-import { GameStateHelpers } from 'helpers/gameStateHelpers';
+import { Action } from 'model/Action'
+import { defaultGameStateState } from 'store/states/gameState'
+import { GameStateActionTypes } from 'store/actions/gameState'
+import { GameStateHelpers } from 'helpers/gameStateHelpers'
 
 export function gameStateReducer(
   state = defaultGameStateState,
-  action: Action<GameStateActionTypes>
+  action: Action<GameStateActionTypes>,
 ): GameStateHelpers | null {
   switch (action.type) {
     case GameStateActionTypes.UPDATE: {
-      return action.payload;
+      return action.payload
     }
 
     default:
-      return state;
+      return state
   }
 }

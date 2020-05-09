@@ -7,15 +7,11 @@ import { history } from "router/router";
 import { mainRoute } from "router/routerPaths";
 import { CardsOnTable } from "components/gamePage/cardsOnTable";
 import { MyCards } from "components/gamePage/myCards";
-import {
-  GamePageTitle,
-  PlayersWaiting,
-  ToMain,
-} from "components/gamePage/elements";
+import { GamePageTitle, PlayersWaiting, ToMain, } from "components/gamePage/elements";
 import { PlayersList } from "components/gamePage/playersList";
 import { gameStateService } from "services/gameState.service";
 import { GameStateHelpers } from "helpers/gameStateHelpers";
-import { getGameState } from "store/selectors/gameState";
+import { getGameStateHelper } from "store/selectors/gameState";
 import { SetResults } from 'components/gamePage/setResults';
 import styled from 'styled-components';
 
@@ -88,12 +84,10 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
               />
             )}
             {gameState.isSetEnded && !!gameState.gameState.tricks && <SetResults
-              players={gameState.gameState.players}
-              tricks={gameState.gameState.tricks}
+                players={gameState.gameState.players}
+                tricks={gameState.gameState.tricks}
             />}
-            {(gameState.isPlaying) && (
-              <MyCards gameState={gameState}/>
-            )}
+            {(gameState.isPlaying) && <MyCards/>}
           </div>
         )}
       </div>
@@ -102,7 +96,7 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
 }
 
 export const GamePage = connect(
-  createSelector(getGameState, getGameIdByLocation, (gameState, gameId) => ({
+  createSelector(getGameStateHelper, getGameIdByLocation, (gameState, gameId) => ({
     gameState,
     gameId,
   })),
