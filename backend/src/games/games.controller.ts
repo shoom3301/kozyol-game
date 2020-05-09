@@ -5,7 +5,6 @@ import {
   Controller,
   Get,
   Req,
-  Res,
   UseGuards,
   Post,
   Body,
@@ -14,7 +13,7 @@ import {
   Param,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 
 import { GamesService } from './games.service';
 import { UserService } from '../user/user.service';
@@ -22,6 +21,7 @@ import { calcGameState } from 'src/game-state/calcGameState';
 import { continueGame } from './helpers/continueGame';
 import { Game } from './entities/game';
 import { without } from 'ramda';
+import { GameGuard } from './games.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/games')
@@ -33,13 +33,10 @@ export class GamesController {
     return this.gameService.availableGames();
   }
 
+  @UseGuards(GameGuard)
   @Get(':gameId')
   async gameById(@Req() req: Request, @Param('gameId') gameId?: number) {
     const game = await this.gameService.gameById(gameId);
-
-    if (!game.hasPlayer(req.user.userId)) {
-      throw new HttpException('you are not connected to game', HttpStatus.FORBIDDEN);
-    }
 
     return game;
   }
@@ -65,6 +62,7 @@ export class GamesController {
     return calcGameState(game, req.user.userId);
   }
 
+  @UseGuards(GameGuard)
   @Post('continue')
   async continueGame(@Req() req: Request, @Body() { gameId }: { gameId?: number }) {
     const currGame = await Game.findOne({ where: { id: gameId } });
@@ -77,10 +75,5 @@ export class GamesController {
       }
       return;
     }
-  }
-
-  @Get('subscribe/:gameId')
-  async subscribeToGameStateUpdates(@Param('gameId') gameId: number) {
-    //
   }
 }

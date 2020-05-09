@@ -13,12 +13,11 @@ import { Request } from 'express';
 import { Cards } from '../games/cards/types';
 import { GamesService } from 'src/games/games.service';
 import { processStep } from './processStep';
-import { head, values, without } from 'ramda';
+import { head, values } from 'ramda';
 import { calcGameState } from 'src/game-state/calcGameState';
-import { Game } from 'src/games/entities/game';
-import { continueGame } from 'src/games/helpers/continueGame';
+import { GameGuard } from 'src/games/games.guard';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, GameGuard)
 @Controller('api/step')
 export class StepController {
   constructor(private gameService: GamesService) {}
@@ -35,11 +34,6 @@ export class StepController {
 
     const { userId } = req.user;
     const game = await this.gameService.gameById(gameId);
-
-    // когда вырасту, напишу Guard для этой шляпы
-    if (!game.hasPlayer(userId)) {
-      throw new HttpException('idi v svoy dvor', HttpStatus.FORBIDDEN);
-    }
 
     // check that game is not finished
     if (game.isFinished()) {
