@@ -29,7 +29,7 @@ export class GameSet extends Base {
   @ManyToOne(
     () => Game,
     game => game.sets,
-    { nullable: false, eager: true },
+    { nullable: false, eager: true, onDelete: 'CASCADE' },
   )
   game: Game;
 

@@ -7,7 +7,7 @@ import { map, prop, toPairs, unnest, values } from 'ramda';
 
 @Entity()
 export class Game extends Base {
-  @ManyToOne(() => User, { eager: true, nullable: false })
+  @ManyToOne(() => User, { eager: true, nullable: false, onDelete: 'CASCADE' })
   owner: User;
 
   @OneToMany(
@@ -23,7 +23,11 @@ export class Game extends Base {
   @Column({ type: 'json' })
   waitConfirmations: User['id'][];
 
-  @ManyToMany(() => User, { eager: true })
+  @ManyToMany(
+    () => User,
+    user => user.games,
+    { eager: true },
+  )
   @JoinTable()
   players: User[];
 

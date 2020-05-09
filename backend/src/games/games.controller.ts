@@ -17,11 +17,11 @@ import { Request } from 'express';
 
 import { GamesService } from './games.service';
 import { UserService } from '../user/user.service';
-import { calcGameState } from 'src/game-state/calcGameState';
 import { continueGame } from './helpers/continueGame';
 import { Game } from './entities/game';
 import { without } from 'ramda';
 import { GameGuard } from './games.guard';
+import { broadcastGamesList, broadcastGameState } from 'src/subscribe/subscribe.controller';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/games')
@@ -48,6 +48,7 @@ export class GamesController {
       owner: { id: req.user.userId },
       slotsCount: req.body.slotsCount,
     });
+    await broadcastGamesList();
     return game;
   }
 
@@ -57,9 +58,10 @@ export class GamesController {
       throw new HttpException('no gameId provided', HttpStatus.NOT_FOUND);
     }
 
-    const game = await this.gameService.connectUserToGame(req.user.userId, body.gameId);
+    await this.gameService.connectUserToGame(req.user.userId, body.gameId);
+    await broadcastGameState(body.gameId);
 
-    return calcGameState(game, req.user.userId);
+    return 'success';
   }
 
   @UseGuards(GameGuard)
@@ -71,7 +73,7 @@ export class GamesController {
       await currGame.save();
       if (currGame.waitConfirmations.length === 0) {
         await continueGame(gameId);
-        // TODO: broadcast new state to clients
+        await broadcastGameState(gameId);
       }
       return;
     }

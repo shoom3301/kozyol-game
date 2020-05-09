@@ -19,7 +19,7 @@ export class GameGuard implements CanActivate {
         gameId = req.params.gameId;
         break;
       case 'POST':
-        gameId = req.body.gameId;
+        gameId = req.body.gameId || req.params.gameId;
       default:
         break;
     }

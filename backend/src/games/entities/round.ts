@@ -15,7 +15,7 @@ export class Round extends Base {
   @ManyToOne(
     () => GameSet,
     set => set.rounds,
-    { nullable: false },
+    { nullable: false, onDelete: 'CASCADE' },
   )
   set: GameSet;
 

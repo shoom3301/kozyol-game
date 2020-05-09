@@ -14,8 +14,8 @@ import { Cards } from '../games/cards/types';
 import { GamesService } from 'src/games/games.service';
 import { processStep } from './processStep';
 import { head, values } from 'ramda';
-import { calcGameState } from 'src/game-state/calcGameState';
 import { GameGuard } from 'src/games/games.guard';
+import { broadcastGameState } from 'src/subscribe/subscribe.controller';
 
 @UseGuards(JwtAuthGuard, GameGuard)
 @Controller('api/step')
@@ -66,8 +66,8 @@ export class StepController {
     });
 
     await processStep(game, cards, userId);
+    await broadcastGameState(game.id);
 
-    await game.reload();
-    return calcGameState(game, userId);
+    return 'success';
   }
 }
