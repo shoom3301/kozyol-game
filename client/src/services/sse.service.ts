@@ -7,6 +7,7 @@ import { gameStateUpdate } from 'store/actions/gameState'
 import { gameStateService } from 'services/gameState.service'
 import { GameItem } from 'model/GameItem'
 import { GameState } from 'model/GameState'
+import { authService } from 'services/auth.service'
 
 const pollingTimeout = 2000
 
@@ -16,7 +17,9 @@ export class SseService {
   private sse: EventSource | null = null
 
   connect() {
-    this.sse = new EventSource(`${process.env.REACT_APP_PROD_HOST}/api/subscribe`)
+    this.sse = new EventSource(
+      `${process.env.REACT_APP_PROD_HOST}/api/subscribe?token=${authService.getToken()}`,
+    )
   }
 
   disconnect() {
