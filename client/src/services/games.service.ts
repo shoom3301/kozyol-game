@@ -1,8 +1,6 @@
 import axios from 'axios'
 import { authService } from 'services/auth.service'
 import { GameItem } from 'model/GameItem'
-import { store } from 'store'
-import { gameFetchAllSuccess } from 'store/actions/games'
 import { apiUrl } from 'helpers/apiUrl'
 
 export class GamesService {
@@ -22,10 +20,10 @@ export class GamesService {
       .then((res) => res.data)
   }
 
-  updateList(): Promise<void> {
-    return this.getList().then((games) => {
-      store.dispatch(gameFetchAllSuccess(games))
-    })
+  continue(gameId: number): Promise<void> {
+    return axios
+      .post(apiUrl('/games/continue'), { gameId }, { ...authService.withAuth() })
+      .then((res) => void 0)
   }
 }
 

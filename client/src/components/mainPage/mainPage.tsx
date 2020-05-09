@@ -2,8 +2,17 @@ import React, { Component } from 'react'
 import { GamesList } from 'components/gamesList/gamesList'
 import { GameCreation } from 'components/gameCreation/gameCreation'
 import styled from 'styled-components'
+import { sseService } from 'services/sse.service'
 
 export class MainPage extends Component<any, any> {
+  componentDidMount() {
+    sseService.connect()
+  }
+
+  componentWillUnmount() {
+    sseService.disconnect()
+  }
+
   render(): React.ReactElement {
     return (
       <div>
