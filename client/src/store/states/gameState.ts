@@ -13,5 +13,5 @@ export const defaultGameStateState: GameState = {
   players: [],
   slotsCount: 0,
   state: GameStateEnum.WAIT_PLAYERS,
-  trump: 0
+  trump: 0,
 }

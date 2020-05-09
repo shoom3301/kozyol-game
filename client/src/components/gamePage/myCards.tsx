@@ -28,6 +28,9 @@ export interface MyCardsState {
   selectedCards: Cards
 }
 
+const waitSetTimeout = 10000
+const waitStepTimeout = 5000
+
 export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
   state: MyCardsState = { selectedCards: [] }
 
@@ -99,16 +102,17 @@ export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
             <MyCardSlot
               key={`${card}`}
               selected={this.isSelectedCard(card)}
-              onClick={() => this.selectCard(card)}
-            >
+              onClick={() => this.selectCard(card)}>
               <CardItem src={cardImage(card)}/>
             </MyCardSlot>
           ))}
         </CardsList>
-        {isMyTurn && <Button onClick={() => this.doStep()}>Ходить</Button>}
+        {isMyTurn &&
+        <Button onClick={() => this.doStep()}>Ходить</Button>
+        }
         {gameStages.isWaitConfirm &&
         <ConfirmButton
-            timeout={gameStages.isWaitNewSet ? 10000 : 5000}
+            timeout={gameStages.isWaitNewSet ? waitSetTimeout : waitStepTimeout}
             confirm={() => this.confirm()}/>
         }
       </Container>

@@ -15,24 +15,35 @@ export const getGameSlotsCount = createSelector(getGameState, ({ slotsCount }) =
 export const getGameMe = createSelector(getGameState, ({ me }) => me)
 export const getMyTricks = createSelector(getGameState, ({ myTricks }) => myTricks)
 export const getGameTricks = createSelector(getGameState, ({ tricks }) => tricks)
-export const getCurrentPlayerId = createSelector(getGameState, ({ currentPlayerId }) => currentPlayerId)
+export const getCurrentPlayerId = createSelector(
+  getGameState,
+  ({ currentPlayerId }) => currentPlayerId,
+)
 export const getGameScore = createSelector(getGameState, ({ gameScore }) => gameScore)
-export const getIsWaitNewSet = createSelector(getGameStage, (stage) => stage === GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_SET)
+export const getIsWaitNewSet = createSelector(
+  getGameStage,
+  (stage) => stage === GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_SET,
+)
 export const getIsGameEnded = createSelector(getGameStage, (stage) => stage === GameStateEnum.ENDED)
-export const getIsWaitPlayers = createSelector(getGameStage, (stage) => stage === GameStateEnum.WAIT_PLAYERS)
-export const getIsWaitNewRound = createSelector(getGameStage, (stage) => stage === GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_ROUND)
+export const getIsWaitPlayers = createSelector(
+  getGameStage,
+  (stage) => stage === GameStateEnum.WAIT_PLAYERS,
+)
+export const getIsWaitNewRound = createSelector(
+  getGameStage,
+  (stage) => stage === GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_ROUND,
+)
 export const getIsWaitConfirm = createSelector(
   getIsWaitNewSet,
   getIsWaitNewRound,
   (waitingNewSet, waitingNewRound) => waitingNewSet || waitingNewRound,
 )
-export const getIsPlaying = createSelector(
-  getGameStage,
-  (stage) => [
+export const getIsPlaying = createSelector(getGameStage, (stage) =>
+  [
     GameStateEnum.PLAY,
     GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_ROUND,
     GameStateEnum.WAIT_CONFIRMATIONS_FOR_START_NEW_SET,
-  ].includes(stage)
+  ].includes(stage),
 )
 export const getGameStages = createSelector(
   getIsWaitNewSet,
@@ -41,14 +52,26 @@ export const getGameStages = createSelector(
   getIsWaitNewRound,
   getIsWaitConfirm,
   getIsPlaying,
-  (isWaitNewSet,isGameEnded, isWaitPlayers, isWaitNewRound, isWaitConfirm, isPlaying): GameStages => ({
-    isWaitNewSet, isGameEnded, isWaitPlayers, isWaitNewRound, isWaitConfirm, isPlaying
-  })
+  (
+    isWaitNewSet,
+    isGameEnded,
+    isWaitPlayers,
+    isWaitNewRound,
+    isWaitConfirm,
+    isPlaying,
+  ): GameStages => ({
+    isWaitNewSet,
+    isGameEnded,
+    isWaitPlayers,
+    isWaitNewRound,
+    isWaitConfirm,
+    isPlaying,
+  }),
 )
 export const getGameSlotsState = createSelector(
   getGamePlayers,
   getGameSlotsCount,
-  (players, slotsCount) => `${players.length}/${slotsCount}`
+  (players, slotsCount) => `${players.length}/${slotsCount}`,
 )
 export const getIsMyTurn = createSelector(
   getGameMe,
