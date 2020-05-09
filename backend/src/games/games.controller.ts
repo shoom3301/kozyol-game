@@ -5,6 +5,7 @@ import {
   Controller,
   Get,
   Req,
+  Res,
   UseGuards,
   Post,
   Body,
@@ -13,11 +14,14 @@ import {
   Param,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 import { GamesService } from './games.service';
 import { UserService } from '../user/user.service';
 import { calcGameState } from 'src/game-state/calcGameState';
+import { continueGame } from './helpers/continueGame';
+import { Game } from './entities/game';
+import { without } from 'ramda';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/games')
@@ -46,7 +50,6 @@ export class GamesController {
     const game = await this.gameService.create({
       owner: { id: req.user.userId },
       slotsCount: req.body.slotsCount,
-      // players: [{ id: 4 }, { id: 5 }, { id: 6 }],
     });
     return game;
   }
@@ -60,5 +63,24 @@ export class GamesController {
     const game = await this.gameService.connectUserToGame(req.user.userId, body.gameId);
 
     return calcGameState(game, req.user.userId);
+  }
+
+  @Post('continue')
+  async continueGame(@Req() req: Request, @Body() { gameId }: { gameId?: number }) {
+    const currGame = await Game.findOne({ where: { id: gameId } });
+    if (currGame.waitConfirmations.length > 0) {
+      currGame.waitConfirmations = without([req.user.userId], currGame.waitConfirmations);
+      await currGame.save();
+      if (currGame.waitConfirmations.length === 0) {
+        await continueGame(gameId);
+        // TODO: broadcast new state to clients
+      }
+      return;
+    }
+  }
+
+  @Get('subscribe/:gameId')
+  async subscribeToGameStateUpdates(@Param('gameId') gameId: number) {
+    //
   }
 }

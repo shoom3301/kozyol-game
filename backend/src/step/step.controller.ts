@@ -29,17 +29,6 @@ export class StepController {
     @Param('gameId') gameId: number,
     @Body() { cards }: { cards: Cards },
   ) {
-    // TODO: temp
-    const currGame = await Game.findOne({ where: { id: gameId } });
-    if (currGame.waitConfirmations.length > 0) {
-      currGame.waitConfirmations = without([req.user.userId], currGame.waitConfirmations);
-      await currGame.save();
-      if (currGame.waitConfirmations.length === 0) {
-        await continueGame(gameId);
-      }
-      return;
-    }
-
     if (!cards || !Array.isArray(cards) || cards.length === 0) {
       throw new HttpException('ooops', HttpStatus.UNPROCESSABLE_ENTITY);
     }
