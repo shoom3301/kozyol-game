@@ -17,13 +17,20 @@ export class SseService {
   private sse: EventSource | null = null
 
   connect() {
+    if (this.sse) {
+      return
+    }
+
     this.sse = new EventSource(
       `${process.env.REACT_APP_PROD_HOST}/api/subscribe?token=${authService.getToken()}`,
     )
   }
 
   disconnect() {
-    if (this.sse) this.sse.close()
+    if (this.sse) {
+      this.sse.close()
+      this.sse = null
+    }
   }
 
   subscribeToGamesList() {
@@ -40,22 +47,22 @@ export class SseService {
 
   subscribeToGame() {
     if (this.sse) {
-      this.sse.addEventListener('list', this.onState)
+      this.sse.addEventListener('state', this.onState)
     }
   }
 
   unsubscribeFromGame() {
     if (this.sse) {
-      this.sse.removeEventListener('list', this.onState)
+      this.sse.removeEventListener('state', this.onState)
     }
   }
 
   onList = (event: any) => {
-    store.dispatch(gameFetchAllSuccess(event.data as GameItem[]))
+    store.dispatch(gameFetchAllSuccess(JSON.parse(event.data) as GameItem[]))
   }
 
   onState = (event: any) => {
-    store.dispatch(gameStateUpdate(event.data as GameState))
+    store.dispatch(gameStateUpdate(JSON.parse(event.data) as GameState))
   }
 
   // subscribeToGamesList() {

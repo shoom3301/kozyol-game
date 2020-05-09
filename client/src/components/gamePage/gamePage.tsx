@@ -24,6 +24,8 @@ export interface GamePageProps {
 
 export class GamePageComponent extends Component<GamePageProps, any> {
   componentDidMount() {
+    sseService.connect()
+
     const gameId = parseInt(this.props.gameId)
 
     gamesService
@@ -39,6 +41,7 @@ export class GamePageComponent extends Component<GamePageProps, any> {
 
   componentWillUnmount() {
     sseService.unsubscribeFromGame()
+    sseService.disconnect()
   }
 
   render(): React.ReactElement {
