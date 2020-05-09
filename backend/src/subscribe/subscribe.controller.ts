@@ -39,7 +39,7 @@ export const broadcastGamesList = async () => {
 };
 
 @UseGuards(JwtAuthGuard)
-@Controller('subscribe')
+@Controller('api/subscribe')
 export class SubscribeController {
   @Get()
   async subscribeToUpdates(@Req() req: Request, @Res() res: Response) {

@@ -16,7 +16,7 @@ export class SseService {
   private sse: EventSource | null = null
 
   connect() {
-    this.sse = new EventSource('/api/subscribe')
+    this.sse = new EventSource(`${process.env.REACT_APP_PROD_HOST}/api/subscribe`)
   }
 
   disconnect() {
