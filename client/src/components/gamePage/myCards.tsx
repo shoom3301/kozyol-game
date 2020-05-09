@@ -11,22 +11,17 @@ import { ConfirmButton } from 'components/gamePage/confirmButton'
 import { logError } from 'helpers/logError'
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
-import {
-  getCardsOnTable,
-  getGameId,
-  getIsMyTurn,
-  getIsWaitingConfirmations,
-  getIsWaitingForStartNewSet,
-  getMyCards
-} from 'store/selectors/gameState'
+import { getCardsOnTable, getGameId, getGameStages, getIsMyTurn, getMyCards } from 'store/selectors/gameState'
+import { getDeskItemCards } from 'helpers/getDeskItemCards'
+import { isJsonEquals } from 'helpers/isJsonEquals'
+import { GameStages } from 'model/GameState'
 
 export interface MyCardsProps {
   myCards: Cards
   cardsOnTable: Desk
   gameId: number
   isMyTurn: boolean
-  isWaitingConfirmations: boolean
-  isWaitingForStartNewSet: boolean
+  gameStages: GameStages
 }
 
 export interface MyCardsState {
@@ -41,86 +36,60 @@ export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
     nextState: Readonly<MyCardsState>,
     nextContext: any
   ): boolean {
-    return (
-      JSON.stringify(nextState) !== JSON.stringify(this.state) ||
-      JSON.stringify(nextProps) !== JSON.stringify(this.props)
-    )
+    return !isJsonEquals(nextState, this.state) || !isJsonEquals(nextProps, this.props)
   }
 
   selectCard(card: Card) {
     const { cardsOnTable, isMyTurn } = this.props
     const isFirstStep = cardsOnTable.length === 0
-    let firstStepCards = []
-
-    if (!isFirstStep) {
-      const firstStep = cardsOnTable[0]
-      const firstUserId = parseInt(Object.keys(firstStep)[0])
-      firstStepCards = firstStep[firstUserId]
-    }
+    const selectedCards = this.state.selectedCards
+    const maxCardsSelected = getDeskItemCards(cardsOnTable[0]).length === selectedCards.length
 
     if (this.isSelectedCard(card)) {
-      this.setState({
-        selectedCards: this.state.selectedCards.filter(
-          (item) => JSON.stringify(item) !== JSON.stringify(card)
-        ),
-      })
+      this.setState({ selectedCards: selectedCards.filter(item => !isJsonEquals(item, card)) })
 
       return
     }
 
-    if (
-      !isMyTurn ||
-      (!isFirstStep &&
-        firstStepCards.length === this.state.selectedCards.length)
+    if (!isMyTurn
+      || (maxCardsSelected && !isFirstStep)
+      || (!canCardBeSelected(card, selectedCards) && isFirstStep)
     ) {
       return
     }
 
-    if (isFirstStep && !canCardBeSelected(card, this.state.selectedCards)) {
-      return
-    }
-
-    this.setState({ selectedCards: [...this.state.selectedCards, card] })
+    this.setState({ selectedCards: [...selectedCards, card] })
   }
 
   isSelectedCard(card: Card): boolean {
-    return !!this.state.selectedCards.find(
-      (item) => JSON.stringify(item) === JSON.stringify(card)
-    )
+    return !!this.state.selectedCards.find(item => isJsonEquals(item, card))
   }
 
   doStep() {
-    if (this.state.selectedCards.length === 0) {
+    const selectedCards = this.state.selectedCards
+
+    if (selectedCards.length === 0) {
       return
     }
-
-    const cards = this.state.selectedCards
 
     this.setState({ selectedCards: [] })
 
     stepService
-      .doStep(this.props.gameId, cards)
+      .doStep(this.props.gameId, selectedCards)
       .catch(logError)
-      .then(() => {
-        gameStateService.fetch()
-      })
   }
 
   confirm() {
     stepService
       .confirm(this.props.gameId)
       .catch(logError)
-      .then(() => {
-        gameStateService.fetch()
-      })
   }
 
   render(): React.ReactElement {
     const {
       myCards,
-      isMyTurn,
-      isWaitingConfirmations,
-      isWaitingForStartNewSet
+      gameStages,
+      isMyTurn
     } = this.props
 
     return (
@@ -137,12 +106,10 @@ export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
             </MyCardSlot>
           ))}
         </CardsList>
-        {isMyTurn && (
-          <Button onClick={() => this.doStep()}>Ходить</Button>
-        )}
-        {isWaitingConfirmations &&
+        {isMyTurn && <Button onClick={() => this.doStep()}>Ходить</Button>}
+        {gameStages.isWaitConfirm &&
         <ConfirmButton
-            timeout={isWaitingForStartNewSet ? 10000 : 5000}
+            timeout={gameStages.isWaitNewSet ? 10000 : 5000}
             confirm={() => this.confirm()}/>
         }
       </Container>
@@ -156,15 +123,13 @@ export const MyCards = connect(
     getCardsOnTable,
     getGameId,
     getIsMyTurn,
-    getIsWaitingConfirmations,
-    getIsWaitingForStartNewSet,
-    (myCards, cardsOnTable, gameId, isMyTurn, isWaitingConfirmations, isWaitingForStartNewSet) => ({
+    getGameStages,
+    (myCards, cardsOnTable, gameId, isMyTurn, gameStages) => ({
       myCards,
       cardsOnTable,
       gameId,
       isMyTurn,
-      isWaitingConfirmations,
-      isWaitingForStartNewSet
+      gameStages
     })
   ),
   () => ({})

@@ -3,28 +3,46 @@ import { Title } from 'ui-elements/form'
 import { Container } from './elements'
 import { Player } from 'model/Player'
 import styled from 'styled-components'
+import { connect } from 'react-redux'
+import { createSelector } from 'reselect'
+import { getGamePlayers, getGameTricks } from 'store/selectors/gameState'
+import { Tricks } from 'model/GameState'
 
 export interface SetResultsProps {
-  tricks: {
-    [playerId: number]: number
-  }
+  tricks?: Tricks
   players: Player[]
 }
 
-export class SetResults extends Component<SetResultsProps, any> {
+export class SetResultsComponent extends Component<SetResultsProps, any> {
   render(): React.ReactElement {
+    const { players, tricks } = this.props
+
+    if (!tricks) return <span/>
+
     return (
       <Container>
         <Title>Итоги круга:</Title>
         <ResultsList>
-          {this.props.players.map(player => {
-            return <ResultsListItem><strong>{player.name}</strong>: {this.props.tricks[player.id]}</ResultsListItem>
+          {players.map(player => {
+            return <ResultsListItem key={player.id}>
+              <strong>{player.name}</strong>: {tricks[player.id]}
+            </ResultsListItem>
           })}
         </ResultsList>
       </Container>
     )
   }
 }
+
+export const SetResults = connect(
+  createSelector(
+    getGameTricks,
+    getGamePlayers,
+    (tricks, players) => ({ tricks, players })
+  ),
+  () => ({})
+)(SetResultsComponent)
+
 
 export const ResultsList = styled.ul`
   border: 1px solid #000;

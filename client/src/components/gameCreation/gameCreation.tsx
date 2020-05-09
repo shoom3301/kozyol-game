@@ -16,9 +16,6 @@ export class GameCreation extends Component<any, GameCreationState> {
   createGame = () => {
     gamesService.createGame(this.state.slotsCount)
       .catch(logError)
-      .then(() => {
-        gamesService.updateList()
-      })
   }
 
   onSlotsCountChange = (event: ChangeEvent<HTMLSelectElement>) => {

@@ -1,8 +1,6 @@
 import axios from 'axios'
 import { authService } from 'services/auth.service'
 import { GameItem } from 'model/GameItem'
-import { store } from 'store'
-import { gameFetchAllSuccess } from 'store/actions/games'
 import { apiUrl } from 'helpers/apiUrl'
 
 export class GamesService {
@@ -20,12 +18,6 @@ export class GamesService {
     return axios
       .post(apiUrl('/games/connect'), { gameId }, { ...authService.withAuth() })
       .then((res) => res.data)
-  }
-
-  updateList(): Promise<void> {
-    return this.getList().then((games) => {
-      store.dispatch(gameFetchAllSuccess(games))
-    })
   }
 }
 

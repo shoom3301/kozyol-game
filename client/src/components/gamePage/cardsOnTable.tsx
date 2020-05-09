@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import { Title } from 'ui-elements/form'
 import { cardImage } from 'helpers/cardImage'
-import { Card, Desk, suitIsRed, suitSymbols } from 'model/Card'
+import { Desk, suitIsRed, suitSymbols } from 'model/Card'
 import { CardItemOnTable, CardsList, CardSlot, Container } from './elements'
 import styled, { css } from 'styled-components'
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 import { getCardsInDeck, getCardsOnTable, getTrump } from 'store/selectors/gameState'
+import { getDeskItemCards } from 'helpers/getDeskItemCards'
 
 const cardBack = 'https://raw.githubusercontent.com/richardschneider/cardsJS/' +
   'fe5e857c5094468c58a7cfe0a7075ad351fc7920/cards/BLUE_BACK.svg'
@@ -20,25 +21,10 @@ export interface CardsOnTableProps {
 
 export class CardsOnTableComponent extends Component<CardsOnTableProps, any> {
   render(): React.ReactElement {
-    const slots: (Card | null)[][] = []
     const { cardsOnTable, cardsInDeck, trump } = this.props
-
-    if (cardsOnTable.length > 0) {
-      const first = cardsOnTable[0]
-      const firstUserId = parseInt(Object.keys(first)[0])
-      const firstCards = first[firstUserId]
-      const slotsCount = firstCards.length
-
-      for (let i = 0; i < slotsCount; i++) {
-        cardsOnTable.forEach(item => {
-          const userId = parseInt(Object.keys(item)[0])
-          const cards = item[userId]
-
-          slots[i] = slots[i] || []
-          slots[i].push(cards[i])
-        })
-      }
-    }
+    const slotsCount = getDeskItemCards(cardsOnTable[0]).length
+    const slots = [...Array(slotsCount).keys()]
+      .map(i => cardsOnTable.map(item => getDeskItemCards(item)[i]))
 
     return (
       <Container>

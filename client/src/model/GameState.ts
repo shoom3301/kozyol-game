@@ -9,6 +9,19 @@ export enum GameStateEnum {
   ENDED = 'ENDED',
 }
 
+export type Tricks = {
+  [playerId: number]: number
+}
+
+export type GameStages = {
+  isWaitNewSet: boolean
+  isGameEnded: boolean
+  isWaitPlayers: boolean
+  isWaitNewRound: boolean
+  isWaitConfirm: boolean
+  isPlaying: boolean
+}
+
 export type GameState = {
   id: number
   me: number
@@ -18,14 +31,9 @@ export type GameState = {
   state: GameStateEnum
   trump: number
   currentPlayerId?: number
-  // stepEndTime: string;
   myScore: number
-  gameScore: {
-    [playerId: number]: number
-  }
-  tricks?: {
-    [playerId: number]: number
-  }
+  gameScore: Tricks
+  tricks?: Tricks
   cardsOnTable: Desk
   cardsInDeck: number
   players: Player[]
