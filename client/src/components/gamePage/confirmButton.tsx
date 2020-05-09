@@ -52,7 +52,7 @@ export class ConfirmButton extends Component<ConfirmButtonProps, any> {
     return (
       this.state.disabled ? <span/> :
         <Button onClick={() => this.props.confirm()}>
-          ЭЭЭЭ, давай дальше, сайпал ({this.state.current / 1000})
+          Продолжить ({this.state.current / 1000})
         </Button>
     )
   }

@@ -76,13 +76,7 @@ export class GamePageComponent extends Component<GamePageProps, GamePageState> {
             {gameState.isWaitingPlayers && (
               <PlayersWaiting>{`Ожидаем игроков: ${gameState.slotsState}`}</PlayersWaiting>
             )}
-            {gameState.isPlaying && !gameState.isSetEnded && (
-              <CardsOnTable
-                cardsInDeck={gameState.gameState.cardsInDeck}
-                trump={gameState.gameState.trump}
-                cards={gameState.gameState.cardsOnTable}
-              />
-            )}
+            {gameState.isPlaying && !gameState.isSetEnded && <CardsOnTable/>}
             {gameState.isSetEnded && !!gameState.gameState.tricks && <SetResults
                 players={gameState.gameState.players}
                 tricks={gameState.gameState.tricks}

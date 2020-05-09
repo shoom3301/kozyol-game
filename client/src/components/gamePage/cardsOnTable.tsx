@@ -4,29 +4,33 @@ import { cardImage } from 'helpers/cardImage'
 import { Card, Desk, suitIsRed, suitSymbols } from 'model/Card'
 import { CardItemOnTable, CardsList, CardSlot, Container } from './elements'
 import styled, { css } from 'styled-components'
+import { connect } from 'react-redux'
+import { createSelector } from 'reselect'
+import { getCardsInDeck, getCardsOnTable, getTrump } from 'store/selectors/gameState'
 
 const cardBack = 'https://raw.githubusercontent.com/richardschneider/cardsJS/' +
   'fe5e857c5094468c58a7cfe0a7075ad351fc7920/cards/BLUE_BACK.svg'
 const cardsInDeckTotal = 36
 
 export interface CardsOnTableProps {
-  cards: Desk
+  cardsOnTable: Desk
   trump: number
   cardsInDeck: number
 }
 
-export class CardsOnTable extends Component<CardsOnTableProps, any> {
+export class CardsOnTableComponent extends Component<CardsOnTableProps, any> {
   render(): React.ReactElement {
     const slots: (Card | null)[][] = []
+    const { cardsOnTable, cardsInDeck, trump } = this.props
 
-    if (this.props.cards.length > 0) {
-      const first = this.props.cards[0]
+    if (cardsOnTable.length > 0) {
+      const first = cardsOnTable[0]
       const firstUserId = parseInt(Object.keys(first)[0])
       const firstCards = first[firstUserId]
       const slotsCount = firstCards.length
 
       for (let i = 0; i < slotsCount; i++) {
-        this.props.cards.forEach(item => {
+        cardsOnTable.forEach(item => {
           const userId = parseInt(Object.keys(item)[0])
           const cards = item[userId]
 
@@ -38,8 +42,8 @@ export class CardsOnTable extends Component<CardsOnTableProps, any> {
 
     return (
       <Container>
-        <Title>Колода: {this.props.cardsInDeck || 0}/{cardsInDeckTotal}. Козырь:
-          <SuitSymbol isRed={suitIsRed[this.props.trump]}>{suitSymbols[this.props.trump]}</SuitSymbol>
+        <Title>Колода: {cardsInDeck || 0}/{cardsInDeckTotal}. Козырь:
+          <SuitSymbol isRed={suitIsRed[trump]}>{suitSymbols[trump]}</SuitSymbol>
           )</Title>
         <CardsList>
           {slots.map((slot, i) =>
@@ -73,3 +77,17 @@ export const SuitSymbol = styled.span<{ isRed?: boolean }>`
     color: red;
   `}
 `
+
+export const CardsOnTable = connect(
+  createSelector(
+    getCardsOnTable,
+    getTrump,
+    getCardsInDeck,
+    (cardsOnTable, trump, cardsInDeck) => ({
+      cardsOnTable,
+      trump,
+      cardsInDeck
+    })
+  ),
+  () => ({})
+)(CardsOnTableComponent)

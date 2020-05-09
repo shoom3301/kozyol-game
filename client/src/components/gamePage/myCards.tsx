@@ -138,9 +138,7 @@ export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
           ))}
         </CardsList>
         {isMyTurn && (
-          <Button onClick={() => this.doStep()}>
-            Ногам ходу, голове приходу
-          </Button>
+          <Button onClick={() => this.doStep()}>Ходить</Button>
         )}
         {isWaitingConfirmations &&
         <ConfirmButton
