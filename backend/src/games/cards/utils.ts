@@ -1,6 +1,18 @@
 import { Suit, Card, Desk, Cards } from './types';
-import { sortWith, toPairs, head, without, map, always, concat, findIndex } from 'ramda';
+import {
+  sortWith,
+  toPairs,
+  head,
+  without,
+  map,
+  always,
+  concat,
+  findIndex,
+  values,
+  unnest,
+} from 'ramda';
 import { isCardsGreater, isCardsPairGreater } from './comparisons';
+import { deskToObj } from '../entities/round.utils';
 
 export const randomArrayValue = <T>(array: T[]): T =>
   array[Math.floor(Math.random() * array.length)];
@@ -65,4 +77,11 @@ export const prettifyWinnerTurn = (trump: Suit) => (
   });
 
   return orderedWinnerCards;
+};
+
+export const calcPointsInTrick = (desk: Desk): number => {
+  const res = unnest(values(deskToObj(desk))).reduce((acc, val) => {
+    return acc + (val[1] > 100 ? val[1] - 100 : 0);
+  }, 0);
+  return res;
 };

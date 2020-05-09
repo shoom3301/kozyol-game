@@ -1,7 +1,7 @@
 import { Game } from 'src/games/entities/game';
 import { GameState, GameStateEnum } from './types';
 import { hideLosersCards } from 'src/games/cards/utils';
-import { calcPlayersTricks, calcPlayerTricksAmount } from './utils';
+import { calcPlayersTricks, calcPlayerTricksArray } from './utils';
 
 export const getWaitState = (game: Game, userId: number): GameState => ({
   id: game.id,
@@ -20,10 +20,7 @@ export const getWaitState = (game: Game, userId: number): GameState => ({
   })),
   players: game.players.map(player => ({ id: player.id, name: player.login, order: 0 })),
   myCards: [],
-  myTricks: {
-    points: 0,
-    amount: 0,
-  },
+  myTricks: [],
   cardsInDeck: 0,
 });
 
@@ -45,10 +42,7 @@ export const getEndedState = (game: Game, userId: number): GameState => {
     })),
     players: game.players.map(player => ({ id: player.id, name: player.login, order: 0 })),
     myCards: [],
-    myTricks: {
-      points: 0,
-      amount: 0,
-    },
+    myTricks: [],
     cardsInDeck: 0,
   };
 };
@@ -82,10 +76,7 @@ export const getPlayState = async (game: Game, userId: number): Promise<GameStat
     cardsOnTable: hideLosersCards(round.desk, set.trump),
     players: game.players.map(player => ({ id: player.id, name: player.login, order: 0 })),
     myCards: round.hands[userId],
-    myTricks: {
-      points: calcPlayersTricks(set)[userId],
-      amount: calcPlayerTricksAmount(set, userId),
-    },
+    myTricks: calcPlayerTricksArray(set, userId),
     cardsInDeck: set.deck.length,
   };
 };

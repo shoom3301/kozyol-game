@@ -7,21 +7,21 @@ export enum Suit {
   Spades, // – пики точеные ♠
 }
 
-export const suitSymbols = ["♥", "♦", "♣", "♠"];
+export const suitSymbols = ['♥', '♦', '♣', '♠']
 
-export const suitIsRed: {[key: number]: boolean} = {
+export const suitIsRed: { [key: number]: boolean } = {
   [Suit.Hearts]: true,
   [Suit.Diamonds]: true,
   [Suit.Clubs]: false,
-  [Suit.Spades]: false
-};
+  [Suit.Spades]: false,
+}
 
 export const SuitCharMap = {
-  [Suit.Hearts]: "H",
-  [Suit.Diamonds]: "D",
-  [Suit.Clubs]: "C",
-  [Suit.Spades]: "S",
-};
+  [Suit.Hearts]: 'H',
+  [Suit.Diamonds]: 'D',
+  [Suit.Clubs]: 'C',
+  [Suit.Spades]: 'S',
+}
 
 export enum Rank {
   Six = 6,
@@ -36,20 +36,20 @@ export enum Rank {
 }
 
 export const ValueCharMap = {
-  [Rank.Six]: "6",
-  [Rank.Seven]: "7",
-  [Rank.Eight]: "8",
-  [Rank.Nine]: "9",
-  [Rank.Jack]: "J",
-  [Rank.Queen]: "Q",
-  [Rank.King]: "K",
-  [Rank.Ten]: "10",
-  [Rank.Ace]: "A",
-};
+  [Rank.Six]: '6',
+  [Rank.Seven]: '7',
+  [Rank.Eight]: '8',
+  [Rank.Nine]: '9',
+  [Rank.Jack]: 'J',
+  [Rank.Queen]: 'Q',
+  [Rank.King]: 'K',
+  [Rank.Ten]: '10',
+  [Rank.Ace]: 'A',
+}
 
-export type Card = [Suit, Rank];
-export type Cards = Card[];
-export type Deck = Cards;
-export type Hand = Cards;
-export type Trick = Cards;
-export type Desk = Array<{ [player: number]: Cards }>;
+export type Card = [Suit, Rank]
+export type Cards = Card[]
+export type Deck = Cards
+export type Hand = Cards
+export type Trick = Cards
+export type Desk = Array<{ [player: number]: Cards }>

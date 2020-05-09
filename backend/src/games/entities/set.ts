@@ -117,9 +117,11 @@ export class GameSet extends Base {
     const score: { [id: number]: number } = fromPairs(scoresPairs);
     // so hacky way to set 0 tricks for user
     const lastRoundHands = last(this.rounds).hands;
+    const usersWithoutTricks = [];
     forEach(playerId => {
       if (!score[playerId]) {
         score[playerId] = 0;
+        usersWithoutTricks.push(playerId);
       }
     }, keys(lastRoundHands));
 
@@ -130,7 +132,11 @@ export class GameSet extends Base {
       let res = 0;
       if (playerTrick < winnerOfGame[1]) {
         if (playerTrick === 0) {
-          res = 6;
+          if (usersWithoutTricks.includes(parseInt(scorePair[0], 10))) {
+            res = 6; // 0 points, 0 tricks
+          } else {
+            res = 4; // 1+ tricks, 0 points
+          }
         } else if (playerTrick < 31) {
           res = 4;
         } else {

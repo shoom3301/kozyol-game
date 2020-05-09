@@ -1,5 +1,5 @@
-import { connectRouter } from 'connected-react-router';
-import { createBrowserHistory } from 'history';
+import { connectRouter } from 'connected-react-router'
+import { createBrowserHistory } from 'history'
 
-export const history = createBrowserHistory();
-export const router = connectRouter(history);
+export const history = createBrowserHistory()
+export const router = connectRouter(history)

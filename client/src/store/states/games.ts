@@ -1,4 +1,4 @@
-import { GameItem } from 'model/GameItem';
+import { GameItem } from 'model/GameItem'
 
 export interface GamesState {
   games: GameItem[]

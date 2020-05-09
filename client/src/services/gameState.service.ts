@@ -1,17 +1,18 @@
-import axios from 'axios';
-import { GameState } from 'model/GameState';
-import { authService } from 'services/auth.service';
-import { getGameIdByLocation } from 'store/selectors/games';
-import { store } from 'store';
-import { IState } from 'store/states';
-import { gameStateUpdate } from 'store/actions/gameState';
-import { GameStateHelpers } from 'helpers/gameStateHelpers';
-import { apiUrl } from 'helpers/apiUrl';
+import axios from 'axios'
+import { GameState } from 'model/GameState'
+import { authService } from 'services/auth.service'
+import { getGameIdByLocation } from 'store/selectors/games'
+import { store } from 'store'
+import { IState } from 'store/states'
+import { gameStateUpdate } from 'store/actions/gameState'
+import { GameStateHelpers } from 'helpers/gameStateHelpers'
+import { apiUrl } from 'helpers/apiUrl'
 
 export class GameStateService {
   getGameState(gameId: number): Promise<GameState> {
-    return axios.get<GameState>(apiUrl(`/gameState/${gameId}`), {...authService.withAuth()})
-      .then(res => res.data)
+    return axios
+      .get<GameState>(apiUrl(`/gameState/${gameId}`), { ...authService.withAuth() })
+      .then((res) => res.data)
   }
 
   fetch() {
@@ -21,7 +22,7 @@ export class GameStateService {
       return
     }
 
-    this.getGameState(gameId).then(state => {
+    this.getGameState(gameId).then((state) => {
       store.dispatch(gameStateUpdate(new GameStateHelpers(state)))
     })
   }

@@ -11,10 +11,7 @@ export enum GameStateEnum {
 export type GameState = {
   id: number;
   me: number;
-  myTricks: {
-    points: number;
-    amount: number;
-  };
+  myTricks: number[];
   owner: {
     id: number;
     name: string;

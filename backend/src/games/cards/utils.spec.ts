@@ -1,4 +1,4 @@
-import { hideLosersCards, prettifyWinnerTurn } from './utils';
+import { hideLosersCards, prettifyWinnerTurn, calcPointsInTrick } from './utils';
 import { diamonds, hearts, spades, clubs } from './make';
 import { Rank, Suit } from './types';
 
@@ -60,6 +60,17 @@ describe('utils', () => {
         hearts(Rank.Ace),
         hearts(Rank.Queen),
       ]);
+    });
+  });
+
+  describe('calc points in trick', () => {
+    it('should work', () => {
+      const desk = [
+        { 1: [diamonds(Rank.Nine), hearts(Rank.Nine)] },
+        { 2: [diamonds(Rank.Eight), spades(Rank.Jack)] },
+        { 3: [hearts(Rank.Seven), hearts(Rank.Ten)] },
+      ];
+      expect(calcPointsInTrick(desk)).toEqual(12);
     });
   });
 });

@@ -1,24 +1,24 @@
-import React, { Component } from "react";
-import { GameItem } from "model/GameItem";
-import { history } from "router/router";
-import { authorizationRoute, gameRoute } from "router/routerPaths";
-import { Box, FormContainer, Title } from 'ui-elements/form';
-import styled from 'styled-components';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import { getGamesList } from 'store/selectors/games';
-import { gamesService } from 'services/games.service';
+import React, { Component } from 'react'
+import { GameItem } from 'model/GameItem'
+import { history } from 'router/router'
+import { authorizationRoute, gameRoute } from 'router/routerPaths'
+import { Box, FormContainer, Title } from 'ui-elements/form'
+import styled from 'styled-components'
+import { connect } from 'react-redux'
+import { createSelector } from 'reselect'
+import { getGamesList } from 'store/selectors/games'
+import { gamesService } from 'services/games.service'
 
 export interface GamesListProps {
-  games: GameItem[];
+  games: GameItem[]
 }
 
 export interface GamesListState {
-  timer: number | null;
+  timer: number | null
 }
 
 export class GamesListComponent extends Component<GamesListProps, GamesListState> {
-  state: GamesListState = { timer: null };
+  state: GamesListState = { timer: null }
 
   componentDidMount() {
     gamesService.updateList()
@@ -58,14 +58,14 @@ export class GamesListComponent extends Component<GamesListProps, GamesListState
           ))}
         </GameListContainer>
       </FormContainer>
-    );
+    )
   }
 }
 
 export const GamesList = connect(
   createSelector(getGamesList, games => ({ games })),
   () => ({})
-)(GamesListComponent);
+)(GamesListComponent)
 
 export const GameListItem = styled.li`
     margin-bottom: 10px;
@@ -76,22 +76,22 @@ export const GameListItem = styled.li`
     text-decoration: none;
     background: #fff;
     cursor: pointer;
-`;
+`
 
 export const GameAuthor = styled.span`
     margin-bottom: 5px;
     margin-right: 5px;
     font-size: 16px;
     font-weight: bold;
-`;
+`
 
 export const GameSlots = styled.span`
     font-size: 14px;
-`;
+`
 
 export const GameListContainer = styled.ul`
     margin: 0;
     padding: 0;
     max-height: 400px;
     overflow-y: scroll;
-`;
+`
