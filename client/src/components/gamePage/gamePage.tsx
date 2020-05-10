@@ -67,7 +67,7 @@ export class GamePageComponent extends Component<GamePageProps, any> {
         <PlayersList/>
         {gameStages.isGameEnded &&
         <EndBanner>
-            <p>Игры кончились, готовь туза</p>
+            <p>Game ower!</p>
             <ToMain to={mainRoute}>К списку игр</ToMain>
         </EndBanner>
         }
