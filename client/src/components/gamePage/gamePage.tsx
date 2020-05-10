@@ -14,6 +14,9 @@ import { SetResults } from 'components/gamePage/setResults'
 import styled from 'styled-components'
 import { GameStages } from 'model/GameState'
 import { sseService } from 'services/sse.service'
+import { gameStateService } from 'services/gameState.service'
+import { store } from 'store'
+import { gameStateUpdate } from 'store/actions/gameState'
 
 export interface GamePageProps {
   ownerName: string
@@ -36,6 +39,10 @@ export class GamePageComponent extends Component<GamePageProps, any> {
       })
       .then(() => {
         sseService.subscribeToGame()
+        gameStateService.getGameState(gameId)
+          .then(state => {
+            store.dispatch(gameStateUpdate(state))
+          })
       })
   }
 
