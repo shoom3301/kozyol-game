@@ -62,7 +62,12 @@ export class SseService {
   }
 
   onState = (event: any) => {
-    store.dispatch(gameStateUpdate(JSON.parse(event.data) as GameState))
+    const gameId = parseInt(getGameIdByLocation(store.getState() as IState))
+    const state = JSON.parse(event.data) as GameState
+
+    if (state.id !== gameId) return
+
+    store.dispatch(gameStateUpdate(state))
   }
 
   // subscribeToGamesList() {
