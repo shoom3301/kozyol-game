@@ -13,6 +13,7 @@ services:
       - 443:443/tcp
     environment:
       CERTBOT_EMAIL: saldin.iliya@gmail.com
+      REACT_APP_PROD_HOST: https://skazhi.be
     volumes:
       - ./conf.d:/etc/nginx/user.conf.d:ro
       - letsencrypt:/etc/letsencrypt
