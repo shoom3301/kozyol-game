@@ -9,6 +9,8 @@ import { getGamesList } from 'store/selectors/games'
 import { gamesService } from 'services/games.service'
 import { GameAuthor, GameListContainer, GameListItem, GameSlots } from 'components/gamesList/gamesListElements'
 import { sseService } from 'services/sse.service'
+import { gameFetchAllSuccess } from 'store/actions/games'
+import { store } from 'store'
 
 export interface GamesListProps {
   games: GameItem[]
@@ -17,6 +19,9 @@ export interface GamesListProps {
 export class GamesListComponent extends Component<GamesListProps, any> {
   componentDidMount() {
     gamesService.getList()
+      .then(games => {
+        store.dispatch(gameFetchAllSuccess(games))
+      })
       .catch(() => {
         history.replace(authorizationRoute)
       })
