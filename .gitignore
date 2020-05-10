@@ -3,3 +3,4 @@
 /.idea/
 mysql_volume
 /dist/
+.env
