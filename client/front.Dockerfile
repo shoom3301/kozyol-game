@@ -1,6 +1,7 @@
 FROM node:12.14.0-alpine as build-env
 
 ENV NODE_ENV=production
+ENV REACT_APP_PROD_HOST=https://skazhi.be
 
 WORKDIR /usr/src/app
 
