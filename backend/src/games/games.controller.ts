@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
+import PQueue from 'p-queue';
 
 import { GamesService } from './games.service';
 import { UserService } from '../user/user.service';
@@ -64,18 +65,24 @@ export class GamesController {
     return 'success';
   }
 
+  // hacky way to execute queries in serial
+  updateConfirmationsQueue = new PQueue({ concurrency: 1 });
+
   @UseGuards(GameGuard)
   @Post('continue')
   async continueGame(@Req() req: Request, @Body() { gameId }: { gameId?: number }) {
-    const currGame = await Game.findOne({ where: { id: gameId } });
-    if (currGame.waitConfirmations.length > 0) {
-      currGame.waitConfirmations = without([req.user.userId], currGame.waitConfirmations);
-      await currGame.save();
-      if (currGame.waitConfirmations.length === 0) {
-        await continueGame(gameId);
+    await this.updateConfirmationsQueue.add(async () => {
+      const currGame = await Game.findOne({ where: { id: gameId } });
+      console.log('currGame.waitConfirmations.length', currGame.waitConfirmations.length);
+      if (currGame.waitConfirmations.length > 0) {
+        currGame.waitConfirmations = without([req.user.userId], currGame.waitConfirmations);
+        await currGame.save();
+        if (currGame.waitConfirmations.length === 0) {
+          await continueGame(gameId);
+        }
+
         await broadcastGameState(gameId);
       }
-      return;
-    }
+    });
   }
 }
