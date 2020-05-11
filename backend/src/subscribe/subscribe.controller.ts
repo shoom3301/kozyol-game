@@ -7,14 +7,16 @@ import {
   HttpException,
   HttpStatus,
   Query,
+  Param,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Response, Request } from 'express';
-import { forEach, values, assoc, dissoc } from 'ramda';
+import { forEach, values, assoc, dissoc, assocPath, dissocPath, toPairs } from 'ramda';
 import { Game } from 'src/games/entities/game';
 import { calcGameState } from 'src/game-state/calcGameState';
 import { User } from '../user/user.entity';
 import { JwtService } from '@nestjs/jwt';
+import { GameGuard } from 'src/games/games.guard';
 
 type GameEventType = 'list' | 'state';
 type SseChunkDataType = { data: string; event: GameEventType };
@@ -24,15 +26,19 @@ const sseChunkData = ({ data, event }: SseChunkDataType) =>
     .map(([key, value]) => `${key}: ${value}`)
     .join('\n') + '\n\n';
 
-let conns: { [clientId: number]: Response } = {};
+let listConns: { [clientId: number]: Response } = {};
+let gamesConns: {
+  [gameId: number]: {
+    [clientId: number]: Response;
+  };
+} = {};
 
 export const broadcastGameState = async (gameId: number) => {
   const game = await Game.findOne({ where: { id: gameId }, relations: ['sets'] });
 
-  const promises = game.players.map(async player => {
-    const gameState = await calcGameState(game, player.id);
+  const promises = toPairs(gamesConns[gameId]).map(async ([userId, res]) => {
+    const gameState = await calcGameState(game, parseInt(userId, 10));
     const gameStateString = JSON.stringify(gameState);
-    const res = conns[`${player.id}`];
     res?.write(sseChunkData({ data: gameStateString, event: 'state' }));
   });
 
@@ -45,16 +51,17 @@ export const broadcastGamesList = async () => {
   const availabeGamesString = JSON.stringify(availabeGames);
   forEach(res => {
     res?.write(sseChunkData({ data: availabeGamesString, event: 'list' }));
-  }, values(conns));
+  }, values(listConns));
 };
 
 @Controller('api/subscribe')
 export class SubscribeController {
   constructor(private jwtService: JwtService) {}
 
-  @Get()
-  async subscribeToUpdates(
-    @Query('token') token: string,
+  @UseGuards(JwtAuthGuard, GameGuard)
+  @Get('game/:gameId')
+  async subscribeToGame(
+    @Param('gameId') gameId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -63,36 +70,37 @@ export class SubscribeController {
       return;
     }
 
-    const decodedUser = this.jwtService.decode(token);
-    if (!decodedUser || typeof decodedUser !== 'object' || !decodedUser.sub) {
-      throw new HttpException('User not found', HttpStatus.FORBIDDEN);
-    }
-    const user = await User.findOne({
-      where: { id: decodedUser.sub },
-      relations: ['games', 'games.sets'],
+    res.setHeader('content-type', 'text/event-stream');
+    res.setHeader('Transfer-Encoding', 'chunked');
+    res.setHeader('Connection', 'keep-alive');
+
+    gamesConns = assocPath([gameId, req.user.userId], res, gamesConns);
+    res.on('close', () => {
+      console.log('conn closed for user with id %d in game %d', req.user.userId, gameId);
+      gamesConns = dissocPath([gameId, req.user.userId], gamesConns);
     });
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.FORBIDDEN);
+
+    await broadcastGameState(gameId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('list')
+  async subscribeToGamesList(@Req() req: Request, @Res() res: Response) {
+    if (req.headers.accept !== 'text/event-stream') {
+      res.end();
+      return;
     }
 
     res.setHeader('content-type', 'text/event-stream');
     res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('Connection', 'keep-alive');
 
-    conns = assoc(`${decodedUser.sub}`, res, conns);
+    listConns = assoc(`${req.user.userId}`, res, listConns);
     res.on('close', () => {
-      console.log('conn closed for user with id %d', decodedUser.sub);
-      conns = dissoc(`${decodedUser.sub}`, conns);
+      console.log('conn closed for user with id %d', req.user.userId);
+      listConns = dissoc(`${req.user.userId}`, listConns);
     });
 
-    const promises = user.games
-      .filter(game => !game.isFinished())
-      .map(async game => {
-        const gameState = await calcGameState(game, user.id);
-        const gameStateString = JSON.stringify(gameState);
-        const res = conns[`${user.id}`];
-        res?.write(sseChunkData({ data: gameStateString, event: 'state' }));
-      });
-    await Promise.all(promises);
+    await broadcastGamesList();
   }
 }
