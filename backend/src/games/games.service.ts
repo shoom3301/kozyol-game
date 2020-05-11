@@ -1,16 +1,24 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Injectable, HttpException, HttpStatus, Req } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { Repository, Connection } from 'typeorm';
 
 import { User } from '../user/user.entity';
 import { Game } from './entities/game';
 
 import { startGame } from './helpers/startGame';
+import { prop, concat } from 'ramda';
+import { broadcastGamesList } from 'src/subscribe/subscribe.controller';
 
 @Injectable()
 export class GamesService {
-  constructor(@InjectRepository(Game) private gameRepository: Repository<Game>) {}
+  private readonly logger = new Logger(GamesService.name);
+
+  constructor(
+    @InjectRepository(Game) private gameRepository: Repository<Game>,
+    private connection: Connection,
+  ) {}
 
   async gameById(gameId: number) {
     const game = await this.gameRepository.findOne(gameId, { relations: ['sets'] });
@@ -62,5 +70,30 @@ export class GamesService {
     }
 
     return game;
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async cleanAbandonedGames() {
+    const abandonedGames = await this.connection.query(
+      'SELECT gameId FROM `set` where (UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(updatedAt)) > 600 and finished = false;',
+    );
+
+    const notStartedGamesQuery =
+      'select `g`.`id`, count(`s`.`id`) as `setsCount` ' +
+      'from `game` `g` ' +
+      'left join `set` `s` on `g`.`id` = `s`.`gameId`  ' +
+      'where UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(`g`.`createdAt`) > 600 ' +
+      'group by `g`.`id` ' +
+      'having `setsCount` = 0;';
+    const notStartedGames = await this.connection.query(notStartedGamesQuery);
+
+    const gamesForDelete = notStartedGames
+      .map(prop('id'))
+      .concat(abandonedGames.map(prop('gameId')));
+    this.logger.debug(`games for delete ${gamesForDelete}`);
+    if (gamesForDelete.length > 0) {
+      await Game.delete(gamesForDelete);
+      await broadcastGamesList();
+    }
   }
 }
