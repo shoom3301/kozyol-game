@@ -132,7 +132,7 @@ export class GameSet extends Base {
       let res = 0;
       if (playerTrick < winnerOfGame[1]) {
         if (playerTrick === 0) {
-          if (usersWithoutTricks.includes(parseInt(scorePair[0], 10))) {
+          if (usersWithoutTricks.includes(scorePair[0])) {
             res = 6; // 0 points, 0 tricks
           } else {
             res = 4; // 1+ tricks, 0 points
