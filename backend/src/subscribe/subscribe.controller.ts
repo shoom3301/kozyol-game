@@ -33,6 +33,17 @@ let gamesConns: {
   };
 } = {};
 
+const availabeGames = async () => {
+  const games = await Game.find();
+  return games.filter(game => game.hasAvailableSlots());
+};
+
+const broadcast = (data: SseChunkDataType, res?: Response) => {
+  console.log('Broadcasting ', sseChunkData(data));
+
+  res?.write(sseChunkData(data));
+};
+
 export const broadcastGameState = async (gameId: number) => {
   const game = await Game.findOne({ where: { id: gameId }, relations: ['sets'] });
 
@@ -46,11 +57,10 @@ export const broadcastGameState = async (gameId: number) => {
 };
 
 export const broadcastGamesList = async () => {
-  const games = await Game.find();
-  const availabeGames = games.filter(game => game.hasAvailableSlots());
-  const availabeGamesString = JSON.stringify(availabeGames);
+  const games = await availabeGames();
+  const availabeGamesString = JSON.stringify(games);
   forEach(res => {
-    res?.write(sseChunkData({ data: availabeGamesString, event: 'list' }));
+    broadcast({ data: availabeGamesString, event: 'list' }, res);
   }, values(listConns));
 };
 
@@ -101,6 +111,8 @@ export class SubscribeController {
       listConns = dissoc(`${req.user.id}`, listConns);
     });
 
-    await broadcastGamesList();
+    const games = await availabeGames();
+    const availabeGamesString = JSON.stringify(games);
+    broadcast({ data: availabeGamesString, event: 'list' }, res);
   }
 }
