@@ -37,16 +37,14 @@ export class GamesController {
   @UseGuards(GameGuard)
   @Get(':gameId')
   async gameById(@Req() req: Request, @Param('gameId') gameId?: number) {
-    const game = await this.gameService.gameById(gameId);
-
-    return game;
+    return await this.gameService.gameById(gameId);
   }
 
   @Post('create')
   async createGame(@Req() req: Request) {
     console.log(req.user);
     const game = await this.gameService.create({
-      owner: { id: req.user.userId },
+      owner: { id: req.user.id },
       slotsCount: req.body.slotsCount,
     });
     await broadcastGamesList();
@@ -59,7 +57,7 @@ export class GamesController {
       throw new HttpException('no gameId provided', HttpStatus.NOT_FOUND);
     }
 
-    await this.gameService.connectUserToGame(req.user.userId, body.gameId);
+    await this.gameService.connectUserToGame(req.user.id, body.gameId);
     await broadcastGameState(body.gameId);
 
     return 'success';
@@ -75,7 +73,7 @@ export class GamesController {
       const currGame = await Game.findOne({ where: { id: gameId } });
       console.log('currGame.waitConfirmations.length', currGame.waitConfirmations.length);
       if (currGame.waitConfirmations.length > 0) {
-        currGame.waitConfirmations = without([req.user.userId], currGame.waitConfirmations);
+        currGame.waitConfirmations = without([req.user.id], currGame.waitConfirmations);
         await currGame.save();
         if (currGame.waitConfirmations.length === 0) {
           await continueGame(gameId);

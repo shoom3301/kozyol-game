@@ -33,7 +33,7 @@ export class GameGuard implements CanActivate {
       if (!game) {
         throw new HttpException('Game not exist', HttpStatus.NOT_FOUND);
       }
-      if (!game.hasPlayer(user.userId)) {
+      if (!game.hasPlayer(user.id)) {
         throw new HttpException('You are not connected to game', HttpStatus.FORBIDDEN);
       }
 

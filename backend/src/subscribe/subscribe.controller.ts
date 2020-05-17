@@ -74,10 +74,10 @@ export class SubscribeController {
     res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('Connection', 'keep-alive');
 
-    gamesConns = assocPath([gameId, req.user.userId], res, gamesConns);
+    gamesConns = assocPath([gameId, req.user.id], res, gamesConns);
     res.on('close', () => {
-      console.log('conn closed for user with id %d in game %d', req.user.userId, gameId);
-      gamesConns = dissocPath([gameId, req.user.userId], gamesConns);
+      console.log('conn closed for user with id %d in game %d', req.user.id, gameId);
+      gamesConns = dissocPath([gameId, req.user.id], gamesConns);
     });
 
     await broadcastGameState(gameId);
@@ -95,10 +95,10 @@ export class SubscribeController {
     res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('Connection', 'keep-alive');
 
-    listConns = assoc(`${req.user.userId}`, res, listConns);
+    listConns = assoc(`${req.user.id}`, res, listConns);
     res.on('close', () => {
-      console.log('conn closed for user with id %d', req.user.userId);
-      listConns = dissoc(`${req.user.userId}`, listConns);
+      console.log('conn closed for user with id %d', req.user.id);
+      listConns = dissoc(`${req.user.id}`, listConns);
     });
 
     await broadcastGamesList();

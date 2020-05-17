@@ -1,18 +1,21 @@
-import { Controller, Req, Post, UseGuards, HttpException, HttpStatus, Get } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Controller, Req, Post, UseGuards, HttpException, HttpStatus, Get, Res } from '@nestjs/common'
+import { Request, Response } from 'express';
 import { UserService } from './user/user.service';
 import { AuthService } from './auth/auth.service';
 import { makeDeck } from './games/cards/make';
+import { LocalAuthGuard } from 'src/auth/local-auth.guard'
 
 @Controller()
 export class AppController {
   constructor(private userService: UserService, private authService: AuthService) {}
 
-  @UseGuards(AuthGuard('local'))
+  @UseGuards(LocalAuthGuard)
   @Post('api/auth/login')
-  async login(@Req() req: Request) {
-    return this.authService.login(req.user);
+  async login(@Req() req: Request, @Res() res: Response) {
+    const { access_token } = await this.authService.login(req.user);
+
+    res.cookie('Authorization', 'Bearer ' + access_token)
+    res.end()
   }
 
   @Post('api/auth/signup')

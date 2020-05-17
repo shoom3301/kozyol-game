@@ -14,10 +14,10 @@ export class GameStateController {
     const game = await this.gameService.gameById(gameId);
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (!game.hasPlayer(req.user!.userId)) {
+    if (!game.hasPlayer(req.user!.id)) {
       throw new HttpException('you are not connected to game', HttpStatus.FORBIDDEN);
     }
 
-    return calcGameState(game, req.user.userId);
+    return calcGameState(game, req.user.id);
   }
 }

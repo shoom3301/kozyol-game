@@ -27,8 +27,6 @@ export interface GamePageProps {
 
 export class GamePageComponent extends Component<GamePageProps, any> {
   componentDidMount() {
-    sseService.connect()
-
     const gameId = parseInt(this.props.gameId)
 
     gamesService
@@ -38,7 +36,7 @@ export class GamePageComponent extends Component<GamePageProps, any> {
         history.replace(mainRoute)
       })
       .then(() => {
-        sseService.subscribeToGame()
+        sseService.subscribeToGame(gameId)
         gameStateService.getGameState(gameId)
           .then(state => {
             store.dispatch(gameStateUpdate(state))
@@ -48,7 +46,6 @@ export class GamePageComponent extends Component<GamePageProps, any> {
 
   componentWillUnmount() {
     sseService.unsubscribeFromGame()
-    sseService.disconnect()
   }
 
   render(): React.ReactElement {
