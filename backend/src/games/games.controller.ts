@@ -37,7 +37,7 @@ export class GamesController {
   @UseGuards(GameGuard)
   @Get(':gameId')
   async gameById(@Req() req: Request, @Param('gameId') gameId?: number) {
-    return await this.gameService.gameById(gameId);
+    return this.gameService.gameById(gameId);
   }
 
   @Post('create')

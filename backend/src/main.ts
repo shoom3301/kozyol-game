@@ -1,7 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
-import passport from 'passport'
-import session from 'express-session'
+import cookiesParser from 'cookie-parser';
+import { config as dotenvConfig } from 'dotenv';
+
+dotenvConfig();
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -9,13 +12,7 @@ async function bootstrap() {
     cors: { origin: process.env.NODE_ENV === 'production' ? 'https://skazhi.be' : true },
   });
   app.use(helmet());
-  app.use(session({
-    secret: 'CHANGEME',
-    resave: false,
-    saveUninitialized: false,
-  }));
-  app.use(passport.initialize());
-  app.use(passport.session());
+  app.use(cookiesParser(process.env.COOKIE_SECRET));
 
   await app.listen(8041, '0.0.0.0');
 }
