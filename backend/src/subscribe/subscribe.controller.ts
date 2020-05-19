@@ -29,7 +29,6 @@ const availabeGames = async () => {
 
 const broadcast = (data: SseChunkDataType, res?: Response) => {
   res.write(sseChunkData(data));
-  res.flush();
 };
 
 export const broadcastGameState = async (gameId: number) => {
@@ -39,7 +38,6 @@ export const broadcastGameState = async (gameId: number) => {
     const gameState = await calcGameState(game, parseInt(userId, 10));
     const gameStateString = JSON.stringify(gameState);
     res?.write(sseChunkData({ data: gameStateString, event: 'state' }));
-    res?.flush();
   });
 
   await Promise.all(promises);
@@ -72,6 +70,7 @@ export class SubscribeController {
     res.setHeader('content-type', 'text/event-stream');
     res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('Connection', 'keep-alive');
+    res.status(200);
     res.on('close', () => {
       console.log('conn closed for user with id %d in game %d', req.user.id, gameId);
       gamesConns = dissocPath([`${gameId}`, `${req.user.id}`], gamesConns);
@@ -92,6 +91,7 @@ export class SubscribeController {
     res.setHeader('content-type', 'text/event-stream');
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('Cache-Control', 'no-cache');
+    res.status(200);
     res.on('close', () => {
       delete listConns[`${req.user.id}`];
       console.log('[list] conn closed for user with id %d', req.user.id);

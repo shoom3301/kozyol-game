@@ -15,7 +15,10 @@ export class AppController {
   async login(@Req() req: Request, @Res() res: Response) {
     const { access_token } = await this.authService.login(req.user);
 
-    res.cookie('Authorization', access_token, { httpOnly: process.env.NODE_ENV === 'production' });
+    res.cookie('Authorization', access_token, {
+      httpOnly: true,
+      expires: new Date(Date.now() + 60 * 60 * 24 * 30 * 1000), // 30d
+    });
     res.end();
   }
 
