@@ -1,5 +1,14 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { Controller, Req, Post, UseGuards, HttpException, HttpStatus, Res } from '@nestjs/common';
+import {
+  Controller,
+  Req,
+  Post,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+  Res,
+  Get,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -34,6 +43,7 @@ export class AppController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('api/auth/ping')
   ping(@Res() res: Response) {
     res.status(200).send('pong');
   }
