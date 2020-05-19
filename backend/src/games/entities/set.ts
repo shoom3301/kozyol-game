@@ -127,25 +127,27 @@ export class GameSet extends Base {
 
     const sortedWinPairs = sortWith([descend(last)])(toPairs(score));
     const winnerOfGame = head(sortedWinPairs);
-    const gameScores: [number, number][] = tail(sortedWinPairs).map(scorePair => {
-      const playerTrick = scorePair[1];
-      let res = 0;
-      if (playerTrick < winnerOfGame[1]) {
-        if (playerTrick === 0) {
-          if (usersWithoutTricks.includes(scorePair[0])) {
-            res = 6; // 0 points, 0 tricks
+    const gameScores: [number, number][] = tail(sortedWinPairs).map(
+      (scorePair: [number, number]) => {
+        const playerTrick = scorePair[1];
+        let res = 0;
+        if (playerTrick < winnerOfGame[1]) {
+          if (playerTrick === 0) {
+            if (usersWithoutTricks.includes(scorePair[0])) {
+              res = 6; // 0 points, 0 tricks
+            } else {
+              res = 4; // 1+ tricks, 0 points
+            }
+          } else if (playerTrick < 31) {
+            res = 4;
           } else {
-            res = 4; // 1+ tricks, 0 points
+            res = 2;
           }
-        } else if (playerTrick < 31) {
-          res = 4;
-        } else {
-          res = 2;
         }
-      }
 
-      return [parseInt(scorePair[0], 10), res];
-    });
+        return [parseInt(`${scorePair[0]}`, 10), res];
+      },
+    );
 
     const result = fromPairs([...gameScores, [winnerOfGame[0], 0]]);
     this.score = result;
