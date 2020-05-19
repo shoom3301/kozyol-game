@@ -5,6 +5,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { UserService } from './user/user.service';
 import { AuthService } from './auth/auth.service';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Controller()
 export class AppController {
@@ -30,5 +31,10 @@ export class AppController {
     }
     const user = await this.userService.create(req.body.username, req.body.password);
     return this.authService.login({ username: user.login, pass: user.password });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  ping(@Res() res: Response) {
+    res.status(200).send('pong');
   }
 }
