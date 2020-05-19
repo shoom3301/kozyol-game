@@ -1,67 +1,82 @@
 import { store } from 'store'
+import { history } from 'router/router'
 import { gameFetchAllSuccess } from 'store/actions/games'
 import { getGameIdByLocation } from 'store/selectors/games'
 import { IState } from 'store/states'
 import { gameStateUpdate } from 'store/actions/gameState'
 import { GameItem } from 'model/GameItem'
 import { GameState } from 'model/GameState'
-import { authService } from 'services/auth.service'
+import { authorizationRoute } from 'router/routerPaths'
 
 export class SseService {
-  private sse: EventSource | null = null
-
-  connect() {
-    if (this.sse) {
-      return
-    }
-
-    this.sse = new EventSource(
-      `${process.env.REACT_APP_PROD_HOST}/api/subscribe?token=${authService.getToken()}`,
-    )
-  }
-
-  disconnect() {
-    if (this.sse) {
-      this.sse.close()
-      this.sse = null
-    }
-  }
-
-  subscribeToGamesList() {
-    if (this.sse) {
-      this.sse.addEventListener('list', this.onList)
-    }
-  }
-
-  unsubscribeFromGamesList() {
-    if (this.sse) {
-      this.sse.removeEventListener('list', this.onList)
-    }
-  }
-
-  subscribeToGame() {
-    if (this.sse) {
-      this.sse.addEventListener('state', this.onState)
-    }
-  }
-
-  unsubscribeFromGame() {
-    if (this.sse) {
-      this.sse.removeEventListener('state', this.onState)
-    }
-  }
-
-  onList = (event: any) => {
+  private onList = (event: any) => {
     store.dispatch(gameFetchAllSuccess(JSON.parse(event.data) as GameItem[]))
   }
 
-  onState = (event: any) => {
+  private onState = (event: any) => {
     const gameId = parseInt(getGameIdByLocation(store.getState() as IState))
     const state = JSON.parse(event.data) as GameState
 
     if (state.id !== gameId) return
 
     store.dispatch(gameStateUpdate(state))
+  }
+
+  private onError = () => {
+    history.replace(authorizationRoute)
+  }
+
+  private listManager = new SSEConnectionManager('list', this.onList, this.onError)
+  private gameManager = new SSEConnectionManager('state', this.onState, this.onError)
+
+  subscribeToGamesList() {
+    this.listManager.connect('/list')
+  }
+
+  unsubscribeFromGamesList() {
+    this.listManager.disconnect()
+  }
+
+  subscribeToGame(gameId: number) {
+    this.gameManager.connect(`/game/${gameId}`)
+  }
+
+  unsubscribeFromGame() {
+    this.gameManager.disconnect()
+  }
+}
+
+class SSEConnectionManager {
+  private connection: EventSource | null = null
+
+  constructor(
+    private eventName: string,
+    private callback: (event: any) => void,
+    private onError?: (event: any) => void
+  ) {
+  }
+
+  connect(path: string) {
+    if (this.connection) {
+      this.connection.close()
+    }
+
+    this.connection = new EventSource(
+      `/api/subscribe${path}`,
+      { withCredentials: true }
+    )
+
+    this.connection.addEventListener(this.eventName, this.callback)
+    this.connection.onmessage = console.log
+
+    if (this.onError) this.connection.onerror = this.onError
+  }
+
+  disconnect() {
+    if (this.connection) {
+      this.connection.removeEventListener(this.eventName, this.callback)
+      this.connection.close()
+    }
   }
 }
 

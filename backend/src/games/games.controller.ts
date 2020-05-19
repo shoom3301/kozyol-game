@@ -1,17 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../types.d.ts" />
 
-import {
-  Controller,
-  Get,
-  Req,
-  UseGuards,
-  Post,
-  Body,
-  HttpException,
-  HttpStatus,
-  Param,
-} from '@nestjs/common';
+import { Controller, Req, UseGuards, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
 import PQueue from 'p-queue';
@@ -29,24 +19,11 @@ import { broadcastGamesList, broadcastGameState } from 'src/subscribe/subscribe.
 export class GamesController {
   constructor(private gameService: GamesService, private userService: UserService) {}
 
-  @Get('list')
-  getGames() {
-    return this.gameService.availableGames();
-  }
-
-  @UseGuards(GameGuard)
-  @Get(':gameId')
-  async gameById(@Req() req: Request, @Param('gameId') gameId?: number) {
-    const game = await this.gameService.gameById(gameId);
-
-    return game;
-  }
-
   @Post('create')
   async createGame(@Req() req: Request) {
     console.log(req.user);
     const game = await this.gameService.create({
-      owner: { id: req.user.userId },
+      owner: { id: req.user.id },
       slotsCount: req.body.slotsCount,
     });
     await broadcastGamesList();
@@ -59,8 +36,9 @@ export class GamesController {
       throw new HttpException('no gameId provided', HttpStatus.NOT_FOUND);
     }
 
-    await this.gameService.connectUserToGame(req.user.userId, body.gameId);
+    await this.gameService.connectUserToGame(req.user.id, body.gameId);
     await broadcastGameState(body.gameId);
+    await broadcastGamesList();
 
     return 'success';
   }
@@ -75,14 +53,13 @@ export class GamesController {
       const currGame = await Game.findOne({ where: { id: gameId } });
       console.log('currGame.waitConfirmations.length', currGame.waitConfirmations.length);
       if (currGame.waitConfirmations.length > 0) {
-        currGame.waitConfirmations = without([req.user.userId], currGame.waitConfirmations);
+        currGame.waitConfirmations = without([req.user.id], currGame.waitConfirmations);
         await currGame.save();
         if (currGame.waitConfirmations.length === 0) {
           await continueGame(gameId);
         }
-
-        await broadcastGameState(gameId);
       }
+      await broadcastGameState(gameId);
     });
   }
 }

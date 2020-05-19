@@ -32,7 +32,7 @@ export class StepController {
       throw new HttpException('ooops', HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    const { userId } = req.user;
+    const { id: userId } = req.user;
     const game = await this.gameService.gameById(gameId);
 
     // check that game is not finished

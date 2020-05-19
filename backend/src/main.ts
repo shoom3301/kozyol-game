@@ -1,5 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
+import cookiesParser from 'cookie-parser';
+import compression from 'compression';
+import { config as dotenvConfig } from 'dotenv';
+
+dotenvConfig();
 
 import { AppModule } from './app.module';
 
@@ -8,6 +13,8 @@ async function bootstrap() {
     cors: { origin: process.env.NODE_ENV === 'production' ? 'https://skazhi.be' : true },
   });
   app.use(helmet());
+  app.use(cookiesParser(process.env.COOKIE_SECRET));
+  app.use(compression());
 
   await app.listen(8041, '0.0.0.0');
 }

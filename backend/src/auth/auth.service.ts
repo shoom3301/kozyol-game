@@ -11,9 +11,7 @@ export class AuthService {
 
   async validateUser(login: string, password: string): Promise<Omit<User, 'password'> | null> {
     const user = await this.userService.getByLogin(login);
-    console.log({ user });
     if (password && password !== '' && user?.password === password) {
-      console.log('matched');
       return omit(['password'], user);
     }
     return null;

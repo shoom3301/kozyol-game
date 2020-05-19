@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -22,13 +23,14 @@ import { SubscribeModule } from './subscribe/subscribe.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.MYSQL_HOST || 'localhost',
+      host: process.env.MYSQL_HOST,
       port: 3306,
-      username: process.env.MYSQL_USER || 'db_user',
-      password: process.env.MYSQL_PASSWORD || '2SNJwgsfPFMtSWkw68bnzwUKmvbkaJpj',
-      database: process.env.MYSQL_DATABASE || 'kozyol',
+      username: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
       // logging: true,
       entities: [User, Game, Round, GameSet],
       synchronize: true,

@@ -14,9 +14,6 @@ import { SetResults } from 'components/gamePage/setResults'
 import styled from 'styled-components'
 import { GameStages } from 'model/GameState'
 import { sseService } from 'services/sse.service'
-import { gameStateService } from 'services/gameState.service'
-import { store } from 'store'
-import { gameStateUpdate } from 'store/actions/gameState'
 
 export interface GamePageProps {
   ownerName: string
@@ -27,8 +24,6 @@ export interface GamePageProps {
 
 export class GamePageComponent extends Component<GamePageProps, any> {
   componentDidMount() {
-    sseService.connect()
-
     const gameId = parseInt(this.props.gameId)
 
     gamesService
@@ -38,17 +33,12 @@ export class GamePageComponent extends Component<GamePageProps, any> {
         history.replace(mainRoute)
       })
       .then(() => {
-        sseService.subscribeToGame()
-        gameStateService.getGameState(gameId)
-          .then(state => {
-            store.dispatch(gameStateUpdate(state))
-          })
+        sseService.subscribeToGame(gameId)
       })
   }
 
   componentWillUnmount() {
     sseService.unsubscribeFromGame()
-    sseService.disconnect()
   }
 
   render(): React.ReactElement {
