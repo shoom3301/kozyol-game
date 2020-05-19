@@ -1,10 +1,12 @@
 import { store } from 'store'
+import { history } from 'router/router'
 import { gameFetchAllSuccess } from 'store/actions/games'
 import { getGameIdByLocation } from 'store/selectors/games'
 import { IState } from 'store/states'
 import { gameStateUpdate } from 'store/actions/gameState'
 import { GameItem } from 'model/GameItem'
 import { GameState } from 'model/GameState'
+import { authorizationRoute } from 'router/routerPaths'
 
 export class SseService {
   private onList = (event: any) => {
@@ -20,8 +22,12 @@ export class SseService {
     store.dispatch(gameStateUpdate(state))
   }
 
-  private listManager = new SSEConnectionManager('list', this.onList)
-  private gameManager = new SSEConnectionManager('state', this.onState)
+  private onError = () => {
+    history.replace(authorizationRoute)
+  }
+
+  private listManager = new SSEConnectionManager('list', this.onList, this.onError)
+  private gameManager = new SSEConnectionManager('state', this.onState, this.onError)
 
   subscribeToGamesList() {
     this.listManager.connect('/list')
@@ -45,7 +51,8 @@ class SSEConnectionManager {
 
   constructor(
     private eventName: string,
-    private callback: (event: any) => void
+    private callback: (event: any) => void,
+    private onError?: (event: any) => void
   ) {
   }
 
@@ -59,12 +66,15 @@ class SSEConnectionManager {
       { withCredentials: true }
     )
 
-    this.connection.addEventListener('list', this.callback)
+    this.connection.addEventListener(this.eventName, this.callback)
+    this.connection.onmessage = console.log
+
+    if (this.onError) this.connection.onerror = this.onError
   }
 
   disconnect() {
     if (this.connection) {
-      this.connection.removeEventListener('list', this.callback)
+      this.connection.removeEventListener(this.eventName, this.callback)
       this.connection.close()
     }
   }

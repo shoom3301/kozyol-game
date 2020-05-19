@@ -1,16 +1,13 @@
 import React, { Component } from 'react'
 import { GameItem } from 'model/GameItem'
 import { history } from 'router/router'
-import { authorizationRoute, gameRoute } from 'router/routerPaths'
+import { gameRoute } from 'router/routerPaths'
 import { Box, FormContainer, Title } from 'ui-elements/form'
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 import { getGamesList } from 'store/selectors/games'
-import { gamesService } from 'services/games.service'
 import { GameAuthor, GameListContainer, GameListItem, GameSlots } from 'components/gamesList/gamesListElements'
 import { sseService } from 'services/sse.service'
-import { gameFetchAllSuccess } from 'store/actions/games'
-import { store } from 'store'
 
 export interface GamesListProps {
   games: GameItem[]
@@ -18,16 +15,7 @@ export interface GamesListProps {
 
 export class GamesListComponent extends Component<GamesListProps, any> {
   componentDidMount() {
-    gamesService.getList()
-      .then(games => {
-        store.dispatch(gameFetchAllSuccess(games))
-      })
-      .catch(() => {
-        history.replace(authorizationRoute)
-      })
-      .then(() => {
-        sseService.subscribeToGamesList()
-      })
+    sseService.subscribeToGamesList()
   }
 
   componentWillUnmount() {
