@@ -74,9 +74,9 @@ export class SubscribeController {
     res.setHeader('Connection', 'keep-alive');
     res.on('close', () => {
       console.log('conn closed for user with id %d in game %d', req.user.id, gameId);
-      gamesConns = dissocPath([gameId, req.user.id], gamesConns);
+      gamesConns = dissocPath([`${gameId}`, `${req.user.id}`], gamesConns);
     });
-    gamesConns = assocPath([gameId, req.user.id], res, gamesConns);
+    gamesConns = assocPath([`${gameId}`, `${req.user.id}`], res, gamesConns);
 
     await broadcastGameState(gameId);
   }

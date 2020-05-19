@@ -1,17 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../types.d.ts" />
 
-import {
-  Controller,
-  Get,
-  Req,
-  UseGuards,
-  Post,
-  Body,
-  HttpException,
-  HttpStatus,
-  Param,
-} from '@nestjs/common';
+import { Controller, Req, UseGuards, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
 import PQueue from 'p-queue';
@@ -28,17 +18,6 @@ import { broadcastGamesList, broadcastGameState } from 'src/subscribe/subscribe.
 @Controller('api/games')
 export class GamesController {
   constructor(private gameService: GamesService, private userService: UserService) {}
-
-  @Get('list')
-  getGames() {
-    return this.gameService.availableGames();
-  }
-
-  @UseGuards(GameGuard)
-  @Get(':gameId')
-  async gameById(@Req() req: Request, @Param('gameId') gameId?: number) {
-    return this.gameService.gameById(gameId);
-  }
 
   @Post('create')
   async createGame(@Req() req: Request) {
