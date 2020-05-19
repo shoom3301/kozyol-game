@@ -1,20 +1,9 @@
-import {
-  Controller,
-  UseGuards,
-  Get,
-  Req,
-  Res,
-  HttpException,
-  HttpStatus,
-  Query,
-  Param,
-} from '@nestjs/common';
+import { Controller, UseGuards, Get, Req, Res, Param } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Response, Request } from 'express';
-import { forEach, values, assoc, dissoc, assocPath, dissocPath, toPairs } from 'ramda';
+import { forEach, values, assocPath, dissocPath, toPairs } from 'ramda';
 import { Game } from 'src/games/entities/game';
 import { calcGameState } from 'src/game-state/calcGameState';
-import { User } from '../user/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { GameGuard } from 'src/games/games.guard';
 
@@ -26,7 +15,7 @@ const sseChunkData = ({ data, event }: SseChunkDataType) =>
     .map(([key, value]) => `${key}: ${value}`)
     .join('\n') + '\n\n';
 
-let listConns: { [clientId: number]: Response } = {};
+const listConns: { [clientId: number]: Response } = {};
 let gamesConns: {
   [gameId: number]: {
     [clientId: number]: Response;
@@ -39,9 +28,8 @@ const availabeGames = async () => {
 };
 
 const broadcast = (data: SseChunkDataType, res?: Response) => {
-  console.log('Broadcasting ', sseChunkData(data));
-
-  res?.write(sseChunkData(data));
+  res.write(sseChunkData(data));
+  res.flush();
 };
 
 export const broadcastGameState = async (gameId: number) => {
@@ -51,6 +39,7 @@ export const broadcastGameState = async (gameId: number) => {
     const gameState = await calcGameState(game, parseInt(userId, 10));
     const gameStateString = JSON.stringify(gameState);
     res?.write(sseChunkData({ data: gameStateString, event: 'state' }));
+    res?.flush();
   });
 
   await Promise.all(promises);
@@ -83,12 +72,11 @@ export class SubscribeController {
     res.setHeader('content-type', 'text/event-stream');
     res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('Connection', 'keep-alive');
-
-    gamesConns = assocPath([gameId, req.user.id], res, gamesConns);
     res.on('close', () => {
       console.log('conn closed for user with id %d in game %d', req.user.id, gameId);
       gamesConns = dissocPath([gameId, req.user.id], gamesConns);
     });
+    gamesConns = assocPath([gameId, req.user.id], res, gamesConns);
 
     await broadcastGameState(gameId);
   }
@@ -102,14 +90,13 @@ export class SubscribeController {
     }
 
     res.setHeader('content-type', 'text/event-stream');
-    res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('Connection', 'keep-alive');
-
-    listConns = assoc(`${req.user.id}`, res, listConns);
+    res.setHeader('Cache-Control', 'no-cache');
     res.on('close', () => {
-      console.log('conn closed for user with id %d', req.user.id);
-      listConns = dissoc(`${req.user.id}`, listConns);
+      delete listConns[`${req.user.id}`];
+      console.log('[list] conn closed for user with id %d', req.user.id);
     });
+    listConns[`${req.user.id}`] = res;
 
     const games = await availabeGames();
     const availabeGamesString = JSON.stringify(games);

@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 import cookiesParser from 'cookie-parser';
+import compression from 'compression';
 import { config as dotenvConfig } from 'dotenv';
 
 dotenvConfig();
@@ -13,6 +14,7 @@ async function bootstrap() {
   });
   app.use(helmet());
   app.use(cookiesParser(process.env.COOKIE_SECRET));
+  app.use(compression());
 
   await app.listen(8041, '0.0.0.0');
 }
