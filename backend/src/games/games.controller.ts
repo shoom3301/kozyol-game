@@ -59,6 +59,7 @@ export class GamesController {
 
     await this.gameService.connectUserToGame(req.user.id, body.gameId);
     await broadcastGameState(body.gameId);
+    await broadcastGamesList();
 
     return 'success';
   }
@@ -78,9 +79,8 @@ export class GamesController {
         if (currGame.waitConfirmations.length === 0) {
           await continueGame(gameId);
         }
-
-        await broadcastGameState(gameId);
       }
+      await broadcastGameState(gameId);
     });
   }
 }
