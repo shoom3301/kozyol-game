@@ -49,7 +49,7 @@ export const getEndedState = (game: Game, userId: number): GameState => {
 
 export const getPlayState = async (game: Game, userId: number): Promise<GameState> => {
   const set = await game.lastSet();
-  const round = await set?.lastRound();
+  const round = await set.lastRound();
   round.set = set;
 
   let state = GameStateEnum.PLAY;

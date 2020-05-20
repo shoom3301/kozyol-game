@@ -11,6 +11,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 
 import { deleteTimeoutForGame, getTimeoutNameForGame } from 'src/games/helpers/timeoutHelpers';
 import { broadcastGameState } from 'src/subscribe/subscribe.controller';
+import { continueGame } from 'src/games/helpers/continueGame';
 
 const CARDS_NOT_ALLOWED_FOR_FIRST_STEP = new HttpException(
   'This cards now allowed for first step',
@@ -45,6 +46,7 @@ export const processStep = async (
       getTimeoutNameForGame(game.id),
       setTimeout(async () => {
         await confirmContinueForAll(game.id);
+        await continueGame(game.id, schedulerRegistry);
         await broadcastGameState(game.id);
       }, 5000),
     );

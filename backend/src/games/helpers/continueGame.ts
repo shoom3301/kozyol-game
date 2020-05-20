@@ -27,6 +27,7 @@ export const continueGame = async (gameId: number, schedulerRegistry: SchedulerR
         getTimeoutNameForGame(game.id),
         setTimeout(async () => {
           await confirmContinueForAll(game.id);
+          await continueGame(game.id, schedulerRegistry);
           await broadcastGameState(game.id);
         }, 10000),
       );
