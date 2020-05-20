@@ -16,10 +16,10 @@ import { GameSet } from './games/entities/set';
 import { GamesController } from './games/games.controller';
 import { GamesService } from './games/games.service';
 import { GamesModule } from './games/games.module';
-import { GameStateController } from './game-state/game-state.controller';
 import { StepController } from './step/step.controller';
 import { SubscribeController } from './subscribe/subscribe.controller';
 import { SubscribeModule } from './subscribe/subscribe.module';
+import { AwaitedConfirmation } from './games/entities/awaitedConfirmation';
 
 @Module({
   imports: [
@@ -32,7 +32,7 @@ import { SubscribeModule } from './subscribe/subscribe.module';
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
       // logging: true,
-      entities: [User, Game, Round, GameSet],
+      entities: [User, Game, Round, GameSet, AwaitedConfirmation],
       synchronize: true,
     }),
     AuthModule,
@@ -40,13 +40,7 @@ import { SubscribeModule } from './subscribe/subscribe.module';
     GamesModule,
     SubscribeModule,
   ],
-  controllers: [
-    AppController,
-    GamesController,
-    GameStateController,
-    StepController,
-    SubscribeController,
-  ],
+  controllers: [AppController, GamesController, StepController, SubscribeController],
   providers: [AppService, GamesService],
 })
 export class AppModule {

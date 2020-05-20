@@ -20,9 +20,6 @@ export class Game extends Base {
   @Column()
   slotsCount: number;
 
-  @Column({ type: 'json' })
-  waitConfirmations: User['id'][];
-
   @ManyToMany(
     () => User,
     user => user.games,
@@ -41,10 +38,6 @@ export class Game extends Base {
 
   hasPlayer(id: number) {
     return !!this.players.find(user => user.id === id);
-  }
-
-  initWaitingConfirmationsForContinue() {
-    this.waitConfirmations = map(prop('id'), this.players);
   }
 
   gameScore(): { [playerId: number]: number } {

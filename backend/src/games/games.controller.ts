@@ -7,17 +7,20 @@ import { Request } from 'express';
 import PQueue from 'p-queue';
 
 import { GamesService } from './games.service';
-import { UserService } from '../user/user.service';
-import { continueGame } from './helpers/continueGame';
-import { Game } from './entities/game';
-import { without } from 'ramda';
 import { GameGuard } from './games.guard';
 import { broadcastGamesList, broadcastGameState } from 'src/subscribe/subscribe.controller';
+import {
+  confirmContinue,
+  isGameNeedConfirmationsForContinue,
+} from './helpers/createAwaitedConfirmation';
+import { continueGame } from './helpers/continueGame';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { deleteTimeoutForGame } from './helpers/timeoutHelpers';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/games')
 export class GamesController {
-  constructor(private gameService: GamesService, private userService: UserService) {}
+  constructor(private gameService: GamesService, private schedulerRegistry: SchedulerRegistry) {}
 
   @Post('create')
   async createGame(@Req() req: Request) {
@@ -50,16 +53,15 @@ export class GamesController {
   @Post('continue')
   async continueGame(@Req() req: Request, @Body() { gameId }: { gameId?: number }) {
     await this.updateConfirmationsQueue.add(async () => {
-      const currGame = await Game.findOne({ where: { id: gameId } });
-      console.log('currGame.waitConfirmations.length', currGame.waitConfirmations.length);
-      if (currGame.waitConfirmations.length > 0) {
-        currGame.waitConfirmations = without([req.user.id], currGame.waitConfirmations);
-        await currGame.save();
-        if (currGame.waitConfirmations.length === 0) {
-          await continueGame(gameId);
-        }
+      await confirmContinue(gameId, req.user.id);
+
+      const needMoreConfirmations = await isGameNeedConfirmationsForContinue(gameId);
+      if (!needMoreConfirmations) {
+        deleteTimeoutForGame(gameId, this.schedulerRegistry);
+
+        await continueGame(gameId, this.schedulerRegistry);
+        await broadcastGameState(gameId);
       }
-      await broadcastGameState(gameId);
     });
   }
 }

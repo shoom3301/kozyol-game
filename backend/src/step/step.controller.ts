@@ -16,11 +16,12 @@ import { processStep } from './processStep';
 import { head, values } from 'ramda';
 import { GameGuard } from 'src/games/games.guard';
 import { broadcastGameState } from 'src/subscribe/subscribe.controller';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 @UseGuards(JwtAuthGuard, GameGuard)
 @Controller('api/step')
 export class StepController {
-  constructor(private gameService: GamesService) {}
+  constructor(private gameService: GamesService, private schedulerRegistry: SchedulerRegistry) {}
 
   @Post(':gameId')
   async doStep(
@@ -65,7 +66,7 @@ export class StepController {
       }
     });
 
-    await processStep(game, cards, userId);
+    await processStep(game, cards, userId, this.schedulerRegistry);
     await broadcastGameState(game.id);
 
     return 'success';

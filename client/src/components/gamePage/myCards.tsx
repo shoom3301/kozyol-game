@@ -37,7 +37,6 @@ export class MyCardsComponent extends Component<MyCardsProps, MyCardsState> {
   shouldComponentUpdate(
     nextProps: Readonly<MyCardsProps>,
     nextState: Readonly<MyCardsState>,
-    nextContext: any
   ): boolean {
     return !isJsonEquals(nextState, this.state) || !isJsonEquals(nextProps, this.props)
   }

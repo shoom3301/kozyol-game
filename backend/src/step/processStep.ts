@@ -3,13 +3,26 @@ import { Cards } from '../games/cards/types';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { allCardsOfSameRankOrSuit } from 'src/games/cards/comparisons';
 import { map, prop } from 'ramda';
+import {
+  createAwaitedConfirmation,
+  confirmContinueForAll,
+} from 'src/games/helpers/createAwaitedConfirmation';
+import { SchedulerRegistry } from '@nestjs/schedule';
+
+import { deleteTimeoutForGame, getTimeoutNameForGame } from 'src/games/helpers/timeoutHelpers';
+import { broadcastGameState } from 'src/subscribe/subscribe.controller';
 
 const CARDS_NOT_ALLOWED_FOR_FIRST_STEP = new HttpException(
   'This cards now allowed for first step',
   HttpStatus.UNPROCESSABLE_ENTITY,
 );
 
-export const processStep = async (game: Game, cards: Cards, userId: number) => {
+export const processStep = async (
+  game: Game,
+  cards: Cards,
+  userId: number,
+  schedulerRegistry: SchedulerRegistry,
+) => {
   const set = await game.playingSet();
   const round = await set.currentRound();
 
@@ -25,7 +38,15 @@ export const processStep = async (game: Game, cards: Cards, userId: number) => {
   await game.reload();
 
   if (round.isFinished()) {
-    game.initWaitingConfirmationsForContinue();
-    await game.save();
+    await Promise.all(game.players.map(player => createAwaitedConfirmation(game.id, player.id)));
+    deleteTimeoutForGame(game.id, schedulerRegistry);
+
+    schedulerRegistry.addTimeout(
+      getTimeoutNameForGame(game.id),
+      setTimeout(async () => {
+        await confirmContinueForAll(game.id);
+        await broadcastGameState(game.id);
+      }, 5000),
+    );
   }
 };

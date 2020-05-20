@@ -15,7 +15,7 @@ export interface ConfirmButtonState {
 export class ConfirmButton extends Component<ConfirmButtonProps, any> {
   state: ConfirmButtonState = { timer: null, current: 0, disabled: false }
 
-  componentDidUpdate(prevProps: Readonly<ConfirmButtonProps>, prevState: Readonly<any>) {
+  componentDidUpdate(prevProps: Readonly<ConfirmButtonProps>) {
     if (this.props.timeout !== prevProps.timeout) {
       this.updateTimer()
     }
@@ -38,9 +38,7 @@ export class ConfirmButton extends Component<ConfirmButtonProps, any> {
       this.setState({ ...this.state, current: newCurrent }, () => {
         if (newCurrent <= 0) {
           if (this.state.timer) window.clearInterval(this.state.timer)
-          this.setState({ timer: null, current: 0, disabled: true }, () => {
-            this.props.confirm()
-          })
+          this.setState({ timer: null, current: 0, disabled: true })
         }
       })
     }, 1000)

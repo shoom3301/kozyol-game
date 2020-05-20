@@ -21,7 +21,7 @@ export class GamesService {
   ) {}
 
   async gameById(gameId: number) {
-    const game = await this.gameRepository.findOne(gameId, { relations: ['sets'] });
+    const game = await this.gameRepository.findOne(gameId, { relations: ['sets', 'players'] });
 
     if (!game) {
       throw new HttpException('no game found', HttpStatus.NOT_FOUND);
