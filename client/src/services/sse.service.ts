@@ -23,7 +23,6 @@ export class SseService {
   }
 
   private onError = () => {
-    history.replace(authorizationRoute)
   }
 
   private listManager = new SSEConnectionManager('list', this.onList, this.onError)

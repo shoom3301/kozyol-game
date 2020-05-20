@@ -20,6 +20,10 @@ export class AuthService {
     })
   }
 
+  ping(): Promise<void> {
+    return axios.post(apiUrl('/auth/ping')).then(() => void 0)
+  }
+
   signUp(login: string, password: string): Promise<void> {
     return axios.post(apiUrl('/auth/signup'), { username: login, password }).then(() => void 0)
   }

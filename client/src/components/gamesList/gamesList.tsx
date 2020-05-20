@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import { GameItem } from 'model/GameItem'
 import { history } from 'router/router'
-import { gameRoute } from 'router/routerPaths'
+import { authorizationRoute, gameRoute } from 'router/routerPaths'
 import { Box, FormContainer, Title } from 'ui-elements/form'
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 import { getGamesList } from 'store/selectors/games'
 import { GameAuthor, GameListContainer, GameListItem, GameSlots } from 'components/gamesList/gamesListElements'
 import { sseService } from 'services/sse.service'
+import { authService } from 'services/auth.service'
 
 export interface GamesListProps {
   games: GameItem[]
@@ -15,7 +16,13 @@ export interface GamesListProps {
 
 export class GamesListComponent extends Component<GamesListProps, any> {
   componentDidMount() {
-    sseService.subscribeToGamesList()
+    authService.ping()
+      .then(() => {
+        sseService.subscribeToGamesList()
+      })
+      .catch(() => {
+        history.replace(authorizationRoute)
+      })
   }
 
   componentWillUnmount() {
