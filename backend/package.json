@@ -23,7 +23,7 @@
   "dependencies": {
     "@nestjs/common": "^7.0.1",
     "@nestjs/core": "^7.0.1",
-    "@nestjs/jwt": "^7.0.0",
+    "@nestjs/jwt": "^10.0.1",
     "@nestjs/passport": "^7.0.0",
     "@nestjs/platform-express": "^7.0.1",
     "@nestjs/schedule": "^0.3.1",
@@ -36,7 +36,7 @@
     "mysql": "^2.18.1",
     "p-queue": "^6.4.0",
     "passport": "^0.4.1",
-    "passport-jwt": "^4.0.0",
+    "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "ramda": "^0.27.0",
     "reflect-metadata": "^0.1.13",
